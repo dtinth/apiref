@@ -17,7 +17,9 @@ export function DocView(props: DocViewProps) {
       {
         // TODO: Deprecated block
       }
-      {tsdocToReactNode(props.summary)}
+      {!!props.summary && (
+        <div className="prose-xl">{tsdocToReactNode(props.summary)}</div>
+      )}
 
       {
         // TODO: Excerpt
