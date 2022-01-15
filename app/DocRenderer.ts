@@ -1,6 +1,7 @@
 import {
   ApiDocumentedItem,
   ApiItem,
+  ApiItemKind,
   ApiModel,
 } from '@microsoft/api-extractor-model'
 import {
@@ -12,6 +13,7 @@ import {
   DocParagraph,
   DocPlainText,
   DocSection,
+  StandardTags,
 } from '@microsoft/tsdoc'
 import { Page } from './DocModel.server'
 import { DocViewProps, RenderedTsdocNode } from './DocView'
@@ -29,18 +31,41 @@ export function renderDocPage(
   context: DocRenderContext,
 ): DocViewProps {
   const apiItem = page.info.item
+  const tsdocItem =
+    page.info.item.kind === ApiItemKind.EntryPoint
+      ? page.info.item.parent
+      : page.info.item
   const tsdocRenderContext: TsdocRenderContext = { ...context, apiItem }
   let summary: RenderedTsdocNode | undefined = undefined
+  let remarks: RenderedTsdocNode | undefined = undefined
+  let examples: RenderedTsdocNode[] = []
 
   // TODO: Breadcrumb
 
   // TODO: Deprecated block
 
   // Summary
-  if (apiItem instanceof ApiDocumentedItem) {
-    const tsdocComment = apiItem.tsdocComment
+  if (tsdocItem instanceof ApiDocumentedItem) {
+    const tsdocComment = tsdocItem.tsdocComment
     if (tsdocComment) {
       summary = renderDocNode(tsdocComment.summarySection, tsdocRenderContext)
+      if (tsdocComment.remarksBlock) {
+        remarks = renderDocNode(
+          tsdocComment.remarksBlock.content,
+          tsdocRenderContext,
+        )
+      }
+      for (const block of tsdocComment.customBlocks) {
+        if (
+          block.blockTag.tagNameWithUpperCase ===
+          StandardTags.example.tagNameWithUpperCase
+        ) {
+          const rendered = renderDocNode(block.content, tsdocRenderContext)
+          if (rendered) {
+            examples.push(rendered)
+          }
+        }
+      }
     }
   }
 
@@ -77,6 +102,8 @@ export function renderDocPage(
   return {
     title: page.info.pageTitle,
     summary,
+    remarks,
+    examples,
   }
 }
 

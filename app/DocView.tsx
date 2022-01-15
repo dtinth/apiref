@@ -3,14 +3,66 @@ import { Fragment, ReactNode } from 'react'
 export type DocViewProps = {
   title: string
   summary?: RenderedTsdocNode
+  remarks?: RenderedTsdocNode
+  examples?: RenderedTsdocNode[]
 }
 
 export function DocView(props: DocViewProps) {
   return (
-    <>
+    <div className="prose max-w-none">
+      {
+        // TODO: Breadcrumb
+      }
       <h1 className="text-3xl">{props.title}</h1>
+      {
+        // TODO: Deprecated block
+      }
       {tsdocToReactNode(props.summary)}
-    </>
+
+      {
+        // TODO: Excerpt
+        // TODO: Extends for class
+        // TODO: Implements for class
+        // TODO: Extends for interface
+        // TODO: Referenced types type alias
+        // TODO: Decorators
+      }
+      {!!props.remarks && (
+        <Section title="Remarks">{tsdocToReactNode(props.remarks)}</Section>
+      )}
+      {
+        // TODO: Examples
+      }
+      {
+        // TODO: Class => Events
+        // TODO: Class => Constructors
+        // TODO: Class => Properties
+        // TODO: Class => Methods
+        // TODO: Enum => Members
+        // TODO: Interface => Events
+        // TODO: Interface => Properties
+        // TODO: Interface => Methods
+        // TODO: Function => Parameters
+        // TODO: Function => Throws
+        // TODO: Namespace => Classes
+        // TODO: Namespace => Enumerations
+        // TODO: Namespace => Functions
+        // TODO: Namespace => Interfaces
+        // TODO: Namespace => Namespaces
+        // TODO: Namespace => Variables
+        // TODO: Namespace => TypeAliases
+        // TODO: Root => Entrypoints
+      }
+    </div>
+  )
+}
+
+export function Section(props: { children: ReactNode; title: string }) {
+  return (
+    <section>
+      <h2 className="text-2xl mt-12">{props.title}</h2>
+      {props.children}
+    </section>
   )
 }
 

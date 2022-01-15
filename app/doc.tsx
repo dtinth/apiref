@@ -57,7 +57,7 @@ export default function Doc() {
           <DocView {...data.docViewProps} />
         </div>
       </main>
-      <aside className="fixed top-10 w-[20rem] bottom-0 left-0 overflow-y-auto overflow-x-hidden bg-gray-100">
+      <aside className="fixed top-10 w-[20rem] bottom-0 left-0 overflow-y-auto overflow-x-hidden bg-gray-100 text-gray-700 leading-relaxed">
         <nav>
           {data.navigation.map((nav, i) => (
             <NavigationTree
@@ -87,7 +87,15 @@ function NavigationTree(props: {
         style={{ '--depth': props.depth } as any}
       >
         <KindIcon kind={nav.kind} />
-        {nav.title}
+        {nav.deprecated ? (
+          <span className="line-through">{nav.title}</span>
+        ) : nav.beta ? (
+          <>
+            {nav.title} <span className="opacity-50">&beta;</span>
+          </>
+        ) : (
+          nav.title
+        )}
       </Link>
       {nav.children.length > 0 && (
         <ul>

@@ -1,7 +1,15 @@
-import { ApiItem, ApiItemKind, ApiModel } from '@microsoft/api-extractor-model'
+import {
+  ApiDocumentedItem,
+  ApiItem,
+  ApiItemKind,
+  ApiModel,
+  ApiReleaseTagMixin,
+  ReleaseTag,
+} from '@microsoft/api-extractor-model'
 import { writeFileSync, mkdirSync } from 'fs'
 import fixture from '../fixtures/node-core-library.api.json'
 import { once } from 'lodash'
+import { DocComment } from '@microsoft/tsdoc'
 
 const loadApiModel = once(() => {
   const apiModel = new ApiModel()
@@ -158,6 +166,7 @@ class DocPages {
         slug: page.slug,
         kind: page.info.item.kind,
         children: [],
+        ...decorateNavigationItems(page.info.item),
       }
       slugToNavigationMap.set(page.slug, navigationItem)
     }
@@ -179,11 +188,34 @@ class DocPages {
   }
 }
 
+function decorateNavigationItems(item: ApiItem) {
+  if (!(item instanceof ApiDocumentedItem)) {
+    return {}
+  }
+  const tsdocComment: DocComment | undefined = item.tsdocComment
+  if (!tsdocComment) {
+    return {}
+  }
+  const output: Pick<DocPageNavigationItem, 'beta' | 'deprecated'> = {}
+  if (tsdocComment.deprecatedBlock) {
+    output.deprecated = true
+  }
+  if (
+    ApiReleaseTagMixin.isBaseClassOf(item) &&
+    item.releaseTag === ReleaseTag.Beta
+  ) {
+    output.beta = true
+  }
+  return output
+}
+
 export type DocPageNavigationItem = {
   title: string
   slug: string
   kind: DocItemKind
   children: DocPageNavigationItem[]
+  beta?: boolean
+  deprecated?: boolean
 }
 
 export type DocItemKind = `${ApiItemKind}`
