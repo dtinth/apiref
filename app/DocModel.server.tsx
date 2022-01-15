@@ -1,8 +1,15 @@
 import { ApiItem, ApiItemKind, ApiModel } from '@microsoft/api-extractor-model'
+import { writeFileSync, mkdirSync } from 'fs'
+import fixture from '../fixtures/node-core-library.api.json'
 
 export async function getApiModel(_packageIdentifier: string) {
   const apiModel = new ApiModel()
-  apiModel.loadPackage('fixtures/node-core-library.api.json')
+  mkdirSync('/tmp/docfixtures/', { recursive: true })
+  writeFileSync(
+    '/tmp/docfixtures/node-core-library.api.json',
+    JSON.stringify(fixture, null, 2),
+  )
+  apiModel.loadPackage('/tmp/fixtures/node-core-library.api.json')
   const pages = generatePages(apiModel)
   return { apiModel, pages }
 }
