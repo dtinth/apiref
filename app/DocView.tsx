@@ -5,6 +5,7 @@ export type DocViewProps = {
   summary?: RenderedTsdocNode
   remarks?: RenderedTsdocNode
   examples?: RenderedTsdocNode[]
+  tables: DocViewTable[]
 }
 
 export function DocView(props: DocViewProps) {
@@ -35,6 +36,30 @@ export function DocView(props: DocViewProps) {
       {
         // TODO: Examples
       }
+      {props.tables.map((table, i) => {
+        return (
+          <Section key={i} title={table.sectionTitle}>
+            <table>
+              <thead>
+                <tr>
+                  {table.headerTitles.map((title, j) => (
+                    <th key={j}>{title}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {table.rows.map((row, j) => (
+                  <tr key={j}>
+                    {row.cells.map((cell, k) => (
+                      <td key={k}>{tsdocToReactNode(cell)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Section>
+        )
+      })}
       {
         // TODO: Class => Events
         // TODO: Class => Constructors
@@ -76,6 +101,22 @@ export type RenderedTsdocNode =
   | { kind: 'FencedCode'; text: string }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
+  | {
+      kind: 'EmphasisSpan'
+      nodes: RenderedTsdocNode[]
+      bold?: boolean
+      italic?: boolean
+    }
+
+export type DocViewTable = {
+  sectionTitle: string
+  headerTitles: string[]
+  rows: DocViewTableRow[]
+}
+
+export type DocViewTableRow = {
+  cells: (RenderedTsdocNode | undefined)[]
+}
 
 export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
   if (!node) {
@@ -96,9 +137,31 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
       return <code>{node.text}</code>
     case 'FencedCode':
       return <pre>{node.text}</pre>
+    case 'EmphasisSpan':
+      return emphasize(tsdocChildren(node.nodes), node.bold, node.italic)
   }
 }
 
 function tsdocChildren(nodes: RenderedTsdocNode[]): ReactNode[] {
   return nodes.map((n, i) => <Fragment key={i}>{tsdocToReactNode(n)}</Fragment>)
+}
+
+function emphasize(
+  children: ReactNode,
+  bold?: boolean,
+  italic?: boolean,
+): ReactNode {
+  if (bold && italic) {
+    return (
+      <strong>
+        <em>{children}</em>
+      </strong>
+    )
+  } else if (bold) {
+    return <strong>{children}</strong>
+  } else if (italic) {
+    return <em>{children}</em>
+  } else {
+    return children
+  }
 }

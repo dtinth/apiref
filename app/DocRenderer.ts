@@ -3,6 +3,9 @@ import {
   ApiItem,
   ApiItemKind,
   ApiModel,
+  ApiParameterListMixin,
+  ApiReturnTypeMixin,
+  Excerpt,
 } from '@microsoft/api-extractor-model'
 import {
   DocCodeSpan,
@@ -16,7 +19,12 @@ import {
   StandardTags,
 } from '@microsoft/tsdoc'
 import { Page } from './DocModel.server'
-import { DocViewProps, RenderedTsdocNode } from './DocView'
+import {
+  DocViewProps,
+  DocViewTable,
+  DocViewTableRow,
+  RenderedTsdocNode,
+} from './DocView'
 
 type DocRenderContext = {
   apiModel: ApiModel
@@ -80,6 +88,64 @@ export function renderDocPage(
 
   // TODO: Remarks
 
+  const tables: DocViewTable[] = []
+  const renderExcerpt = (excerpt: Excerpt): RenderedTsdocNode => {
+    return {
+      kind: 'PlainText',
+      text: excerpt.text,
+    }
+  }
+  switch (apiItem.kind) {
+    case ApiItemKind.Constructor:
+    case ApiItemKind.ConstructSignature:
+    case ApiItemKind.Method:
+    case ApiItemKind.MethodSignature:
+    case ApiItemKind.Function: {
+      const rows: DocViewTableRow[] = []
+      if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
+        for (const apiParameter of apiItem.parameters) {
+          rows.push({
+            cells: [
+              { kind: 'PlainText', text: apiParameter.name },
+              renderExcerpt(apiParameter.parameterTypeExcerpt),
+              renderDocNode(
+                apiParameter.tsdocParamBlock?.content,
+                tsdocRenderContext,
+              ),
+            ],
+          })
+        }
+
+        if (ApiReturnTypeMixin.isBaseClassOf(apiItem)) {
+          const returnTypeExcerpt = apiItem.returnTypeExcerpt
+          rows.push({
+            cells: [
+              {
+                kind: 'EmphasisSpan',
+                nodes: [{ kind: 'PlainText', text: '(Returns)' }],
+                bold: true,
+              },
+              renderExcerpt(returnTypeExcerpt),
+              apiItem instanceof ApiDocumentedItem &&
+              apiItem.tsdocComment?.returnsBlock
+                ? renderDocNode(
+                    apiItem.tsdocComment.returnsBlock.content,
+                    tsdocRenderContext,
+                  )
+                : undefined,
+            ],
+          })
+        }
+
+        tables.push({
+          sectionTitle: 'Parameters',
+          headerTitles: ['Parameter', 'Type', 'Description'],
+          rows: rows,
+        })
+      }
+      break
+    }
+  }
   // TODO: Class => Events
   // TODO: Class => Constructors
   // TODO: Class => Properties
@@ -104,14 +170,17 @@ export function renderDocPage(
     summary,
     remarks,
     examples,
+    tables,
   }
 }
 
 function renderDocNode(
-  node: DocNode,
+  node: DocNode | undefined,
   context: TsdocRenderContext,
 ): RenderedTsdocNode | undefined {
-  console.log(node.kind)
+  if (!node) {
+    return undefined
+  }
   switch (node.kind) {
     case 'Section': {
       const section = node as DocSection
