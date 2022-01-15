@@ -18,6 +18,8 @@ export type RenderedTsdocNode =
   | { kind: 'Paragraph'; nodes: RenderedTsdocNode[] }
   | { kind: 'Section'; nodes: RenderedTsdocNode[] }
   | { kind: 'PlainText'; text: string }
+  | { kind: 'CodeSpan'; text: string }
+  | { kind: 'FencedCode'; text: string }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
 
@@ -36,6 +38,10 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
       return ''
     case 'LinkTag':
       return <a href={node.url}>{node.text}</a>
+    case 'CodeSpan':
+      return <code>{node.text}</code>
+    case 'FencedCode':
+      return <pre>{node.text}</pre>
   }
 }
 

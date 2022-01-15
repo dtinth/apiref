@@ -4,6 +4,8 @@ import {
   ApiModel,
 } from '@microsoft/api-extractor-model'
 import {
+  DocCodeSpan,
+  DocFencedCode,
   DocLinkTag,
   DocNode,
   DocNodeContainer,
@@ -119,6 +121,14 @@ function renderDocNode(
       } else if (linkTag.linkText) {
         return { kind: 'PlainText', text: linkTag.linkText }
       }
+    }
+    case 'CodeSpan': {
+      const codeSpan = node as DocCodeSpan
+      return { kind: 'CodeSpan', text: codeSpan.code }
+    }
+    case 'FencedCode': {
+      const fencedCode = node as DocFencedCode
+      return { kind: 'FencedCode', text: fencedCode.code }
     }
   }
   console.warn(`Unhandled DocNode kind: ${node.kind}`)
