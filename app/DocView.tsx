@@ -34,7 +34,9 @@ export function DocView(props: DocViewProps) {
 
       {!!props.signature && (
         <Section title="Signature">
-          <CodeBlock tokens={props.signature.tokens} />
+          <CodeBlock>
+            <code>{renderCode(props.signature.tokens)}</code>
+          </CodeBlock>
         </Section>
       )}
 
@@ -113,8 +115,8 @@ export type RenderedTsdocNode =
   | { kind: 'Section'; nodes: RenderedTsdocNode[] }
   | { kind: 'Span'; nodes: RenderedTsdocNode[] }
   | { kind: 'PlainText'; text: string }
-  | { kind: 'CodeSpan'; text: string }
-  | { kind: 'FencedCode'; text: string; tokens: IThemedToken[][] }
+  | { kind: 'CodeSpan'; text: string; tokens?: IThemedToken[][] }
+  | { kind: 'FencedCode'; code: RenderedTsdocNode }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
   | { kind: 'RouteLink'; to: string; text: string }
@@ -155,9 +157,9 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
     case 'RouteLink':
       return <Link to={node.to}>{node.text}</Link>
     case 'CodeSpan':
-      return <code>{node.text}</code>
+      return <code>{node.tokens ? renderCode(node.tokens) : node.text}</code>
     case 'FencedCode':
-      return <CodeBlock tokens={node.tokens} />
+      return <CodeBlock>{tsdocToReactNode(node.code)}</CodeBlock>
     case 'EmphasisSpan':
       return emphasize(tsdocChildren(node.nodes), node.bold, node.italic)
   }
@@ -187,21 +189,19 @@ function emphasize(
   }
 }
 
-function CodeBlock(props: { tokens: IThemedToken[][] }) {
-  return (
-    <pre>
-      <code>
-        {props.tokens.map((line, i) => (
-          <Fragment key={i}>
-            {i > 0 ? '\n' : ''}
-            {line.map((token, j) => (
-              <span key={j} style={{ color: token.color }}>
-                {token.content}
-              </span>
-            ))}
-          </Fragment>
-        ))}
-      </code>
-    </pre>
-  )
+function CodeBlock(props: { children: ReactNode }) {
+  return <pre>{props.children}</pre>
+}
+
+function renderCode(tokens: IThemedToken[][]): ReactNode {
+  return tokens.map((line, i) => (
+    <Fragment key={i}>
+      {i > 0 ? '\n' : ''}
+      {line.map((token, j) => (
+        <span key={j} style={{ color: token.color }}>
+          {token.content}
+        </span>
+      ))}
+    </Fragment>
+  ))
 }

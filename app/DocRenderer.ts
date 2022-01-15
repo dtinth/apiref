@@ -1,6 +1,7 @@
 import {
   ApiDeclaredItem,
   ApiDocumentedItem,
+  ApiEnum,
   ApiItem,
   ApiItemKind,
   ApiModel,
@@ -26,7 +27,7 @@ import {
   DocViewTableRow,
   RenderedTsdocNode,
 } from './DocView'
-import { getHighlighter, Highlighter } from 'shiki'
+import { getHighlighter, Highlighter, IThemedToken } from 'shiki'
 
 type DocRenderContext = {
   apiModel: ApiModel
@@ -35,7 +36,7 @@ type DocRenderContext = {
 
 type TsdocRenderContext = DocRenderContext & {
   apiItem: ApiItem
-  highlighter: Highlighter
+  renderCode: (code: string) => RenderedTsdocNode
 }
 
 export async function renderDocPage(
@@ -46,6 +47,11 @@ export async function renderDocPage(
     theme: 'one-dark-pro',
     langs: ['typescript'],
   })
+  const renderCode = (code: string): RenderedTsdocNode => ({
+    kind: 'CodeSpan',
+    text: code,
+    tokens: highlighter.codeToThemedTokens(code, 'typescript'),
+  })
   const apiItem = page.info.item
   const tsdocItem =
     page.info.item.kind === ApiItemKind.EntryPoint
@@ -54,7 +60,7 @@ export async function renderDocPage(
   const tsdocRenderContext: TsdocRenderContext = {
     ...context,
     apiItem,
-    highlighter,
+    renderCode,
   }
 
   let summary: RenderedTsdocNode | undefined = undefined
@@ -126,6 +132,20 @@ export async function renderDocPage(
 
   // TODO: Decorators
 
+  const renderDescription = (apiItem: ApiItem): RenderedTsdocNode => {
+    // TODO: Beta
+    // TODO: Optional
+    const parts: RenderedTsdocNode[] = []
+    if (apiItem instanceof ApiDocumentedItem) {
+      const rendered = renderDocNode(
+        apiItem.tsdocComment?.summarySection,
+        tsdocRenderContext,
+      )
+      if (rendered) parts.push(rendered)
+    }
+    return { kind: 'Span', nodes: parts }
+  }
+
   const tables: DocViewTable[] = []
   switch (apiItem.kind) {
     case ApiItemKind.Constructor:
@@ -135,6 +155,7 @@ export async function renderDocPage(
     case ApiItemKind.Function: {
       const rows: DocViewTableRow[] = []
       if (ApiParameterListMixin.isBaseClassOf(apiItem)) {
+        // Function => Parameters
         for (const apiParameter of apiItem.parameters) {
           rows.push({
             cells: [
@@ -148,6 +169,7 @@ export async function renderDocPage(
           })
         }
 
+        // Function => Returns
         if (ApiReturnTypeMixin.isBaseClassOf(apiItem)) {
           const returnTypeExcerpt = apiItem.returnTypeExcerpt
           rows.push({
@@ -169,6 +191,8 @@ export async function renderDocPage(
           })
         }
 
+        // TODO: Function => Throws
+
         tables.push({
           sectionTitle: 'Parameters',
           headerTitles: ['Parameter', 'Type', 'Description'],
@@ -177,17 +201,33 @@ export async function renderDocPage(
       }
       break
     }
+    case ApiItemKind.Enum: {
+      // Enum => Members
+      const apiEnum = apiItem as ApiEnum
+      const rows: DocViewTableRow[] = []
+      for (const apiEnumMember of apiEnum.members) {
+        rows.push({
+          cells: [
+            { kind: 'PlainText', text: apiEnumMember.displayName },
+            renderCode(apiEnumMember.initializerExcerpt.text),
+            renderDescription(apiEnumMember),
+          ],
+        })
+      }
+      tables.push({
+        sectionTitle: 'Enumeration Members',
+        headerTitles: ['Member', 'Value', 'Description'],
+        rows,
+      })
+    }
   }
   // TODO: Class => Events
   // TODO: Class => Constructors
   // TODO: Class => Properties
   // TODO: Class => Methods
-  // TODO: Enum => Members
   // TODO: Interface => Events
   // TODO: Interface => Properties
   // TODO: Interface => Methods
-  // TODO: Function => Parameters
-  // TODO: Function => Throws
   // TODO: Namespace => Classes
   // TODO: Namespace => Enumerations
   // TODO: Namespace => Functions
@@ -262,11 +302,7 @@ function renderDocNode(
       const fencedCode = node as DocFencedCode
       return {
         kind: 'FencedCode',
-        text: fencedCode.code,
-        tokens: context.highlighter.codeToThemedTokens(
-          fencedCode.code,
-          'typescript',
-        ),
+        code: context.renderCode(fencedCode.code),
       }
     }
   }
