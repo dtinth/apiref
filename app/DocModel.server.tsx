@@ -291,6 +291,12 @@ export class LinkGenerator {
 
   linkTo(apiItem: ApiItem): string | undefined {
     const canonicalReference = apiItem.canonicalReference.toString()
-    return this.canonicalReferenceToRouteMap.get(canonicalReference)
+    return this.linkToReference(canonicalReference)
+  }
+
+  linkToReference(canonicalReference: string | undefined): string | undefined {
+    return canonicalReference
+      ? this.canonicalReferenceToRouteMap.get(canonicalReference)
+      : undefined
   }
 }

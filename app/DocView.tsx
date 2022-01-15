@@ -110,6 +110,7 @@ export function Section(props: { children: ReactNode; title: string }) {
 export type RenderedTsdocNode =
   | { kind: 'Paragraph'; nodes: RenderedTsdocNode[] }
   | { kind: 'Section'; nodes: RenderedTsdocNode[] }
+  | { kind: 'Span'; nodes: RenderedTsdocNode[] }
   | { kind: 'PlainText'; text: string }
   | { kind: 'CodeSpan'; text: string }
   | { kind: 'FencedCode'; text: string }
@@ -142,6 +143,8 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
       return <p>{tsdocChildren(node.nodes)}</p>
     case 'Section':
       return <section>{tsdocChildren(node.nodes)}</section>
+    case 'Span':
+      return <>{tsdocChildren(node.nodes)}</>
     case 'PlainText':
       return node.text
     case 'SoftBreak':

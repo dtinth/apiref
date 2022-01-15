@@ -87,8 +87,16 @@ export function renderDocPage(
 
   const renderExcerpt = (excerpt: Excerpt): RenderedTsdocNode => {
     return {
-      kind: 'PlainText',
-      text: excerpt.text,
+      kind: 'Span',
+      nodes: excerpt.spannedTokens.map((token) => {
+        const canonicalReference = token.canonicalReference?.toString()
+        const link = context.linkGenerator.linkToReference(canonicalReference)
+        if (link) {
+          return { kind: 'RouteLink', to: link, text: token.text }
+        } else {
+          return { kind: 'PlainText', text: token.text }
+        }
+      }),
     }
   }
 
