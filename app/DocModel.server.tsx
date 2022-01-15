@@ -1,7 +1,7 @@
 import { ApiItem, ApiItemKind, ApiModel } from '@microsoft/api-extractor-model'
 import { writeFileSync, mkdirSync } from 'fs'
 import fixture from '../fixtures/node-core-library.api.json'
-import { once } from 'lodash-es'
+import { once } from 'lodash'
 
 const loadApiModel = once(() => {
   const apiModel = new ApiModel()
