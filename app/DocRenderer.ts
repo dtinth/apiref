@@ -1,4 +1,5 @@
 import {
+  ApiDeclaredItem,
   ApiDocumentedItem,
   ApiItem,
   ApiItemKind,
@@ -44,25 +45,31 @@ export function renderDocPage(
       ? page.info.item.parent
       : page.info.item
   const tsdocRenderContext: TsdocRenderContext = { ...context, apiItem }
+
   let summary: RenderedTsdocNode | undefined = undefined
   let remarks: RenderedTsdocNode | undefined = undefined
+  let signature: string | undefined = undefined
   let examples: RenderedTsdocNode[] = []
 
   // TODO: Breadcrumb
 
   // TODO: Deprecated block
 
-  // Summary
   if (tsdocItem instanceof ApiDocumentedItem) {
     const tsdocComment = tsdocItem.tsdocComment
     if (tsdocComment) {
+      // Summary
       summary = renderDocNode(tsdocComment.summarySection, tsdocRenderContext)
+
+      // Remarks
       if (tsdocComment.remarksBlock) {
         remarks = renderDocNode(
           tsdocComment.remarksBlock.content,
           tsdocRenderContext,
         )
       }
+
+      // Examples
       for (const block of tsdocComment.customBlocks) {
         if (
           block.blockTag.tagNameWithUpperCase ===
@@ -77,7 +84,17 @@ export function renderDocPage(
     }
   }
 
-  // TODO: Excerpt
+  const renderExcerpt = (excerpt: Excerpt): RenderedTsdocNode => {
+    return {
+      kind: 'PlainText',
+      text: excerpt.text,
+    }
+  }
+
+  if (apiItem instanceof ApiDeclaredItem) {
+    // Signature
+    signature = apiItem.getExcerptWithModifiers()
+  }
 
   // TODO: Extends for class
   // TODO: Implements for class
@@ -86,15 +103,7 @@ export function renderDocPage(
 
   // TODO: Decorators
 
-  // TODO: Remarks
-
   const tables: DocViewTable[] = []
-  const renderExcerpt = (excerpt: Excerpt): RenderedTsdocNode => {
-    return {
-      kind: 'PlainText',
-      text: excerpt.text,
-    }
-  }
   switch (apiItem.kind) {
     case ApiItemKind.Constructor:
     case ApiItemKind.ConstructSignature:
@@ -167,7 +176,9 @@ export function renderDocPage(
 
   return {
     title: page.info.pageTitle,
+    kind: page.info.item.kind,
     summary,
+    signature,
     remarks,
     examples,
     tables,

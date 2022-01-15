@@ -55,6 +55,10 @@ export function KindIcon(props: { kind: DocItemKind }) {
       icon = <span title={props.kind}></span>
   }
   return (
-    <span className={`inline-block align-middle w-5 ${color}`}>{icon}</span>
+    <span
+      className={`inline-block align-middle w-[1.25em] relative top-[-0.1em] ${color}`}
+    >
+      {icon}
+    </span>
   )
 }

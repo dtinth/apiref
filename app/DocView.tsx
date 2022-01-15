@@ -1,11 +1,15 @@
 import { Fragment, ReactNode } from 'react'
+import { DocItemKind } from './DocModel.server'
+import { KindIcon } from './KindIcon'
 
 export type DocViewProps = {
   title: string
+  kind: DocItemKind
   summary?: RenderedTsdocNode
   remarks?: RenderedTsdocNode
   examples?: RenderedTsdocNode[]
   tables: DocViewTable[]
+  signature?: string
 }
 
 export function DocView(props: DocViewProps) {
@@ -14,7 +18,13 @@ export function DocView(props: DocViewProps) {
       {
         // TODO: Breadcrumb
       }
-      <h1 className="text-3xl">{props.title}</h1>
+      <h1 className="text-3xl">
+        <KindIcon kind={props.kind} />
+        {props.title}{' '}
+        <small className="text-lg font-normal text-gray-500">
+          {props.kind}
+        </small>
+      </h1>
       {
         // TODO: Deprecated block
       }
@@ -22,8 +32,13 @@ export function DocView(props: DocViewProps) {
         <div className="prose-xl">{tsdocToReactNode(props.summary)}</div>
       )}
 
+      {!!props.signature && (
+        <Section title="Signature">
+          <pre>{props.signature}</pre>
+        </Section>
+      )}
+
       {
-        // TODO: Excerpt
         // TODO: Extends for class
         // TODO: Implements for class
         // TODO: Extends for interface
