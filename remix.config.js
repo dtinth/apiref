@@ -6,5 +6,10 @@ module.exports = {
   assetsBuildDirectory: "public/build",
   publicPath: "/build/",
   serverBuildDirectory: "api/_build",
-  ignoredRouteFiles: [".*"]
+  ignoredRouteFiles: [".*"],
+  routes: async defineRoutes => {
+    return defineRoutes(route => {
+      route("/*", "doc.tsx");
+    });
+  }
 };

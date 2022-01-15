@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "dev",
-			"dependsOn": ["remix", "tailwindcss"],
+			"dependsOn": ["remix", "tailwindcss", "vitest"],
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -18,6 +18,11 @@
 			"type": "shell",
 			"label": "tailwindcss",
 			"command": "yarn tailwindcss -o ./app/tailwind.css --watch",
+		},
+		{
+			"type": "shell",
+			"label": "vitest",
+			"command": "yarn vitest",
 		}
 	]
 }
