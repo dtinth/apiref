@@ -14,7 +14,6 @@
     "@microsoft/tsdoc": "^0.13.2",
     "@microsoft/tsdoc-config": "^0.15.2",
     "@remix-run/react": "^1.1.1",
-    "@remix-run/serve": "^1.1.1",
     "@remix-run/vercel": "^1.1.1",
     "@vercel/node": "^1.12.1",
     "react": "^17.0.2",
