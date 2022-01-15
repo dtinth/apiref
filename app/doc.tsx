@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
     baseUrl: '/' + packageName,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
-    docViewProps: renderDocPage(page, { apiModel, linkGenerator }),
+    docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
   }
 }
 

@@ -1,5 +1,6 @@
 import { Fragment, ReactNode } from 'react'
 import { Link } from 'remix'
+import type { IThemedToken } from 'shiki'
 import { DocItemKind } from './DocModel.server'
 import { KindIcon } from './KindIcon'
 
@@ -10,7 +11,7 @@ export type DocViewProps = {
   remarks?: RenderedTsdocNode
   examples?: RenderedTsdocNode[]
   tables: DocViewTable[]
-  signature?: string
+  signature?: { text: string; tokens: IThemedToken[][] }
 }
 
 export function DocView(props: DocViewProps) {
@@ -33,7 +34,7 @@ export function DocView(props: DocViewProps) {
 
       {!!props.signature && (
         <Section title="Signature">
-          <pre>{props.signature}</pre>
+          <CodeBlock tokens={props.signature.tokens} />
         </Section>
       )}
 
@@ -113,7 +114,7 @@ export type RenderedTsdocNode =
   | { kind: 'Span'; nodes: RenderedTsdocNode[] }
   | { kind: 'PlainText'; text: string }
   | { kind: 'CodeSpan'; text: string }
-  | { kind: 'FencedCode'; text: string }
+  | { kind: 'FencedCode'; text: string; tokens: IThemedToken[][] }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
   | { kind: 'RouteLink'; to: string; text: string }
@@ -156,7 +157,7 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
     case 'CodeSpan':
       return <code>{node.text}</code>
     case 'FencedCode':
-      return <pre>{node.text}</pre>
+      return <CodeBlock tokens={node.tokens} />
     case 'EmphasisSpan':
       return emphasize(tsdocChildren(node.nodes), node.bold, node.italic)
   }
@@ -184,4 +185,23 @@ function emphasize(
   } else {
     return children
   }
+}
+
+function CodeBlock(props: { tokens: IThemedToken[][] }) {
+  return (
+    <pre>
+      <code>
+        {props.tokens.map((line, i) => (
+          <Fragment key={i}>
+            {i > 0 ? '\n' : ''}
+            {line.map((token, j) => (
+              <span key={j} style={{ color: token.color }}>
+                {token.content}
+              </span>
+            ))}
+          </Fragment>
+        ))}
+      </code>
+    </pre>
+  )
 }

@@ -26,6 +26,7 @@ import {
   DocViewTableRow,
   RenderedTsdocNode,
 } from './DocView'
+import { getHighlighter, Highlighter } from 'shiki'
 
 type DocRenderContext = {
   apiModel: ApiModel
@@ -34,22 +35,31 @@ type DocRenderContext = {
 
 type TsdocRenderContext = DocRenderContext & {
   apiItem: ApiItem
+  highlighter: Highlighter
 }
 
-export function renderDocPage(
+export async function renderDocPage(
   page: Page,
   context: DocRenderContext,
-): DocViewProps {
+): Promise<DocViewProps> {
+  const highlighter = await getHighlighter({
+    theme: 'one-dark-pro',
+    langs: ['typescript'],
+  })
   const apiItem = page.info.item
   const tsdocItem =
     page.info.item.kind === ApiItemKind.EntryPoint
       ? page.info.item.parent
       : page.info.item
-  const tsdocRenderContext: TsdocRenderContext = { ...context, apiItem }
+  const tsdocRenderContext: TsdocRenderContext = {
+    ...context,
+    apiItem,
+    highlighter,
+  }
 
   let summary: RenderedTsdocNode | undefined = undefined
   let remarks: RenderedTsdocNode | undefined = undefined
-  let signature: string | undefined = undefined
+  let signature: DocViewProps['signature'] = undefined
   let examples: RenderedTsdocNode[] = []
 
   // TODO: Breadcrumb
@@ -102,7 +112,11 @@ export function renderDocPage(
 
   if (apiItem instanceof ApiDeclaredItem) {
     // Signature
-    signature = apiItem.getExcerptWithModifiers()
+    const code = apiItem.getExcerptWithModifiers()
+    signature = {
+      text: code,
+      tokens: highlighter.codeToThemedTokens(code, 'typescript'),
+    }
   }
 
   // TODO: Extends for class
@@ -246,7 +260,14 @@ function renderDocNode(
     }
     case 'FencedCode': {
       const fencedCode = node as DocFencedCode
-      return { kind: 'FencedCode', text: fencedCode.code }
+      return {
+        kind: 'FencedCode',
+        text: fencedCode.code,
+        tokens: context.highlighter.codeToThemedTokens(
+          fencedCode.code,
+          'typescript',
+        ),
+      }
     }
   }
   console.warn(`Unhandled DocNode kind: ${node.kind}`)
