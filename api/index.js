@@ -1,5 +1,9 @@
-const { createRequestHandler } = require("@remix-run/vercel");
+const { createRequestHandler } = require('@remix-run/vercel')
+
+// ???
+require('@microsoft/tsdoc')
+require('@microsoft/api-extractor-model')
 
 module.exports = createRequestHandler({
-  build: require("./_build")
-});
+  build: require('./_build'),
+})
