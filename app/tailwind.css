@@ -1124,6 +1124,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-left: 20rem;
 }
 
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
+}
+
 .block {
   display: block;
 }
@@ -1160,6 +1168,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   overflow-x: hidden;
 }
 
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
 .bg-gray-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
@@ -1185,6 +1197,18 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pl-\[calc\(0\.75rem\*var\(--depth\)\)\] {
   padding-left: calc(0.75rem * var(--depth));
+}
+
+.pl-\[calc\(0\.5rem\+0\.75rem\*var\(--depth\)\)\] {
+  padding-left: calc(0.5rem + 0.75rem * var(--depth));
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
+}
+
+.pr-2 {
+  padding-right: 0.5rem;
 }
 
 .align-middle {

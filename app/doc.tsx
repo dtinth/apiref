@@ -82,7 +82,7 @@ function NavigationTree(props: {
   return (
     <>
       <Link
-        className="block pl-[calc(0.75rem*var(--depth))]"
+        className="block pl-[calc(0.5rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap"
         to={`${props.baseUrl}/${nav.slug}`}
         style={{ '--depth': props.depth } as any}
       >
