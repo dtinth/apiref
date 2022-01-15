@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dev",
+			"dependsOn": ["remix", "tailwindcss"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "remix",
+			"command": "yarn dev",
+		},
+		{
+			"type": "shell",
+			"label": "tailwindcss",
+			"command": "yarn tailwindcss -o ./app/tailwind.css --watch",
+		}
+	]
+}
