@@ -44,7 +44,7 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.0"
 
-"@microsoft/tsdoc-config@~0.15.2":
+"@microsoft/tsdoc-config@^0.15.2", "@microsoft/tsdoc-config@~0.15.2":
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc-config/-/tsdoc-config-0.15.2.tgz#eb353c93f3b62ab74bdc9ab6f4a82bcf80140f14"
   integrity sha512-mK19b2wJHSdNf8znXSMYVShAHktVr/ib0Ck2FA3lsVBSEhSI/TfXT7DJQkAYgcztTuwazGcg58ZjYdk0hTCVrA==
