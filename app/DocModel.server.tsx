@@ -1,10 +1,10 @@
 import { ApiItem, ApiItemKind, ApiModel } from '@microsoft/api-extractor-model'
 
 export async function getApiModel(_packageIdentifier: string) {
-  const model = new ApiModel()
-  model.loadPackage('fixtures/node-core-library.api.json')
-  const pages = generatePages(model)
-  return { model, pages }
+  const apiModel = new ApiModel()
+  apiModel.loadPackage('fixtures/node-core-library.api.json')
+  const pages = generatePages(apiModel)
+  return { apiModel, pages }
 }
 
 export type PageInfo = {

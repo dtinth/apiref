@@ -468,8 +468,54 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-sepia:  ;
 }
 
+.fixed {
+  position: fixed;
+}
+
+.inset-x-0 {
+  left: 0px;
+  right: 0px;
+}
+
+.top-0 {
+  top: 0px;
+}
+
+.top-10 {
+  top: 2.5rem;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}
+
+.left-0 {
+  left: 0px;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ml-\[20rem\] {
+  margin-left: 20rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
+}
+
+.block {
+  display: block;
+}
+
 .inline-block {
   display: inline-block;
+}
+
+.h-10 {
+  height: 2.5rem;
 }
 
 .w-4 {
@@ -480,8 +526,59 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 1.25rem;
 }
 
+.w-\[20rem\] {
+  width: 20rem;
+}
+
+.max-w-4xl {
+  max-width: 56rem;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.bg-gray-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
 .pl-3 {
   padding-left: 0.75rem;
+}
+
+.pl-\[calc\(0\.5rem\*var\(--depth\)\)\] {
+  padding-left: calc(0.5rem * var(--depth));
+}
+
+.pl-\[calc\(0\.75rem\*var\(--depth\)\)\] {
+  padding-left: calc(0.75rem * var(--depth));
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .text-xl {
