@@ -1,8 +1,9 @@
 import { ApiItem, ApiItemKind, ApiModel } from '@microsoft/api-extractor-model'
 import { writeFileSync, mkdirSync } from 'fs'
 import fixture from '../fixtures/node-core-library.api.json'
+import { once } from 'lodash-es'
 
-export async function getApiModel(_packageIdentifier: string) {
+const loadApiModel = once(() => {
   const apiModel = new ApiModel()
   mkdirSync('/tmp/docfixtures/', { recursive: true })
   writeFileSync(
@@ -10,6 +11,11 @@ export async function getApiModel(_packageIdentifier: string) {
     JSON.stringify(fixture, null, 2),
   )
   apiModel.loadPackage('/tmp/docfixtures/node-core-library.api.json')
+  return apiModel
+})
+
+export async function getApiModel(_packageIdentifier: string) {
+  const apiModel = loadApiModel()
   const pages = generatePages(apiModel)
   return { apiModel, pages }
 }
