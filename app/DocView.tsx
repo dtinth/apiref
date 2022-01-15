@@ -1,4 +1,5 @@
 import { Fragment, ReactNode } from 'react'
+import { Link } from 'remix'
 import { DocItemKind } from './DocModel.server'
 import { KindIcon } from './KindIcon'
 
@@ -116,6 +117,7 @@ export type RenderedTsdocNode =
   | { kind: 'FencedCode'; text: string }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
+  | { kind: 'RouteLink'; to: string; text: string }
   | {
       kind: 'EmphasisSpan'
       nodes: RenderedTsdocNode[]
@@ -148,6 +150,8 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
       return ''
     case 'LinkTag':
       return <a href={node.url}>{node.text}</a>
+    case 'RouteLink':
+      return <Link to={node.to}>{node.text}</Link>
     case 'CodeSpan':
       return <code>{node.text}</code>
     case 'FencedCode':

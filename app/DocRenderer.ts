@@ -19,7 +19,7 @@ import {
   DocSection,
   StandardTags,
 } from '@microsoft/tsdoc'
-import { Page } from './DocModel.server'
+import { LinkGenerator, Page } from './DocModel.server'
 import {
   DocViewProps,
   DocViewTable,
@@ -29,6 +29,7 @@ import {
 
 type DocRenderContext = {
   apiModel: ApiModel
+  linkGenerator: LinkGenerator
 }
 
 type TsdocRenderContext = DocRenderContext & {
@@ -219,8 +220,10 @@ function renderDocNode(
           const { resolvedApiItem } = result
           const text =
             linkTag.linkText || resolvedApiItem.getScopedNameWithinPackage()
-          // TODO: return { kind: 'LinkTag', text, url: '#' }
-          return { kind: 'PlainText', text }
+          const to = context.linkGenerator.linkTo(resolvedApiItem)
+          return to
+            ? { kind: 'RouteLink', to, text }
+            : { kind: 'PlainText', text }
         }
       } else if (linkTag.urlDestination) {
         const text = linkTag.linkText || linkTag.urlDestination

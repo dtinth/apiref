@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
   const path = segments.join('/')
   console.log({ packageName, path })
 
-  const { pages, apiModel } = await getApiDoc(packageName)
+  const { pages, apiModel, linkGenerator } = await getApiDoc(packageName)
   const page = pages.getPage(path)
   if (!page) {
     throw new Response('Not Found - No page found.', {
@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
     baseUrl: '/' + packageName,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
-    docViewProps: renderDocPage(page, { apiModel }),
+    docViewProps: renderDocPage(page, { apiModel, linkGenerator }),
   }
 }
 

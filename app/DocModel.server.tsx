@@ -8,7 +8,7 @@ import {
 } from '@microsoft/api-extractor-model'
 import { writeFileSync, mkdirSync } from 'fs'
 import fixture from '../fixtures/node-core-library.api.json'
-import { once } from 'lodash'
+import { once, sortBy } from 'lodash'
 import { DocComment } from '@microsoft/tsdoc'
 
 const loadApiModel = once(() => {
@@ -22,10 +22,11 @@ const loadApiModel = once(() => {
   return apiModel
 })
 
-export async function getApiModel(_packageIdentifier: string) {
+export async function getApiModel(packageIdentifier: string) {
   const apiModel = loadApiModel()
   const pages = generatePages(apiModel)
-  return { apiModel, pages }
+  const linkGenerator = new LinkGenerator(pages, `/${packageIdentifier}`)
+  return { apiModel, pages, linkGenerator }
 }
 
 export type PageInfo = {
@@ -106,7 +107,7 @@ function generatePages(model: ApiModel) {
   visit(model.packages[0].entryPoints[0])
   pageInfos.sort((a, b) => a.pageSortKey.localeCompare(b.pageSortKey))
 
-  const slugGenerator = new SlugGenerator()
+  const slugGenerator = new PageSlugGenerator()
   const pages = pageInfos.map((pageInfo): Page => {
     return {
       info: pageInfo,
@@ -116,7 +117,7 @@ function generatePages(model: ApiModel) {
   return new DocPages(pages)
 }
 
-class SlugGenerator {
+class PageSlugGenerator {
   used = new Set<string>()
   generateSlug(pageInfo: PageInfo): string {
     const candidate = this.generateSlugCandidates(pageInfo)
@@ -131,6 +132,27 @@ class SlugGenerator {
   *generateSlugCandidates(pageInfo: PageInfo) {
     const scopedName = pageInfo.item.getScopedNameWithinPackage()
     let slugifiedName = scopedName.replace(/[^a-zA-Z0-9_.]/g, '')
+    yield slugifiedName
+    for (let i = 2; ; i++) {
+      yield `${slugifiedName}_${i}`
+    }
+  }
+}
+
+class HashSlugGenerator {
+  used = new Set<string>()
+  generateSlug(inputName: string): string {
+    const candidate = this.generateSlugCandidates(inputName)
+    for (;;) {
+      const name = candidate.next().value as string
+      if (!this.used.has(name)) {
+        this.used.add(name)
+        return name
+      }
+    }
+  }
+  *generateSlugCandidates(inputName: string) {
+    let slugifiedName = inputName.replace(/[^a-zA-Z0-9_]/g, '')
     yield slugifiedName
     for (let i = 2; ; i++) {
       yield `${slugifiedName}_${i}`
@@ -153,6 +175,9 @@ class DocPages {
         }
       }
     }
+  }
+  getAllPages() {
+    return this.pages
   }
   getPage(slug: string) {
     return this.pages.find((page) => page.slug === slug)
@@ -219,3 +244,53 @@ export type DocPageNavigationItem = {
 }
 
 export type DocItemKind = `${ApiItemKind}`
+
+export class LinkGenerator {
+  private canonicalReferenceToRouteMap = new Map<string, string>()
+
+  constructor(pages: DocPages, prefix: string) {
+    for (const page of pages.getAllPages()) {
+      const apiItem = page.info.item
+      const canonicalReference = apiItem.canonicalReference.toString()
+      const base = `${prefix}/${page.slug}`
+      this.canonicalReferenceToRouteMap.set(canonicalReference, base)
+    }
+
+    for (const page of pages.getAllPages()) {
+      const apiItem = page.info.item
+      const base = `${prefix}/${page.slug}`
+      const linkableItems: ApiItem[] = []
+      const visit = (item: ApiItem) => {
+        const canonicalReference = item.canonicalReference.toString()
+        if (this.canonicalReferenceToRouteMap.has(canonicalReference)) {
+          return
+        }
+        linkableItems.push(item)
+        visitMembers(item)
+      }
+      const visitMembers = (item: ApiItem) => {
+        for (const member of item.members) {
+          visit(member)
+        }
+      }
+      visitMembers(apiItem)
+      linkableItems.sort((a, b) => a.getSortKey().localeCompare(b.getSortKey()))
+      const slugGenerator = new HashSlugGenerator()
+      for (const item of linkableItems) {
+        const slug = slugGenerator.generateSlug(item.displayName)
+        const canonicalReference = item.canonicalReference.toString()
+        if (!this.canonicalReferenceToRouteMap.has(canonicalReference)) {
+          this.canonicalReferenceToRouteMap.set(
+            canonicalReference,
+            `${base}#${slug}`,
+          )
+        }
+      }
+    }
+  }
+
+  linkTo(apiItem: ApiItem): string | undefined {
+    const canonicalReference = apiItem.canonicalReference.toString()
+    return this.canonicalReferenceToRouteMap.get(canonicalReference)
+  }
+}
