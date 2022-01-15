@@ -12,7 +12,7 @@ import {
 
 export function KindIcon(props: { kind: DocItemKind }) {
   let icon = null
-  let color = 'text-gray-600'
+  let color = 'text-gray-400'
   switch (props.kind) {
     case 'EntryPoint':
     case 'Namespace':
@@ -21,7 +21,7 @@ export function KindIcon(props: { kind: DocItemKind }) {
       break
     case 'Class':
       icon = <VscSymbolClass />
-      color = 'text-orange-600'
+      color = 'text-orange-400'
       break
     case 'Constructor':
     case 'ConstructSignature':
@@ -30,26 +30,26 @@ export function KindIcon(props: { kind: DocItemKind }) {
       break
     case 'Enum':
       icon = <VscSymbolEnum />
-      color = 'text-orange-600'
+      color = 'text-orange-400'
       break
     case 'Interface':
       icon = <VscSymbolInterface />
-      color = 'text-sky-600'
+      color = 'text-sky-400'
       break
     case 'Function':
     case 'Method':
     case 'MethodSignature':
       icon = <VscSymbolMethod />
-      color = 'text-purple-600'
+      color = 'text-purple-400'
       break
     case 'Property':
     case 'PropertySignature':
       icon = <VscSymbolField />
-      color = 'text-sky-600'
+      color = 'text-sky-400'
       break
     case 'Variable':
       icon = <VscSymbolVariable />
-      color = 'text-sky-600'
+      color = 'text-sky-400'
       break
     default:
       icon = <span title={props.kind}></span>

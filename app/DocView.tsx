@@ -15,16 +15,14 @@ export type DocViewProps = {
 
 export function DocView(props: DocViewProps) {
   return (
-    <div className="prose max-w-none">
+    <div className="prose prose-invert max-w-none">
       {
         // TODO: Breadcrumb
       }
       <h1 className="text-3xl">
         <KindIcon kind={props.kind} />
-        {props.title}{' '}
-        <small className="text-lg font-normal text-gray-500">
-          {props.kind}
-        </small>
+        {props.title} &nbsp;
+        <small className="text-lg font-normal text-#8b8685">{props.kind}</small>
       </h1>
       {
         // TODO: Deprecated block

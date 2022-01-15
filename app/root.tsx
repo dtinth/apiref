@@ -26,7 +26,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-white">
+      <body className="bg-#353433 text-#e9e8e7">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
