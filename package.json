@@ -4,7 +4,7 @@
   "description": "",
   "license": "",
   "scripts": {
-    "build": "remix build",
+    "build": "remix build && ls -la node_modules/@microsoft/tsdoc/schemas/tsdoc.schema.json && ls -la .output",
     "dev": "remix dev",
     "postinstall": "remix setup node",
     "start": "remix-serve build"
