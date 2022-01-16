@@ -1,6 +1,13 @@
+import { LoaderFunction, redirect } from 'remix'
 import { Layout } from '~/Layout'
 import { Prose } from '~/Prose'
 import { Section } from '~/Section'
+
+export let loader: LoaderFunction = ({ context }) => {
+  if (process.env.APIREF_LOCAL) {
+    return redirect('/package/apiref:local/')
+  }
+}
 
 export default function Index() {
   return (

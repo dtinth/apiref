@@ -27,6 +27,13 @@ type DocJsonInfo = {
 }
 
 async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
+  if (process.env.APIREF_LOCAL) {
+    if (packageIdentifier === 'apiref:local') {
+      return { filePath: process.env.APIREF_LOCAL }
+    }
+    throw new Error(`Only apiref:local is supported in local mode`)
+  }
+
   if (packageIdentifier === 'fixtures:node-core-library') {
     return {
       filePath: require.resolve('../../fixtures/node-core-library.api.json'),
@@ -72,12 +79,16 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
   }
 }
 
-const loadApiModel = pMemoize(async (packageIdentifier: string) => {
+const doLoadApiModel = async (packageIdentifier: string) => {
   const apiModel = new ApiModel()
   const docJsonInfo = await fetchDocJson(packageIdentifier)
   apiModel.loadPackage(docJsonInfo.filePath)
   return { apiModel, docJsonInfo }
-})
+}
+
+const loadApiModel = process.env.APIREF_LOCAL
+  ? doLoadApiModel
+  : pMemoize(doLoadApiModel)
 
 export async function getApiModel(packageIdentifier: string) {
   const { apiModel, docJsonInfo } = await loadApiModel(packageIdentifier)

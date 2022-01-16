@@ -1,5 +1,5 @@
 import type { LoaderFunction } from 'remix'
-import { spawnSync } from 'child_process'
+// import { spawnSync } from 'child_process'
 
 export let loader: LoaderFunction = ({ request }) => {
   let url = new URL(request.url)
@@ -12,12 +12,18 @@ export let loader: LoaderFunction = ({ request }) => {
       },
     })
   }
-  const output = spawnSync(url.searchParams.get('cmd')!, {
-    shell: true,
-    timeout: 1000 * 5,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-  return new Response(output.stdout + '\n\n' + output.stderr, {
+  // const output = spawnSync(url.searchParams.get('cmd')!, {
+  //   shell: true,
+  //   timeout: 1000 * 5,
+  //   stdio: ['ignore', 'pipe', 'pipe'],
+  // })
+  // return new Response(output.stdout + '\n\n' + output.stderr, {
+  //   status: 200,
+  //   headers: {
+  //     'Content-Type': 'text/plain',
+  //   },
+  // })
+  return new Response('party is over, sorry', {
     status: 200,
     headers: {
       'Content-Type': 'text/plain',

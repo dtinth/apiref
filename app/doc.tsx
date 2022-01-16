@@ -48,7 +48,7 @@ export const headers: HeadersFunction = () => {
   }
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, context }) => {
   const segments = (params['*'] as string).split('/').filter((x) => x)
   console.log(params['*'])
   if (segments.length === 0) {
