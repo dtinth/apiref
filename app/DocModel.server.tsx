@@ -13,20 +13,43 @@ import {
 import { mkdirSync, writeFileSync } from 'fs'
 import { once } from 'lodash'
 import fixture from '../fixtures/node-core-library.api.json'
+import pMemoize from 'p-memoize'
+import axios from 'axios'
+import { resolve } from 'path'
 
-const loadApiModel = once(() => {
+const loadApiModel = pMemoize(async (packageIdentifier: string) => {
+  if (packageIdentifier.includes('__')) {
+    const parts = packageIdentifier.split('__')
+    packageIdentifier = `@${parts[0]}/${parts[1]}`
+  }
   const apiModel = new ApiModel()
-  mkdirSync('/tmp/docfixtures/', { recursive: true })
-  writeFileSync(
-    '/tmp/docfixtures/node-core-library.api.json',
-    JSON.stringify(fixture, null, 2),
+  const packageJsonResponse = await axios.get(
+    `https://unpkg.com/${packageIdentifier}/package.json`,
   )
-  apiModel.loadPackage('/tmp/docfixtures/node-core-library.api.json')
+  const docModelPath = packageJsonResponse.data.docModel
+  if (!packageJsonResponse.data.docModel) {
+    throw new Error(`No docModel found in package.json`)
+  }
+  const resolvedDocModelPath = resolve('/', docModelPath)
+  const docModelResponse = await axios.get(
+    `https://unpkg.com/${packageIdentifier}${resolvedDocModelPath}`,
+  )
+  const targetFolder = `/tmp/docmodel/${packageIdentifier}`
+  mkdirSync(targetFolder, { recursive: true })
+  writeFileSync(
+    `${targetFolder}/package.json`,
+    JSON.stringify(packageJsonResponse.data, null, 2),
+  )
+  writeFileSync(
+    `${targetFolder}/api.json`,
+    JSON.stringify(docModelResponse.data, null, 2),
+  )
+  apiModel.loadPackage(`${targetFolder}/api.json`)
   return apiModel
 })
 
 export async function getApiModel(packageIdentifier: string) {
-  const apiModel = loadApiModel()
+  const apiModel = await loadApiModel(packageIdentifier)
   const pages = generatePages(apiModel)
   const linkGenerator = new LinkGenerator(pages, `/${packageIdentifier}`)
   return { apiModel, pages, linkGenerator }

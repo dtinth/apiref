@@ -21,6 +21,7 @@ type PageData = {
 
 export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
   const segments = (params['*'] as string).split('/').filter((x) => x)
+  console.log(params['*'])
   if (segments.length === 0) {
     throw new Response('Not Found - No package name specified.', {
       status: 404,
