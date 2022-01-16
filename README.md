@@ -2,6 +2,11 @@
 
 Automatically generated API reference sites for JS and TS libraries that use API Extractor.
 
+## Examples
+
+- [@dtinth/google-sign-in-controller](https://apiref.page/package/@dtinth/google-sign-in-controller)
+- [@spacet.me/chain](https://apiref.page/package/@spacet.me/chain)
+
 ## Tech stack
 
 - Built with [Remix](https://remix.run/)
