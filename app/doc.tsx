@@ -1,7 +1,13 @@
 import clsx from 'clsx'
 import { createContext } from 'react'
 import { VscChevronRight } from 'react-icons/vsc'
-import { HeadersFunction, Link, LoaderFunction, useLoaderData } from 'remix'
+import {
+  HeadersFunction,
+  json,
+  Link,
+  LoaderFunction,
+  useLoaderData,
+} from 'remix'
 import {
   DocPageNavigationItem,
   getApiModel as getApiDoc,
@@ -19,14 +25,16 @@ type PageData = {
   docViewProps: DocViewProps
 }
 
+const CACHE_CONTROL =
+  'public, max-age=60, s-maxage=60, stale-while-revalidate=3600'
+
 export const headers: HeadersFunction = () => {
   return {
-    'Cache-Control':
-      'public, max-age=60, s-maxage=60, stale-while-revalidate=3600',
+    'Cache-Control': CACHE_CONTROL,
   }
 }
 
-export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
+export const loader: LoaderFunction = async ({ params }) => {
   const segments = (params['*'] as string).split('/').filter((x) => x)
   console.log(params['*'])
   if (segments.length === 0) {
@@ -49,13 +57,19 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
     })
   }
 
-  return {
+  const pageData: PageData = {
     baseUrl: '/' + packageName,
     slug: page.slug,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
     docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
   }
+
+  return json(pageData, {
+    headers: {
+      'Cache-Control': CACHE_CONTROL,
+    },
+  })
 }
 
 export default function Doc() {
