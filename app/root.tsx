@@ -23,21 +23,25 @@ export default function App() {
   return (
     <html lang="en">
       <head>
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-5J92C1MDC0"
-        ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <script
+              async
+              src="https://www.googletagmanager.com/gtag/js?id=G-5J92C1MDC0"
+            ></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
 
-              gtag('config', 'G-5J92C1MDC0');
-            `,
-          }}
-        />
+                  gtag('config', 'G-5J92C1MDC0');
+                `,
+              }}
+            />
+          </>
+        )}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="shortcut icon" href="/interface.svg" />
