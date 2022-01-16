@@ -1,0 +1,3 @@
+* xref:index.adoc[About apiref]
+* xref:publishing.adoc[How to publish an API reference]
+* https://apiref.page/[apiref.page]

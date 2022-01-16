@@ -1,0 +1,11 @@
+= Publishing an API reference
+
+
+. Use https://api-extractor.com/[@microsoft/api-extractor] to generate a https://api-extractor.com/pages/setup/generating_docs/[doc model file]. If done correctly, you should have an `.api.json` file in your project. (You don't need to commit this file to your repository.)
+. Add a `docModel` field to your `package.json` file, pointing to the `.api.json` file.
+. Publish your package to npm. Make sure the package includes the `.api.json` file along with the other built files.
+. You can access the API reference of your package at these URLs:
++
+* `\https://apiref.page/package/{package-name}`
+* `\https://apiref.page/package/{package-name}@{version}`
+

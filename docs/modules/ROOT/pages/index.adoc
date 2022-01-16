@@ -1,0 +1,6 @@
+= apiref
+
+apiref is a service that generates API reference sites for JS and TS libraries that use https://api-extractor.com/[API Extractor].
+
+* You can visit apiref at https://apiref.page/[]
+* You can find the source code at https://github.com/dtinth/apiref[]
