@@ -16,7 +16,7 @@ import axios from 'axios'
 import { resolve } from 'path'
 
 async function fetchDocJson(packageIdentifier: string): Promise<string> {
-  if (packageIdentifier === '_fixtures/node-core-library') {
+  if (packageIdentifier === 'fixtures:node-core-library') {
     return 'fixtures/node-core-library.api.json'
   }
 
