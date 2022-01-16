@@ -7,6 +7,7 @@ export let loader: LoaderFunction = ({ context }) => {
   if (process.env.APIREF_LOCAL) {
     return redirect('/package/apiref:local/')
   }
+  return null
 }
 
 export default function Index() {
