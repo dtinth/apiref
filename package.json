@@ -1,10 +1,13 @@
 {
   "name": "apiref",
+  "version": "0.0.0",
   "description": "",
   "license": "",
   "files": [
     "public",
-    "api/_build"
+    "api/_build",
+    "apiref-cli.mjs",
+    "apiref-local-loader.cjs"
   ],
   "bin": {
     "apiref": "./apiref-cli.mjs"
@@ -12,7 +15,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
-    "postinstall": "remix setup node",
+    "prepare": "remix setup node && remix build",
     "start": "remix-serve build"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import express from 'express'
 import { createRequestHandler } from '@remix-run/express'
-import { loadBuild } from './apiref-local-loader.cjs'
+import { getPublicPath, loadBuild } from './apiref-local-loader.cjs'
 
 yargs(hideBin(process.argv))
   .demandCommand()
@@ -30,6 +30,7 @@ yargs(hideBin(process.argv))
       const app = express()
       process.env.NODE_ENV = 'production'
       process.env.APIREF_LOCAL = argv.input
+      app.use(express.static(getPublicPath()))
       app.all(
         '*',
         createRequestHandler({
