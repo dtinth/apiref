@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { createContext } from 'react'
+import { VscChevronRight } from 'react-icons/vsc'
 import { Link, LoaderFunction, useLoaderData } from 'remix'
 import {
   DocPageNavigationItem,
@@ -87,12 +88,19 @@ function NavigationTree(props: {
         {(activePage) => (
           <Link
             className={clsx(
-              'block pl-[calc(0.5rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap',
+              'block pl-[calc(0.25rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap',
               activePage === nav.slug && 'bg-#454443 js-nav-active',
             )}
             to={`${props.baseUrl}/${nav.slug}`}
             style={{ '--depth': props.depth } as any}
           >
+            <span className="inline-block w-5 align-middle relative top-[-0.1em]">
+              {nav.children.length > 0 && (
+                <div className="rotate-90 w-4 h-4">
+                  <VscChevronRight />
+                </div>
+              )}
+            </span>
             <KindIcon kind={nav.kind} static={nav.static} />
             {nav.deprecated ? (
               <span className="line-through">{nav.title}</span>
