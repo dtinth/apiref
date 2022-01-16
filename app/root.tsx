@@ -1,10 +1,12 @@
 import {
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useLocation,
 } from 'remix'
 import type { MetaFunction } from 'remix'
@@ -19,15 +21,19 @@ export const meta: MetaFunction = () => {
   return { title: 'apiref.page' }
 }
 
-function gaEnabled() {
-  return process.env.NODE_ENV === 'production' && !process.env.APIREF_LOCAL
+export const loader: LoaderFunction = () => {
+  return {
+    gaEnabled:
+      process.env.NODE_ENV === 'production' && !process.env.APIREF_LOCAL,
+  }
 }
 
 export default function App() {
+  const { gaEnabled } = useLoaderData()
   return (
     <html lang="en">
       <head>
-        {gaEnabled() && (
+        {gaEnabled && (
           <>
             <script
               async
@@ -65,7 +71,7 @@ body ::-webkit-scrollbar-thumb {
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
-        {gaEnabled() && <GaSender />}
+        {gaEnabled && <GaSender />}
       </body>
     </html>
   )
