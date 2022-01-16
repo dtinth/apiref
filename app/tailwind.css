@@ -1425,6 +1425,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   flex: none;
 }
 
+.-translate-x-full {
+  --tw-translate-x: -100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .rotate-90 {
   --tw-rotate: 90deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1503,6 +1508,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pr-2 {
   padding-right: 0.5rem;
+}
+
+.pl-\[18px\] {
+  padding-left: 18px;
 }
 
 .align-middle {
@@ -1593,6 +1602,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .prose-h1\:text-\#bbeeff :is(:where(h1):not(:where([class~="not-prose"] *))) {
   --tw-text-opacity: 1;
   color: rgb(187 238 255 / var(--tw-text-opacity));
@@ -1642,4 +1657,53 @@ Ensure the default browser behavior of the `hidden` attribute.
 .prose-th\:text-\#8b8685 :is(:where(th):not(:where([class~="not-prose"] *))) {
   --tw-text-opacity: 1;
   color: rgb(139 134 133 / var(--tw-text-opacity));
+}
+
+@media (min-width: 768px) {
+  .md\:fixed {
+    position: fixed;
+  }
+
+  .md\:top-\[58px\] {
+    top: 58px;
+  }
+
+  .md\:bottom-0 {
+    bottom: 0px;
+  }
+
+  .md\:left-0 {
+    left: 0px;
+  }
+
+  .md\:ml-\[20rem\] {
+    margin-left: 20rem;
+  }
+
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:w-\[20rem\] {
+    width: 20rem;
+  }
+
+  .md\:translate-x-0 {
+    --tw-translate-x: 0px;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  .md\:overflow-y-auto {
+    overflow-y: auto;
+  }
+
+  .md\:border-r {
+    border-right-width: 1px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:ml-\[20rem\] {
+    margin-left: 20rem;
+  }
 }
