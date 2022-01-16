@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { createContext } from 'react'
 import { Link, LoaderFunction, useLoaderData } from 'remix'
 import {
   DocPageNavigationItem,
@@ -10,6 +12,7 @@ import { Layout } from './Layout'
 
 type PageData = {
   title: string
+  slug: string
   navigation: DocPageNavigationItem[]
   baseUrl: string
   docViewProps: DocViewProps
@@ -39,6 +42,7 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
 
   return {
     baseUrl: '/' + packageName,
+    slug: page.slug,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
     docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
@@ -47,19 +51,20 @@ export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
 
 export default function Doc() {
   const data: PageData = useLoaderData()
-  console.log(data.navigation)
   return (
     <Layout
       sidebar={
         <nav>
-          {data.navigation.map((nav, i) => (
-            <NavigationTree
-              nav={nav}
-              key={i}
-              baseUrl={data.baseUrl}
-              depth={0}
-            />
-          ))}
+          <ActivePageContext.Provider value={data.slug}>
+            {data.navigation.map((nav, i) => (
+              <NavigationTree
+                nav={nav}
+                key={i}
+                baseUrl={data.baseUrl}
+                depth={0}
+              />
+            ))}
+          </ActivePageContext.Provider>
         </nav>
       }
     >
@@ -67,6 +72,8 @@ export default function Doc() {
     </Layout>
   )
 }
+
+const ActivePageContext = createContext<string | undefined>(undefined)
 
 function NavigationTree(props: {
   nav: DocPageNavigationItem
@@ -76,22 +83,29 @@ function NavigationTree(props: {
   const { nav } = props
   return (
     <>
-      <Link
-        className="block pl-[calc(0.5rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap"
-        to={`${props.baseUrl}/${nav.slug}`}
-        style={{ '--depth': props.depth } as any}
-      >
-        <KindIcon kind={nav.kind} static={nav.static} />
-        {nav.deprecated ? (
-          <span className="line-through">{nav.title}</span>
-        ) : nav.beta ? (
-          <>
-            {nav.title} <span className="opacity-50">&beta;</span>
-          </>
-        ) : (
-          nav.title
+      <ActivePageContext.Consumer>
+        {(activePage) => (
+          <Link
+            className={clsx(
+              'block pl-[calc(0.5rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap',
+              activePage === nav.slug && 'bg-#454443 js-nav-active',
+            )}
+            to={`${props.baseUrl}/${nav.slug}`}
+            style={{ '--depth': props.depth } as any}
+          >
+            <KindIcon kind={nav.kind} static={nav.static} />
+            {nav.deprecated ? (
+              <span className="line-through">{nav.title}</span>
+            ) : nav.beta ? (
+              <>
+                {nav.title} <span className="opacity-50">&beta;</span>
+              </>
+            ) : (
+              nav.title
+            )}
+          </Link>
         )}
-      </Link>
+      </ActivePageContext.Consumer>
       {nav.children.length > 0 && (
         <ul>
           {nav.children.map((child, i) => (
