@@ -57,7 +57,7 @@ body ::-webkit-scrollbar-thumb {
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
-        <GaSender />
+        {process.env.NODE_ENV === 'production' && <GaSender />}
       </body>
     </html>
   )
