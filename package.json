@@ -16,6 +16,7 @@
     "@remix-run/serve": "^1.1.1",
     "@remix-run/vercel": "^1.1.1",
     "@vercel/node": "^1.12.1",
+    "clsx": "^1.1.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "react": "^17.0.2",

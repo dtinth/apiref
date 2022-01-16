@@ -6,6 +6,7 @@ import {
 import { renderDocPage } from './DocRenderer'
 import { DocView, DocViewProps } from './DocView'
 import { KindIcon } from './KindIcon'
+import { Layout } from './Layout'
 
 type PageData = {
   title: string
@@ -48,16 +49,8 @@ export default function Doc() {
   const data: PageData = useLoaderData()
   console.log(data.navigation)
   return (
-    <>
-      <header className="h-[58px] fixed top-0 inset-x-0 bg-#090807 border-b border-#454443 z-20">
-        [Header]
-      </header>
-      <main className="ml-[20rem] pt-[58px]">
-        <div className="max-w-4xl mx-auto p-6">
-          <DocView {...data.docViewProps} />
-        </div>
-      </main>
-      <aside className="fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto overflow-x-hidden bg-#252423 leading-relaxed border-r border-#454443 text-gray-300 z-10">
+    <Layout
+      sidebar={
         <nav>
           {data.navigation.map((nav, i) => (
             <NavigationTree
@@ -68,8 +61,10 @@ export default function Doc() {
             />
           ))}
         </nav>
-      </aside>
-    </>
+      }
+    >
+      <DocView {...data.docViewProps} />
+    </Layout>
   )
 }
 

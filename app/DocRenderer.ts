@@ -28,6 +28,7 @@ import {
   RenderedTsdocNode,
 } from './DocView'
 import { getHighlighter, Highlighter, IThemedToken } from 'shiki'
+import { groupBy } from 'lodash'
 
 type DocRenderContext = {
   apiModel: ApiModel
@@ -101,6 +102,17 @@ export async function renderDocPage(
     }
   }
 
+  const renderLinkToReference = (
+    canonicalReference: string,
+    text: string,
+  ): RenderedTsdocNode => {
+    const link = context.linkGenerator.linkToReference(canonicalReference)
+    if (link) {
+      return { kind: 'RouteLink', to: link, text: text }
+    } else {
+      return { kind: 'PlainText', text: text }
+    }
+  }
   const renderExcerpt = (excerpt: Excerpt): RenderedTsdocNode => {
     return {
       kind: 'Span',
@@ -219,6 +231,43 @@ export async function renderDocPage(
         headerTitles: ['Member', 'Value', 'Description'],
         rows,
       })
+      break
+    }
+    case ApiItemKind.EntryPoint:
+    case ApiItemKind.Package:
+    case ApiItemKind.Namespace: {
+      const apiMembers = groupBy(apiItem.members, (m) => m.kind)
+      const addTable = (
+        kind: ApiItemKind,
+        sectionTitle: string,
+        headerTitle: string,
+      ) => {
+        const members = apiMembers[kind]
+        if (!members?.length) return
+        tables.push({
+          sectionTitle,
+          headerTitles: [headerTitle, 'Description'],
+          rows: members.map((m) => {
+            return {
+              cells: [
+                renderLinkToReference(
+                  m.canonicalReference.toString(),
+                  m.displayName,
+                ),
+                renderDescription(m),
+              ],
+            }
+          }),
+        })
+      }
+      addTable(ApiItemKind.Class, 'Classes', 'Class')
+      addTable(ApiItemKind.Enum, 'Enumerations', 'Enumeration')
+      addTable(ApiItemKind.Function, 'Functions', 'Function')
+      addTable(ApiItemKind.Interface, 'Interface', 'Interface')
+      addTable(ApiItemKind.Namespace, 'Namespaces', 'Namespace')
+      addTable(ApiItemKind.Variable, 'Variables', 'Variable')
+      addTable(ApiItemKind.TypeAlias, 'Type Aliases', 'Type Alias')
+      break
     }
   }
   // TODO: Class => Events
@@ -228,14 +277,6 @@ export async function renderDocPage(
   // TODO: Interface => Events
   // TODO: Interface => Properties
   // TODO: Interface => Methods
-  // TODO: Namespace => Classes
-  // TODO: Namespace => Enumerations
-  // TODO: Namespace => Functions
-  // TODO: Namespace => Interfaces
-  // TODO: Namespace => Namespaces
-  // TODO: Namespace => Variables
-  // TODO: Namespace => TypeAliases
-  // TODO: Root => Entrypoints
 
   return {
     title: page.info.pageTitle,
