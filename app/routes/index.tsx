@@ -28,45 +28,22 @@ export default function Index() {
             libraries that use{' '}
             <a href="https://api-extractor.com/">API Extractor</a>.
           </p>
+          <ul>
+            <li>
+              <a href="https://docs.dt.in.th/apiref/">Documentation</a>
+            </li>
+            <li>
+              <a href="https://docs.dt.in.th/apiref/publishing.html">
+                How to publish an API reference
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/dtinth/apiref">
+                Source code on GitHub
+              </a>
+            </li>
+          </ul>
         </div>
-        <Section title="How to publish an API reference to this site">
-          <div className="prose-lg">
-            <ol>
-              <li>
-                <p>
-                  Use{' '}
-                  <a href="https://api-extractor.com/">
-                    @microsoft/api-extractor
-                  </a>{' '}
-                  to{' '}
-                  <a href="https://api-extractor.com/pages/setup/generating_docs/">
-                    generate a doc model file
-                  </a>
-                  .
-                </p>
-                <p>
-                  If done correctly, you should have a <code>.api.json</code>{' '}
-                  file in your project.
-                </p>
-              </li>
-              <li>
-                <p>
-                  Add <code>docModel</code> field to your{' '}
-                  <code>package.json</code> file.
-                </p>
-              </li>
-              <li>
-                <p>Publish your package to npm.</p>
-              </li>
-              <li>
-                <p>
-                  Access the docs from{' '}
-                  <code>{'/package/{your-package-name}'}</code>.
-                </p>
-              </li>
-            </ol>
-          </div>
-        </Section>
       </Prose>
     </Layout>
   )
