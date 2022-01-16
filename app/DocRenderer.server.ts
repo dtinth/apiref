@@ -137,9 +137,11 @@ export async function renderDocPage(
   if (apiItem instanceof ApiDeclaredItem) {
     // Signature
     const code = apiItem.getExcerptWithModifiers()
-    signature = {
-      text: code,
-      tokens: highlighter.codeToThemedTokens(code, 'typescript'),
+    if (code.trim()) {
+      signature = {
+        text: code,
+        tokens: highlighter.codeToThemedTokens(code, 'typescript'),
+      }
     }
   }
 
