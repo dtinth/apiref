@@ -12,6 +12,7 @@ import {
   json,
   Link,
   LoaderFunction,
+  MetaFunction,
   useLoaderData,
   useTransition,
 } from 'remix'
@@ -32,6 +33,7 @@ type PageData = {
   navigation: DocPageNavigationItem[]
   baseUrl: string
   docViewProps: DocViewProps
+  packageName: string
   packageInfo?: PackageInfo
 }
 
@@ -73,6 +75,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const pageData: PageData = {
     baseUrl: '/package/' + packageName,
+    packageName,
     slug: page.slug,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
@@ -85,6 +88,14 @@ export const loader: LoaderFunction = async ({ params }) => {
       'Cache-Control': CACHE_CONTROL,
     },
   })
+}
+
+export const meta: MetaFunction = (args) => {
+  const data: PageData = args.data
+  const pkg = data.packageInfo
+    ? `${data.packageInfo.name}@${data.packageInfo.version}`
+    : data.packageName
+  return { title: data.title + ' — ' + pkg + ' — apiref.page' }
 }
 
 export default function Doc() {
