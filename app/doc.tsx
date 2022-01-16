@@ -21,7 +21,8 @@ type PageData = {
 
 export const headers: HeadersFunction = () => {
   return {
-    'Cache-Control': 'public, max-age=60, s-maxage=120',
+    'Cache-Control':
+      'public, max-age=60, s-maxage=60, stale-while-revalidate=3600',
   }
 }
 
