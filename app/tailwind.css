@@ -1429,6 +1429,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   flex: none;
 }
 
+.flex-auto {
+  flex: 1 1 auto;
+}
+
 .-translate-x-full {
   --tw-translate-x: -100%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1472,12 +1476,22 @@ Ensure the default browser behavior of the `hidden` attribute.
   align-self: center;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .overflow-y-auto {
   overflow-y: auto;
 }
 
 .overflow-x-hidden {
   overflow-x: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .whitespace-nowrap {
@@ -1582,6 +1596,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .font-normal {

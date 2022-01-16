@@ -119,12 +119,15 @@ export default function Doc() {
 function TopNavPackageInfo(props: { packageInfo: PackageInfo }) {
   const { packageInfo } = props
   return (
-    <div className="flex self-center items-center px-[18px] flex-none border-l border-#353433 text-#8b8685 gap-3">
-      <a href={`/package/${packageInfo.name}@${packageInfo.version}`}>
+    <div className="flex self-center items-center px-[18px] border-l border-#353433 text-#8b8685 gap-3 flex-auto">
+      <a
+        href={`/package/${packageInfo.name}@${packageInfo.version}`}
+        className="flex nowrap truncate overflow-hidden"
+      >
         {packageInfo.name}@{packageInfo.version}
       </a>
       {!!packageInfo.homepage && (
-        <a href={`${packageInfo.homepage}`} className="text-xl">
+        <a href={`${packageInfo.homepage}`} className="text-lg flex-none">
           {isGitHub(packageInfo.homepage) ? (
             <VscGithubInverted />
           ) : (
@@ -134,7 +137,7 @@ function TopNavPackageInfo(props: { packageInfo: PackageInfo }) {
       )}
       <a
         href={`https://www.npmjs.com/package/${packageInfo.name}/v/${packageInfo.version}`}
-        className="text-xl"
+        className="text-lg flex-none"
       >
         <SiNpm />
       </a>
