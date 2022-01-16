@@ -4,7 +4,7 @@ import { Section } from '~/Section'
 
 export default function Index() {
   return (
-    <Layout>
+    <Layout showProject>
       <Prose>
         <h1>apiref</h1>
         <div className="prose-xl">

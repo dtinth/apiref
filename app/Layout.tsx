@@ -1,13 +1,14 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Link } from 'remix'
 import clsx from 'clsx'
-import { VscMenu } from 'react-icons/vsc'
+import { VscGithubInverted, VscMenu } from 'react-icons/vsc'
 
 export function Layout(props: {
   children?: ReactNode
   sidebar?: ReactNode
   navigationId?: string
   headerItems?: ReactNode
+  showProject?: boolean
 }) {
   const [responsiveMenu, setResponsiveMenu] = useState<
     'hide' | 'show' | 'none'
@@ -53,6 +54,15 @@ export function Layout(props: {
           </Link>
         </div>
         {props.headerItems}
+        {!!props.showProject && (
+          <>
+            <div className="flex items-center ml-auto px-[18px]">
+              <a href="https://github.com/dtinth/apiref" className="text-3xl">
+                <VscGithubInverted />
+              </a>
+            </div>
+          </>
+        )}
       </header>
       <main
         className={clsx(
