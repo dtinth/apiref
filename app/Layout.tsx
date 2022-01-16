@@ -15,8 +15,13 @@ export function Layout(props: { children?: ReactNode; sidebar?: ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className={clsx('pt-[58px]', !!props.sidebar && 'ml-[20rem]')}>
-        <div className="max-w-4xl mx-auto p-6">{props.children}</div>
+      <main
+        className={clsx(
+          'pt-[58px] bg-#353433',
+          !!props.sidebar && 'ml-[20rem]',
+        )}
+      >
+        <div className="max-w-4xl mx-auto p-6 py-12">{props.children}</div>
       </main>
       {!!props.sidebar && (
         <aside className="fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto overflow-x-hidden bg-#252423 leading-relaxed border-r border-#454443 text-gray-300 z-10">

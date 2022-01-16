@@ -34,7 +34,7 @@ body ::-webkit-scrollbar-thumb {
         <Meta />
         <Links />
       </head>
-      <body className="bg-#353433 text-#e9e8e7 antialiased">
+      <body className="bg-#252423 text-#e9e8e7 antialiased">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

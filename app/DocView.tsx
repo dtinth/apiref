@@ -3,6 +3,8 @@ import { Link } from 'remix'
 import type { IThemedToken } from 'shiki'
 import { DocItemKind } from './DocModel.server'
 import { KindIcon } from './KindIcon'
+import { Prose } from './Prose'
+import { Section } from './Section'
 
 export type DocViewProps = {
   title: string
@@ -17,7 +19,7 @@ export type DocViewProps = {
 
 export function DocView(props: DocViewProps) {
   return (
-    <div className="prose prose-invert max-w-none">
+    <Prose>
       {
         // TODO: Breadcrumb
       }
@@ -87,16 +89,7 @@ export function DocView(props: DocViewProps) {
           </Section>
         )
       })}
-    </div>
-  )
-}
-
-export function Section(props: { children: ReactNode; title: string }) {
-  return (
-    <section>
-      <h2>{props.title}</h2>
-      <div className="ml-8">{props.children}</div>
-    </section>
+    </Prose>
   )
 }
 

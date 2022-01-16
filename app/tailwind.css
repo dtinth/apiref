@@ -1503,6 +1503,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 18px;
 }
 
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
 .pt-10 {
   padding-top: 2.5rem;
 }
@@ -1635,4 +1640,65 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.prose-h1\:text-\#bbeeff :is(:where(h1):not(:where([class~="not-prose"] *))) {
+  --tw-text-opacity: 1;
+  color: rgb(187 238 255 / var(--tw-text-opacity));
+}
+
+.prose-h1\:\[text-shadow\:2px_2px_\#00000040\] :is(:where(h1):not(:where([class~="not-prose"] *))) {
+  text-shadow: 2px 2px #00000040;
+}
+
+.prose-h2\:text-\#d7fc70 :is(:where(h2):not(:where([class~="not-prose"] *))) {
+  --tw-text-opacity: 1;
+  color: rgb(215 252 112 / var(--tw-text-opacity));
+}
+
+.prose-h2\:\[text-shadow\:2px_2px_\#d7fc7026\] :is(:where(h2):not(:where([class~="not-prose"] *))) {
+  text-shadow: 2px 2px #d7fc7026;
+}
+
+.prose-a\:text-\#ffffbb :is(:where(a):not(:where([class~="not-prose"] *))) {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 187 / var(--tw-text-opacity));
+}
+
+.prose-thead\:border-\#8b8685 :is(:where(thead):not(:where([class~="not-prose"] *))) {
+  --tw-border-opacity: 1;
+  border-color: rgb(139 134 133 / var(--tw-border-opacity));
+}
+
+.prose-thead\:border-\#656463 :is(:where(thead):not(:where([class~="not-prose"] *))) {
+  --tw-border-opacity: 1;
+  border-color: rgb(101 100 99 / var(--tw-border-opacity));
+}
+
+.prose-tr\:border-\#454443 :is(:where(tr):not(:where([class~="not-prose"] *))) {
+  --tw-border-opacity: 1;
+  border-color: rgb(69 68 67 / var(--tw-border-opacity));
+}
+
+.prose-th\:text-sm :is(:where(th):not(:where([class~="not-prose"] *))) {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.prose-th\:text-xs :is(:where(th):not(:where([class~="not-prose"] *))) {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.prose-th\:font-normal :is(:where(th):not(:where([class~="not-prose"] *))) {
+  font-weight: 400;
+}
+
+.prose-th\:uppercase :is(:where(th):not(:where([class~="not-prose"] *))) {
+  text-transform: uppercase;
+}
+
+.prose-th\:text-\#8b8685 :is(:where(th):not(:where([class~="not-prose"] *))) {
+  --tw-text-opacity: 1;
+  color: rgb(139 134 133 / var(--tw-text-opacity));
 }
