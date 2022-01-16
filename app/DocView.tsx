@@ -23,7 +23,7 @@ export function DocView(props: DocViewProps) {
       {
         // TODO: Breadcrumb
       }
-      <h1 className="text-3xl">
+      <h1 className="text-xl md:text-3xl">
         <KindIcon kind={props.kind} static={props.static} />
         {props.title} &nbsp;
         <small className="text-lg font-normal text-#8b8685">
@@ -35,7 +35,9 @@ export function DocView(props: DocViewProps) {
         // TODO: Deprecated block
       }
       {!!props.summary && (
-        <div className="prose-xl">{tsdocToReactNode(props.summary)}</div>
+        <div className="prose-lg md:prose-xl">
+          {tsdocToReactNode(props.summary)}
+        </div>
       )}
 
       {!!props.signature && (
