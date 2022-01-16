@@ -19,11 +19,15 @@ export const meta: MetaFunction = () => {
   return { title: 'apiref.page' }
 }
 
+function gaEnabled() {
+  return process.env.NODE_ENV === 'production' && !process.env.APIREF_LOCAL
+}
+
 export default function App() {
   return (
     <html lang="en">
       <head>
-        {process.env.NODE_ENV === 'production' && (
+        {gaEnabled() && (
           <>
             <script
               async
@@ -61,7 +65,7 @@ body ::-webkit-scrollbar-thumb {
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
-        {process.env.NODE_ENV === 'production' && <GaSender />}
+        {gaEnabled() && <GaSender />}
       </body>
     </html>
   )
