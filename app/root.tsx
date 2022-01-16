@@ -5,9 +5,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from 'remix'
 import type { MetaFunction } from 'remix'
 import styles from './tailwind.css'
+import { useEffect } from 'react'
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles }]
@@ -21,6 +23,21 @@ export default function App() {
   return (
     <html lang="en">
       <head>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-5J92C1MDC0"
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-5J92C1MDC0');
+            `,
+          }}
+        />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="shortcut icon" href="/interface.svg" />
@@ -40,7 +57,21 @@ body ::-webkit-scrollbar-thumb {
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
+        <GaSender />
       </body>
     </html>
   )
+}
+
+function GaSender(props: {}) {
+  const location = useLocation()
+  const pathname = location.pathname
+  useEffect(() => {
+    const gtag = (window as any).gtag
+    gtag?.('event', 'page_view', {
+      page_title: document.title,
+      page_location: window.location.origin + location.pathname,
+    })
+  }, [pathname])
+  return <></>
 }
