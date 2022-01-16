@@ -11,14 +11,15 @@ import {
   ReleaseTag,
 } from '@microsoft/api-extractor-model'
 import { mkdirSync, writeFileSync } from 'fs'
-import { once } from 'lodash'
-import fixture from '../fixtures/node-core-library.api.json'
 import pMemoize from 'p-memoize'
 import axios from 'axios'
 import { resolve } from 'path'
 
-const loadApiModel = pMemoize(async (packageIdentifier: string) => {
-  const apiModel = new ApiModel()
+async function fetchDocJson(packageIdentifier: string): Promise<string> {
+  if (packageIdentifier === '_fixtures/node-core-library') {
+    return 'fixtures/node-core-library.api.json'
+  }
+
   const packageJsonResponse = await axios.get(
     `https://unpkg.com/${packageIdentifier}/package.json`,
   )
@@ -40,7 +41,12 @@ const loadApiModel = pMemoize(async (packageIdentifier: string) => {
     `${targetFolder}/api.json`,
     JSON.stringify(docModelResponse.data, null, 2),
   )
-  apiModel.loadPackage(`${targetFolder}/api.json`)
+  return `${targetFolder}/api.json`
+}
+
+const loadApiModel = pMemoize(async (packageIdentifier: string) => {
+  const apiModel = new ApiModel()
+  apiModel.loadPackage(await fetchDocJson(packageIdentifier))
   return apiModel
 })
 

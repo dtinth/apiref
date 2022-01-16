@@ -26,7 +26,9 @@ type PageData = {
 }
 
 const CACHE_CONTROL =
-  'public, max-age=60, s-maxage=60, stale-while-revalidate=3600'
+  process.env.NODE_ENV === 'production'
+    ? 'public, max-age=60, s-maxage=60, stale-while-revalidate=3600'
+    : 'no-cache'
 
 export const headers: HeadersFunction = () => {
   return {
