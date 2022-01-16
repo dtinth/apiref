@@ -10,10 +10,9 @@ import {
   ApiStaticMixin,
   ReleaseTag,
 } from '@microsoft/api-extractor-model'
-import { writeFileSync, mkdirSync } from 'fs'
+import { mkdirSync, writeFileSync } from 'fs'
+import { once } from 'lodash'
 import fixture from '../fixtures/node-core-library.api.json'
-import { once, sortBy } from 'lodash'
-import { DocComment } from '@microsoft/tsdoc'
 
 const loadApiModel = once(() => {
   const apiModel = new ApiModel()
