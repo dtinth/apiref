@@ -18,10 +18,6 @@ import axios from 'axios'
 import { resolve } from 'path'
 
 const loadApiModel = pMemoize(async (packageIdentifier: string) => {
-  if (packageIdentifier.includes('__')) {
-    const parts = packageIdentifier.split('__')
-    packageIdentifier = `@${parts[0]}/${parts[1]}`
-  }
   const apiModel = new ApiModel()
   const packageJsonResponse = await axios.get(
     `https://unpkg.com/${packageIdentifier}/package.json`,
@@ -51,7 +47,10 @@ const loadApiModel = pMemoize(async (packageIdentifier: string) => {
 export async function getApiModel(packageIdentifier: string) {
   const apiModel = await loadApiModel(packageIdentifier)
   const pages = generatePages(apiModel)
-  const linkGenerator = new LinkGenerator(pages, `/${packageIdentifier}`)
+  const linkGenerator = new LinkGenerator(
+    pages,
+    `/package/${packageIdentifier}`,
+  )
   return { apiModel, pages, linkGenerator }
 }
 

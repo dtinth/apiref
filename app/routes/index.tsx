@@ -52,7 +52,8 @@ export default function Index() {
               </li>
               <li>
                 <p>
-                  Access the docs from <code>{'/{your-package-name}'}</code>.
+                  Access the docs from{' '}
+                  <code>{'/package/{your-package-name}'}</code>.
                 </p>
               </li>
             </ol>

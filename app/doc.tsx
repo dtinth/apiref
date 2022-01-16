@@ -58,7 +58,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 
   const pageData: PageData = {
-    baseUrl: '/' + packageName,
+    baseUrl: '/package/' + packageName,
     slug: page.slug,
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),

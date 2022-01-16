@@ -9,7 +9,7 @@ module.exports = {
   ignoredRouteFiles: ['.*'],
   routes: async (defineRoutes) => {
     return defineRoutes((route) => {
-      route('/*', 'doc.tsx')
+      route('/package/*', 'doc.tsx')
     })
   },
 }
