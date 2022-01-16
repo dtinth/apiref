@@ -7,6 +7,7 @@ import { KindIcon } from './KindIcon'
 export type DocViewProps = {
   title: string
   kind: DocItemKind
+  static?: boolean
   summary?: RenderedTsdocNode
   remarks?: RenderedTsdocNode
   examples?: RenderedTsdocNode[]
@@ -21,9 +22,12 @@ export function DocView(props: DocViewProps) {
         // TODO: Breadcrumb
       }
       <h1 className="text-3xl">
-        <KindIcon kind={props.kind} />
+        <KindIcon kind={props.kind} static={props.static} />
         {props.title} &nbsp;
-        <small className="text-lg font-normal text-#8b8685">{props.kind}</small>
+        <small className="text-lg font-normal text-#8b8685">
+          {props.static ? 'Static ' : ''}
+          {props.kind}
+        </small>
       </h1>
       {
         // TODO: Deprecated block
@@ -100,12 +104,13 @@ export type RenderedTsdocNode =
   | { kind: 'Paragraph'; nodes: RenderedTsdocNode[] }
   | { kind: 'Section'; nodes: RenderedTsdocNode[] }
   | { kind: 'Span'; nodes: RenderedTsdocNode[] }
+  | { kind: 'Nowrap'; nodes: RenderedTsdocNode[] }
   | { kind: 'PlainText'; text: string }
   | { kind: 'CodeSpan'; text: string; tokens?: IThemedToken[][] }
   | { kind: 'FencedCode'; code: RenderedTsdocNode }
   | { kind: 'SoftBreak' }
   | { kind: 'LinkTag'; url: string; text: string }
-  | { kind: 'RouteLink'; to: string; text: string }
+  | { kind: 'RouteLink'; to: string; text: string; targetKind?: DocItemKind }
   | {
       kind: 'EmphasisSpan'
       nodes: RenderedTsdocNode[]
@@ -134,6 +139,10 @@ export function tsdocToReactNode(node?: RenderedTsdocNode): ReactNode {
       return <section>{tsdocChildren(node.nodes)}</section>
     case 'Span':
       return <>{tsdocChildren(node.nodes)}</>
+    case 'Nowrap':
+      return (
+        <span className="whitespace-nowrap">{tsdocChildren(node.nodes)}</span>
+      )
     case 'PlainText':
       return node.text
     case 'SoftBreak':

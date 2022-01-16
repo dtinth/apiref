@@ -81,7 +81,7 @@ function NavigationTree(props: {
         to={`${props.baseUrl}/${nav.slug}`}
         style={{ '--depth': props.depth } as any}
       >
-        <KindIcon kind={nav.kind} />
+        <KindIcon kind={nav.kind} static={nav.static} />
         {nav.deprecated ? (
           <span className="line-through">{nav.title}</span>
         ) : nav.beta ? (

@@ -10,7 +10,7 @@ import {
   VscSymbolVariable,
 } from 'react-icons/vsc'
 
-export function KindIcon(props: { kind: DocItemKind }) {
+export function KindIcon(props: { kind: DocItemKind; static?: boolean }) {
   let icon = null
   let color = 'text-gray-400'
   switch (props.kind) {
@@ -25,8 +25,11 @@ export function KindIcon(props: { kind: DocItemKind }) {
       break
     case 'Constructor':
     case 'ConstructSignature':
+      icon = <VscSymbolProperty />
+      break
     case 'TypeAlias':
       icon = <VscSymbolProperty />
+      color = 'text-orange-400'
       break
     case 'Enum':
       icon = <VscSymbolEnum />
@@ -40,12 +43,12 @@ export function KindIcon(props: { kind: DocItemKind }) {
     case 'Method':
     case 'MethodSignature':
       icon = <VscSymbolMethod />
-      color = 'text-purple-400'
+      if (!props.static) color = 'text-purple-400'
       break
     case 'Property':
     case 'PropertySignature':
       icon = <VscSymbolField />
-      color = 'text-sky-400'
+      if (!props.static) color = 'text-sky-400'
       break
     case 'Variable':
       icon = <VscSymbolVariable />

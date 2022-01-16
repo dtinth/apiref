@@ -2,8 +2,12 @@ import {
   ApiDocumentedItem,
   ApiItem,
   ApiItemKind,
+  ApiMethod,
   ApiModel,
+  ApiOptionalMixin,
+  ApiProperty,
   ApiReleaseTagMixin,
+  ApiStaticMixin,
   ReleaseTag,
 } from '@microsoft/api-extractor-model'
 import { writeFileSync, mkdirSync } from 'fs'
@@ -92,6 +96,9 @@ function generatePages(model: ApiModel) {
           .filter(Boolean)
           .join('/')
         break
+    }
+    if (isOptional(node)) {
+      navigationTitle += '?'
     }
     const pageInfo: PageInfo = {
       navigationTitle: navigationTitle,
@@ -191,7 +198,10 @@ class DocPages {
         slug: page.slug,
         kind: page.info.item.kind,
         children: [],
-        ...decorateNavigationItems(page.info.item),
+        deprecated: isDeprecated(page.info.item),
+        beta: isBeta(page.info.item),
+        static: isStatic(page.info.item),
+        optional: isOptional(page.info.item),
       }
       slugToNavigationMap.set(page.slug, navigationItem)
     }
@@ -213,25 +223,26 @@ class DocPages {
   }
 }
 
-function decorateNavigationItems(item: ApiItem) {
-  if (!(item instanceof ApiDocumentedItem)) {
-    return {}
-  }
-  const tsdocComment: DocComment | undefined = item.tsdocComment
-  if (!tsdocComment) {
-    return {}
-  }
-  const output: Pick<DocPageNavigationItem, 'beta' | 'deprecated'> = {}
-  if (tsdocComment.deprecatedBlock) {
-    output.deprecated = true
-  }
-  if (
+export function isStatic(item: ApiItem) {
+  return (
+    (item instanceof ApiProperty || item instanceof ApiMethod) &&
+    ApiStaticMixin.isBaseClassOf(item) &&
+    item.isStatic
+  )
+}
+export function isBeta(item: ApiItem) {
+  return (
     ApiReleaseTagMixin.isBaseClassOf(item) &&
     item.releaseTag === ReleaseTag.Beta
-  ) {
-    output.beta = true
-  }
-  return output
+  )
+}
+export function isDeprecated(item: ApiItem) {
+  return (
+    item instanceof ApiDocumentedItem && !!item.tsdocComment?.deprecatedBlock
+  )
+}
+export function isOptional(item: ApiItem) {
+  return ApiOptionalMixin.isBaseClassOf(item) && item.isOptional
 }
 
 export type DocPageNavigationItem = {
@@ -241,6 +252,8 @@ export type DocPageNavigationItem = {
   children: DocPageNavigationItem[]
   beta?: boolean
   deprecated?: boolean
+  static?: boolean
+  optional?: boolean
 }
 
 export type DocItemKind = `${ApiItemKind}`

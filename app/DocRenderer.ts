@@ -2,11 +2,17 @@ import {
   ApiDeclaredItem,
   ApiDocumentedItem,
   ApiEnum,
+  ApiEnumMember,
   ApiItem,
   ApiItemKind,
+  ApiMethod,
   ApiModel,
+  ApiOptionalMixin,
   ApiParameterListMixin,
+  ApiProperty,
+  ApiPropertyItem,
   ApiReturnTypeMixin,
+  ApiStaticMixin,
   Excerpt,
 } from '@microsoft/api-extractor-model'
 import {
@@ -20,7 +26,7 @@ import {
   DocSection,
   StandardTags,
 } from '@microsoft/tsdoc'
-import { LinkGenerator, Page } from './DocModel.server'
+import { isStatic, LinkGenerator, Page } from './DocModel.server'
 import {
   DocViewProps,
   DocViewTable,
@@ -28,7 +34,7 @@ import {
   RenderedTsdocNode,
 } from './DocView'
 import { getHighlighter, Highlighter, IThemedToken } from 'shiki'
-import { groupBy } from 'lodash'
+import { groupBy, partition } from 'lodash'
 
 type DocRenderContext = {
   apiModel: ApiModel
@@ -149,16 +155,92 @@ export async function renderDocPage(
     // TODO: Optional
     const parts: RenderedTsdocNode[] = []
     if (apiItem instanceof ApiDocumentedItem) {
-      const rendered = renderDocNode(
-        apiItem.tsdocComment?.summarySection,
-        tsdocRenderContext,
-      )
-      if (rendered) parts.push(rendered)
+      const summary = getFirstParagraph(apiItem.tsdocComment?.summarySection)
+      if (summary) {
+        parts.push(...renderDocChildren(summary, tsdocRenderContext))
+      }
     }
     return { kind: 'Span', nodes: parts }
   }
 
   const tables: DocViewTable[] = []
+
+  const membersByKind = groupBy(apiItem.members, (m) => m.kind)
+  const getMembersByKind = <T extends ApiItem = ApiItem>(
+    kind: ApiItemKind,
+  ): T[] => {
+    return (membersByKind[kind] || []) as unknown as T[]
+  }
+  type Column<T extends ApiItem> = {
+    header: string
+    render: (member: T) => RenderedTsdocNode
+  }
+  const addMemberTable = <T extends ApiItem = ApiItem>(
+    members: T[] | undefined,
+    sectionTitle: string,
+    headerTitle: string,
+    extraColumns: Column<T>[] = [],
+  ) => {
+    if (!members?.length) return
+    tables.push({
+      sectionTitle,
+      headerTitles: [
+        headerTitle,
+        ...extraColumns.map((c) => c.header),
+        'Description',
+      ],
+      rows: members.map((m) => {
+        let text = m.displayName
+        let beforeText = ''
+        let afterText = ''
+        if (m instanceof ApiProperty || m instanceof ApiMethod) {
+          if (ApiStaticMixin.isBaseClassOf(m) && m.isStatic) {
+            beforeText = `static ${beforeText}`
+          }
+        }
+        if (ApiOptionalMixin.isBaseClassOf(m) && m.isOptional) {
+          afterText += `?`
+        }
+        if (ApiParameterListMixin.isBaseClassOf(m)) {
+          afterText += `(${m.parameters.map((p) => p.name).join(', ')})`
+        }
+        return {
+          cells: [
+            {
+              kind: 'Nowrap',
+              nodes: [
+                { kind: 'PlainText', text: beforeText },
+                renderLinkToReference(m.canonicalReference.toString(), text),
+                { kind: 'PlainText', text: afterText },
+              ],
+            },
+            ...extraColumns.map((c) => c.render(m)),
+            renderDescription(m),
+          ],
+        }
+      }),
+    })
+  }
+  const addMemberTableByKind = <T extends ApiItem = ApiItem>(
+    kind: ApiItemKind,
+    sectionTitle: string,
+    headerTitle: string,
+    extraColumns: Column<T>[] = [],
+  ) => {
+    addMemberTable(
+      getMembersByKind<T>(kind),
+      sectionTitle,
+      headerTitle,
+      extraColumns,
+    )
+  }
+  const typeColumn: Column<ApiPropertyItem> = {
+    header: 'Type',
+    render: (m) => {
+      return renderExcerpt(m.propertyTypeExcerpt)
+    },
+  }
+
   switch (apiItem.kind) {
     case ApiItemKind.Constructor:
     case ApiItemKind.ConstructSignature:
@@ -214,69 +296,62 @@ export async function renderDocPage(
       break
     }
     case ApiItemKind.Enum: {
-      // Enum => Members
-      const apiEnum = apiItem as ApiEnum
-      const rows: DocViewTableRow[] = []
-      for (const apiEnumMember of apiEnum.members) {
-        rows.push({
-          cells: [
-            { kind: 'PlainText', text: apiEnumMember.displayName },
-            renderCode(apiEnumMember.initializerExcerpt.text),
-            renderDescription(apiEnumMember),
-          ],
-        })
-      }
-      tables.push({
-        sectionTitle: 'Enumeration Members',
-        headerTitles: ['Member', 'Value', 'Description'],
-        rows,
-      })
+      addMemberTableByKind<ApiEnumMember>(
+        ApiItemKind.EnumMember,
+        'Enumeration Members',
+        'Member',
+        [
+          {
+            header: 'Value',
+            render: (m) => renderCode(m.initializerExcerpt.text),
+          },
+        ],
+      )
       break
     }
     case ApiItemKind.EntryPoint:
     case ApiItemKind.Package:
     case ApiItemKind.Namespace: {
-      const apiMembers = groupBy(apiItem.members, (m) => m.kind)
-      const addTable = (
-        kind: ApiItemKind,
-        sectionTitle: string,
-        headerTitle: string,
-      ) => {
-        const members = apiMembers[kind]
-        if (!members?.length) return
-        tables.push({
-          sectionTitle,
-          headerTitles: [headerTitle, 'Description'],
-          rows: members.map((m) => {
-            return {
-              cells: [
-                renderLinkToReference(
-                  m.canonicalReference.toString(),
-                  m.displayName,
-                ),
-                renderDescription(m),
-              ],
-            }
-          }),
-        })
-      }
-      addTable(ApiItemKind.Class, 'Classes', 'Class')
-      addTable(ApiItemKind.Enum, 'Enumerations', 'Enumeration')
-      addTable(ApiItemKind.Function, 'Functions', 'Function')
-      addTable(ApiItemKind.Interface, 'Interface', 'Interface')
-      addTable(ApiItemKind.Namespace, 'Namespaces', 'Namespace')
-      addTable(ApiItemKind.Variable, 'Variables', 'Variable')
-      addTable(ApiItemKind.TypeAlias, 'Type Aliases', 'Type Alias')
+      addMemberTableByKind(ApiItemKind.Class, 'Classes', 'Class')
+      addMemberTableByKind(ApiItemKind.Enum, 'Enumerations', 'Enumeration')
+      addMemberTableByKind(ApiItemKind.Function, 'Functions', 'Function')
+      addMemberTableByKind(ApiItemKind.Interface, 'Interface', 'Interface')
+      addMemberTableByKind(ApiItemKind.Namespace, 'Namespaces', 'Namespace')
+      addMemberTableByKind(ApiItemKind.Variable, 'Variables', 'Variable')
+      addMemberTableByKind(ApiItemKind.TypeAlias, 'Type Aliases', 'Type Alias')
+      break
+    }
+    case ApiItemKind.Class: {
+      const [events, properties] = partition(
+        getMembersByKind<ApiPropertyItem>(ApiItemKind.Property),
+        (m) => m.isEventProperty,
+      )
+      addMemberTableByKind(
+        ApiItemKind.Constructor,
+        'Constructors',
+        'Constructor',
+      )
+      addMemberTable(properties, 'Properties', 'Property', [typeColumn])
+      addMemberTable(events, 'Events', 'event', [typeColumn])
+      addMemberTableByKind(ApiItemKind.Method, 'Methods', 'Method')
+      break
+    }
+    case ApiItemKind.Interface: {
+      const [events, properties] = partition(
+        getMembersByKind<ApiPropertyItem>(ApiItemKind.PropertySignature),
+        (m) => m.isEventProperty,
+      )
+      addMemberTableByKind(
+        ApiItemKind.ConstructSignature,
+        'Constructors',
+        'Constructor',
+      )
+      addMemberTable(properties, 'Properties', 'Property', [typeColumn])
+      addMemberTable(events, 'Events', 'event', [typeColumn])
+      addMemberTableByKind(ApiItemKind.MethodSignature, 'Methods', 'Method')
       break
     }
   }
-  // TODO: Class => Events
-  // TODO: Class => Constructors
-  // TODO: Class => Properties
-  // TODO: Class => Methods
-  // TODO: Interface => Events
-  // TODO: Interface => Properties
-  // TODO: Interface => Methods
 
   return {
     title: page.info.pageTitle,
@@ -286,6 +361,7 @@ export async function renderDocPage(
     remarks,
     examples,
     tables,
+    static: isStatic(page.info.item),
   }
 }
 
@@ -299,11 +375,11 @@ function renderDocNode(
   switch (node.kind) {
     case 'Section': {
       const section = node as DocSection
-      return { kind: 'Section', nodes: renderDocNodes(section, context) }
+      return { kind: 'Section', nodes: renderDocChildren(section, context) }
     }
     case 'Paragraph': {
       const paragraph = node as DocParagraph
-      return { kind: 'Paragraph', nodes: renderDocNodes(paragraph, context) }
+      return { kind: 'Paragraph', nodes: renderDocChildren(paragraph, context) }
     }
     case 'PlainText': {
       const text = (node as DocPlainText).text
@@ -351,7 +427,7 @@ function renderDocNode(
   return undefined
 }
 
-function renderDocNodes(
+function renderDocChildren(
   nodes: DocNodeContainer,
   context: TsdocRenderContext,
 ): RenderedTsdocNode[] {
@@ -359,4 +435,14 @@ function renderDocNodes(
     const rendered = renderDocNode(node, context)
     return rendered ? [rendered] : []
   })
+}
+
+function getFirstParagraph(
+  section: DocSection | undefined,
+): DocParagraph | undefined {
+  if (!section) return undefined
+  const firstParagraph = section
+    .getChildNodes()
+    .find((node) => node.kind === 'Paragraph')
+  return firstParagraph as DocParagraph | undefined
 }

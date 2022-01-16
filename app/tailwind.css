@@ -1315,6 +1315,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-prose-td-borders: var(--tw-prose-invert-td-borders);
 }
 
+.static {
+  position: static;
+}
+
 .fixed {
   position: fixed;
 }
@@ -1379,6 +1383,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .inline-block {
   display: inline-block;
+}
+
+.inline {
+  display: inline;
 }
 
 .flex {
