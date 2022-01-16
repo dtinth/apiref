@@ -1,15 +1,37 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Link } from 'remix'
 import clsx from 'clsx'
 import { VscMenu } from 'react-icons/vsc'
 
-export function Layout(props: { children?: ReactNode; sidebar?: ReactNode }) {
+export function Layout(props: {
+  children?: ReactNode
+  sidebar?: ReactNode
+  navigationId?: string
+}) {
   const [responsiveMenu, setResponsiveMenu] = useState<
     'hide' | 'show' | 'none'
   >('none')
+  const sidebarRef = useRef<HTMLElement>(null)
   useEffect(() => {
     setResponsiveMenu('hide')
   }, [])
+  const responsiveMode = responsiveMenu !== 'none'
+  useEffect(() => {
+    const sidebar = sidebarRef.current
+    if (sidebar && responsiveMode) {
+      const currentItem = sidebar.querySelector('.js-nav-active')
+      if (currentItem) {
+        const sidebarRect = sidebar.getBoundingClientRect()
+        const currentItemRect = currentItem.getBoundingClientRect()
+        if (
+          currentItemRect.top < sidebarRect.top ||
+          currentItemRect.bottom > sidebarRect.bottom
+        ) {
+          currentItem.scrollIntoView({ block: 'center' })
+        }
+      }
+    }
+  }, [responsiveMode, props.navigationId])
   const toggleMenu = () => {
     setResponsiveMenu((r) => (r === 'show' ? 'hide' : 'show'))
   }
@@ -46,6 +68,7 @@ export function Layout(props: { children?: ReactNode; sidebar?: ReactNode }) {
               'fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto border-r transition-transform',
             responsiveMenu === 'hide' && '-translate-x-full md:translate-x-0',
           )}
+          ref={sidebarRef}
         >
           {props.sidebar}
         </aside>

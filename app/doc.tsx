@@ -78,6 +78,7 @@ export default function Doc() {
   const data: PageData = useLoaderData()
   return (
     <Layout
+      navigationId={data.baseUrl + data.slug}
       sidebar={
         <nav>
           <ActivePageContext.Provider value={data.slug}>
