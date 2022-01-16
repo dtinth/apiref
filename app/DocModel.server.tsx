@@ -15,16 +15,33 @@ import pMemoize from 'p-memoize'
 import axios from 'axios'
 import { resolve } from 'path'
 
-async function fetchDocJson(packageIdentifier: string): Promise<string> {
+export type PackageInfo = {
+  name: string
+  version: string
+}
+
+type DocJsonInfo = {
+  filePath: string
+  packageInfo?: PackageInfo
+}
+
+async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
   if (packageIdentifier === 'fixtures:node-core-library') {
-    return require.resolve('../../fixtures/node-core-library.api.json')
+    return {
+      filePath: require.resolve('../../fixtures/node-core-library.api.json'),
+      packageInfo: {
+        name: '@rushstack/node-core-library',
+        version: '3.45.0',
+      },
+    }
   }
 
   const packageJsonResponse = await axios.get(
     `https://unpkg.com/${packageIdentifier}/package.json`,
   )
-  const docModelPath = packageJsonResponse.data.docModel
-  if (!packageJsonResponse.data.docModel) {
+  const packageJsonData = packageJsonResponse.data
+  const docModelPath = packageJsonData.docModel
+  if (!packageJsonData.docModel) {
     throw new Error(`No docModel found in package.json`)
   }
   const resolvedDocModelPath = resolve('/', docModelPath)
@@ -35,29 +52,37 @@ async function fetchDocJson(packageIdentifier: string): Promise<string> {
   mkdirSync(targetFolder, { recursive: true })
   writeFileSync(
     `${targetFolder}/package.json`,
-    JSON.stringify(packageJsonResponse.data, null, 2),
+    JSON.stringify(packageJsonData, null, 2),
   )
   writeFileSync(
     `${targetFolder}/api.json`,
     JSON.stringify(docModelResponse.data, null, 2),
   )
-  return `${targetFolder}/api.json`
+  return {
+    filePath: `${targetFolder}/api.json`,
+    packageInfo: {
+      name: String(packageJsonData.name),
+      version: String(packageJsonData.version),
+    },
+  }
 }
 
 const loadApiModel = pMemoize(async (packageIdentifier: string) => {
   const apiModel = new ApiModel()
-  apiModel.loadPackage(await fetchDocJson(packageIdentifier))
-  return apiModel
+  const docJsonInfo = await fetchDocJson(packageIdentifier)
+  apiModel.loadPackage(docJsonInfo.filePath)
+  return { apiModel, docJsonInfo }
 })
 
 export async function getApiModel(packageIdentifier: string) {
-  const apiModel = await loadApiModel(packageIdentifier)
+  const { apiModel, docJsonInfo } = await loadApiModel(packageIdentifier)
   const pages = generatePages(apiModel)
   const linkGenerator = new LinkGenerator(
     pages,
     `/package/${packageIdentifier}`,
   )
-  return { apiModel, pages, linkGenerator }
+  const { packageInfo } = docJsonInfo
+  return { apiModel, pages, linkGenerator, packageInfo }
 }
 
 export type PageInfo = {

@@ -1439,6 +1439,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   align-items: center;
 }
 
+.self-center {
+  align-self: center;
+}
+
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -1459,9 +1463,18 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-right-width: 1px;
 }
 
+.border-l {
+  border-left-width: 1px;
+}
+
 .border-\#454443 {
   --tw-border-opacity: 1;
   border-color: rgb(69 68 67 / var(--tw-border-opacity));
+}
+
+.border-\#353433 {
+  --tw-border-opacity: 1;
+  border-color: rgb(53 52 51 / var(--tw-border-opacity));
 }
 
 .bg-\#090807 {

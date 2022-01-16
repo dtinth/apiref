@@ -11,6 +11,7 @@ import {
 import {
   DocPageNavigationItem,
   getApiModel as getApiDoc,
+  PackageInfo,
 } from './DocModel.server'
 import { renderDocPage } from './DocRenderer.server'
 import { DocView, DocViewProps } from './DocView'
@@ -23,6 +24,7 @@ type PageData = {
   navigation: DocPageNavigationItem[]
   baseUrl: string
   docViewProps: DocViewProps
+  packageInfo?: PackageInfo
 }
 
 const CACHE_CONTROL =
@@ -51,7 +53,9 @@ export const loader: LoaderFunction = async ({ params }) => {
   const path = segments.join('/')
   console.log({ packageName, path })
 
-  const { pages, apiModel, linkGenerator } = await getApiDoc(packageName)
+  const { pages, apiModel, linkGenerator, packageInfo } = await getApiDoc(
+    packageName,
+  )
   const page = pages.getPage(path)
   if (!page) {
     throw new Response('Not Found - No page found.', {
@@ -65,6 +69,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
     docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
+    packageInfo,
   }
 
   return json(pageData, {
@@ -76,6 +81,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export default function Doc() {
   const data: PageData = useLoaderData()
+  const packageInfo = data.packageInfo
   return (
     <Layout
       navigationId={data.baseUrl + data.slug}
@@ -92,6 +98,19 @@ export default function Doc() {
             ))}
           </ActivePageContext.Provider>
         </nav>
+      }
+      headerItems={
+        <>
+          {!!packageInfo && (
+            <div className="flex self-center items-center px-[18px] flex-none border-l border-#353433 text-#8b8685">
+              <a
+                href={`https://www.npmjs.com/package/${packageInfo.name}/v/${packageInfo.version}`}
+              >
+                {packageInfo.name}@{packageInfo.version}
+              </a>
+            </div>
+          )}
+        </>
       }
     >
       <DocView {...data.docViewProps} />

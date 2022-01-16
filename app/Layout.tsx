@@ -7,6 +7,7 @@ export function Layout(props: {
   children?: ReactNode
   sidebar?: ReactNode
   navigationId?: string
+  headerItems?: ReactNode
 }) {
   const [responsiveMenu, setResponsiveMenu] = useState<
     'hide' | 'show' | 'none'
@@ -51,6 +52,7 @@ export function Layout(props: {
             apiref
           </Link>
         </div>
+        {props.headerItems}
       </header>
       <main
         className={clsx(
