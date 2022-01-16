@@ -1,8 +1,14 @@
 {
-  "private": true,
-  "name": "remix-app-template",
+  "name": "apiref",
   "description": "",
   "license": "",
+  "files": [
+    "public",
+    "api/_build"
+  ],
+  "bin": {
+    "apiref": "./apiref-cli.mjs"
+  },
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
