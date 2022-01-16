@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { createContext } from 'react'
 import { VscChevronRight } from 'react-icons/vsc'
-import { Link, LoaderFunction, useLoaderData } from 'remix'
+import { HeadersFunction, Link, LoaderFunction, useLoaderData } from 'remix'
 import {
   DocPageNavigationItem,
   getApiModel as getApiDoc,
@@ -17,6 +17,12 @@ type PageData = {
   navigation: DocPageNavigationItem[]
   baseUrl: string
   docViewProps: DocViewProps
+}
+
+export const headers: HeadersFunction = () => {
+  return {
+    'Cache-Control': 'public, max-age=60, s-maxage=120',
+  }
 }
 
 export const loader: LoaderFunction = async ({ params }): Promise<PageData> => {
