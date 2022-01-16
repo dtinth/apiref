@@ -50,9 +50,15 @@ export function DocView(props: DocViewProps) {
       {!!props.remarks && (
         <Section title="Remarks">{tsdocToReactNode(props.remarks)}</Section>
       )}
-      {
-        // TODO: Examples
-      }
+      {!!props.examples &&
+        props.examples.map((example, i, array) => (
+          <Section
+            title={array.length === 1 ? 'Example' : `Example ${i + 1}`}
+            key={i}
+          >
+            {tsdocToReactNode(example)}
+          </Section>
+        ))}
       {props.tables.map((table, i) => {
         return (
           <Section key={i} title={table.sectionTitle}>
@@ -77,26 +83,6 @@ export function DocView(props: DocViewProps) {
           </Section>
         )
       })}
-      {
-        // TODO: Class => Events
-        // TODO: Class => Constructors
-        // TODO: Class => Properties
-        // TODO: Class => Methods
-        // TODO: Enum => Members
-        // TODO: Interface => Events
-        // TODO: Interface => Properties
-        // TODO: Interface => Methods
-        // TODO: Function => Parameters
-        // TODO: Function => Throws
-        // TODO: Namespace => Classes
-        // TODO: Namespace => Enumerations
-        // TODO: Namespace => Functions
-        // TODO: Namespace => Interfaces
-        // TODO: Namespace => Namespaces
-        // TODO: Namespace => Variables
-        // TODO: Namespace => TypeAliases
-        // TODO: Root => Entrypoints
-      }
     </div>
   )
 }
