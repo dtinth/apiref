@@ -18,6 +18,7 @@ import { resolve } from 'path'
 export type PackageInfo = {
   name: string
   version: string
+  homepage?: string
 }
 
 type DocJsonInfo = {
@@ -32,6 +33,7 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
       packageInfo: {
         name: '@rushstack/node-core-library',
         version: '3.45.0',
+        homepage: 'https://github.com/microsoft/rushstack#readme',
       },
     }
   }
@@ -63,6 +65,9 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
     packageInfo: {
       name: String(packageJsonData.name),
       version: String(packageJsonData.version),
+      homepage: String(packageJsonData.homepage).match(/^https?:\/\//)
+        ? String(packageJsonData.homepage)
+        : undefined,
     },
   }
 }

@@ -1,14 +1,22 @@
 import clsx from 'clsx'
-import { createContext } from 'react'
-import { VscChevronRight } from 'react-icons/vsc'
+import { createContext, memo, useMemo } from 'react'
+import {
+  VscChevronRight,
+  VscGithubInverted,
+  VscGlobe,
+  VscLoading,
+} from 'react-icons/vsc'
+import { SiNpm } from 'react-icons/si'
 import {
   HeadersFunction,
   json,
   Link,
   LoaderFunction,
   useLoaderData,
+  useTransition,
 } from 'remix'
 import {
+  DocItemKind,
   DocPageNavigationItem,
   getApiModel as getApiDoc,
   PackageInfo,
@@ -100,22 +108,42 @@ export default function Doc() {
         </nav>
       }
       headerItems={
-        <>
-          {!!packageInfo && (
-            <div className="flex self-center items-center px-[18px] flex-none border-l border-#353433 text-#8b8685">
-              <a
-                href={`https://www.npmjs.com/package/${packageInfo.name}/v/${packageInfo.version}`}
-              >
-                {packageInfo.name}@{packageInfo.version}
-              </a>
-            </div>
-          )}
-        </>
+        <>{!!packageInfo && <TopNavPackageInfo packageInfo={packageInfo} />}</>
       }
     >
       <DocView {...data.docViewProps} />
     </Layout>
   )
+}
+
+function TopNavPackageInfo(props: { packageInfo: PackageInfo }) {
+  const { packageInfo } = props
+  return (
+    <div className="flex self-center items-center px-[18px] flex-none border-l border-#353433 text-#8b8685 gap-3">
+      <a href={`/package/${packageInfo.name}@${packageInfo.version}`}>
+        {packageInfo.name}@{packageInfo.version}
+      </a>
+      {!!packageInfo.homepage && (
+        <a href={`${packageInfo.homepage}`} className="text-xl">
+          {isGitHub(packageInfo.homepage) ? (
+            <VscGithubInverted />
+          ) : (
+            <VscGlobe />
+          )}
+        </a>
+      )}
+      <a
+        href={`https://www.npmjs.com/package/${packageInfo.name}/v/${packageInfo.version}`}
+        className="text-xl"
+      >
+        <SiNpm />
+      </a>
+    </div>
+  )
+}
+
+function isGitHub(link: string) {
+  return link.match(/^https?:\/\/(?:www\.?)?github\.com\//)
 }
 
 const ActivePageContext = createContext<string | undefined>(undefined)
@@ -130,32 +158,17 @@ function NavigationTree(props: {
     <>
       <ActivePageContext.Consumer>
         {(activePage) => (
-          <Link
-            className={clsx(
-              'block pl-[calc(0.25rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap',
-              activePage === nav.slug && 'bg-#454443 js-nav-active',
-            )}
+          <NavItem
+            active={activePage === nav.slug}
             to={`${props.baseUrl}/${nav.slug}`}
-            style={{ '--depth': props.depth } as any}
-          >
-            <span className="inline-block w-5 align-middle relative top-[-0.1em]">
-              {nav.children.length > 0 && (
-                <div className="rotate-90 w-4 h-4">
-                  <VscChevronRight />
-                </div>
-              )}
-            </span>
-            <KindIcon kind={nav.kind} static={nav.static} />
-            {nav.deprecated ? (
-              <span className="line-through">{nav.title}</span>
-            ) : nav.beta ? (
-              <>
-                {nav.title} <span className="opacity-50">&beta;</span>
-              </>
-            ) : (
-              nav.title
-            )}
-          </Link>
+            depth={props.depth}
+            hasChildren={nav.children.length > 0}
+            kind={nav.kind}
+            static={!!nav.static}
+            beta={!!nav.beta}
+            deprecated={!!nav.deprecated}
+            title={nav.title}
+          />
         )}
       </ActivePageContext.Consumer>
       {nav.children.length > 0 && (
@@ -172,5 +185,67 @@ function NavigationTree(props: {
         </ul>
       )}
     </>
+  )
+}
+
+const NavItem = memo(function NavItem(props: {
+  active: boolean
+  title: string
+  to: string
+  depth: number
+  hasChildren: boolean
+  kind: DocItemKind
+  static: boolean
+  beta: boolean
+  deprecated: boolean
+}) {
+  return (
+    <Link
+      className={clsx(
+        'block pl-[calc(0.25rem+0.75rem*var(--depth))] pr-2 whitespace-nowrap',
+        props.active && 'bg-#454443 js-nav-active',
+      )}
+      to={props.to}
+      style={{ '--depth': props.depth } as any}
+    >
+      <span className="inline-block w-5 align-middle relative top-[-0.1em]">
+        <LoadingConnector to={props.to}>
+          {(loading) =>
+            loading ? (
+              <div className="animate-spin w-4 h-4">
+                <VscLoading />
+              </div>
+            ) : props.hasChildren ? (
+              <div className="rotate-90 w-4 h-4">
+                <VscChevronRight />
+              </div>
+            ) : null
+          }
+        </LoadingConnector>
+      </span>
+      <KindIcon kind={props.kind} static={props.static} />
+      {props.deprecated ? (
+        <span className="line-through">{props.title}</span>
+      ) : props.beta ? (
+        <>
+          {props.title} <span className="opacity-50">&beta;</span>
+        </>
+      ) : (
+        props.title
+      )}
+    </Link>
+  )
+})
+
+const LoadingConnector = (props: {
+  to: string
+  children: (loading: boolean) => React.ReactNode
+}) => {
+  const transition = useTransition()
+  const loading =
+    transition.state === 'loading' && transition.location?.pathname === props.to
+  return useMemo(
+    () => <>{props.children(loading)}</>,
+    [loading, props.children],
   )
 }
