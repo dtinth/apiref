@@ -72,9 +72,7 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
     packageInfo: {
       name: String(packageJsonData.name),
       version: String(packageJsonData.version),
-      homepage: String(packageJsonData.homepage).match(/^https?:\/\//)
-        ? String(packageJsonData.homepage)
-        : undefined,
+      homepage: getHomepage(packageJsonData),
     },
   }
 }
@@ -89,6 +87,23 @@ const doLoadApiModel = async (packageIdentifier: string) => {
 const loadApiModel = process.env.APIREF_LOCAL
   ? doLoadApiModel
   : pMemoize(doLoadApiModel)
+
+function getHomepage(packageJsonData: any): string | undefined {
+  if (
+    typeof packageJsonData.homepage === 'string' &&
+    packageJsonData.homepage.match(/^https?:\/\//)
+  ) {
+    return packageJsonData.homepage
+  }
+  const repoUrl = packageJsonData.repository?.url
+  if (typeof repoUrl === 'string') {
+    const m = repoUrl.match(
+      /^(https?:\/\/(?:www\.)?github\.com\/.*?)(?:\.git)?$/,
+    )
+    if (m) return m[1]
+  }
+  return undefined
+}
 
 export async function getApiModel(packageIdentifier: string) {
   const { apiModel, docJsonInfo } = await loadApiModel(packageIdentifier)
