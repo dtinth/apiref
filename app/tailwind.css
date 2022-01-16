@@ -1340,8 +1340,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   top: 0px;
 }
 
-.top-10 {
-  top: 2.5rem;
+.top-\[58px\] {
+  top: 58px;
 }
 
 .bottom-0 {
@@ -1350,10 +1350,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .left-0 {
   left: 0px;
-}
-
-.top-\[58px\] {
-  top: 58px;
 }
 
 .z-20 {
@@ -1369,12 +1365,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: auto;
 }
 
-.ml-8 {
-  margin-left: 2rem;
-}
-
 .ml-\[20rem\] {
   margin-left: 20rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
 }
 
 .block {
@@ -1385,20 +1381,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: inline-block;
 }
 
-.inline {
-  display: inline;
-}
-
 .flex {
   display: flex;
 }
 
 .table {
   display: table;
-}
-
-.h-10 {
-  height: 2.5rem;
 }
 
 .h-\[58px\] {
@@ -1425,12 +1413,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 1rem;
 }
 
-.max-w-none {
-  max-width: none;
-}
-
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.max-w-none {
+  max-width: none;
 }
 
 .flex-none {
@@ -1471,29 +1459,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-color: rgb(69 68 67 / var(--tw-border-opacity));
 }
 
-.bg-gray-200 {
+.bg-\#090807 {
   --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
-
-.bg-gray-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  background-color: rgb(9 8 7 / var(--tw-bg-opacity));
 }
 
 .bg-\#353433 {
   --tw-bg-opacity: 1;
   background-color: rgb(53 52 51 / var(--tw-bg-opacity));
-}
-
-.bg-\#090807 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(9 8 7 / var(--tw-bg-opacity));
 }
 
 .bg-\#252423 {
@@ -1510,11 +1483,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding: 1.5rem;
 }
 
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
 .px-\[18px\] {
   padding-left: 18px;
   padding-right: 18px;
@@ -1525,24 +1493,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-bottom: 3rem;
 }
 
-.pt-10 {
-  padding-top: 2.5rem;
-}
-
-.pl-\[calc\(0\.5rem\+0\.75rem\*var\(--depth\)\)\] {
-  padding-left: calc(0.5rem + 0.75rem * var(--depth));
-}
-
-.pr-2 {
-  padding-right: 0.5rem;
-}
-
 .pt-\[58px\] {
   padding-top: 58px;
 }
 
 .pl-\[calc\(0\.25rem\+0\.75rem\*var\(--depth\)\)\] {
   padding-left: calc(0.25rem + 0.75rem * var(--depth));
+}
+
+.pr-2 {
+  padding-right: 0.5rem;
 }
 
 .align-middle {
@@ -1575,43 +1535,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   line-height: 1.625;
 }
 
-.leading-\[16px\] {
-  line-height: 16px;
-}
-
-.text-gray-500 {
+.text-\#8b8685 {
   --tw-text-opacity: 1;
-  color: rgb(107 114 128 / var(--tw-text-opacity));
-}
-
-.text-gray-600 {
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity));
-}
-
-.text-orange-600 {
-  --tw-text-opacity: 1;
-  color: rgb(234 88 12 / var(--tw-text-opacity));
-}
-
-.text-sky-600 {
-  --tw-text-opacity: 1;
-  color: rgb(2 132 199 / var(--tw-text-opacity));
-}
-
-.text-purple-600 {
-  --tw-text-opacity: 1;
-  color: rgb(147 51 234 / var(--tw-text-opacity));
-}
-
-.text-gray-700 {
-  --tw-text-opacity: 1;
-  color: rgb(55 65 81 / var(--tw-text-opacity));
-}
-
-.text-\#e9e8e7 {
-  --tw-text-opacity: 1;
-  color: rgb(233 232 231 / var(--tw-text-opacity));
+  color: rgb(139 134 133 / var(--tw-text-opacity));
 }
 
 .text-gray-400 {
@@ -1639,9 +1565,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
-.text-\#8b8685 {
+.text-\#e9e8e7 {
   --tw-text-opacity: 1;
-  color: rgb(139 134 133 / var(--tw-text-opacity));
+  color: rgb(233 232 231 / var(--tw-text-opacity));
 }
 
 .line-through {
@@ -1690,11 +1616,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(255 255 187 / var(--tw-text-opacity));
 }
 
-.prose-thead\:border-\#8b8685 :is(:where(thead):not(:where([class~="not-prose"] *))) {
-  --tw-border-opacity: 1;
-  border-color: rgb(139 134 133 / var(--tw-border-opacity));
-}
-
 .prose-thead\:border-\#656463 :is(:where(thead):not(:where([class~="not-prose"] *))) {
   --tw-border-opacity: 1;
   border-color: rgb(101 100 99 / var(--tw-border-opacity));
@@ -1703,11 +1624,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .prose-tr\:border-\#454443 :is(:where(tr):not(:where([class~="not-prose"] *))) {
   --tw-border-opacity: 1;
   border-color: rgb(69 68 67 / var(--tw-border-opacity));
-}
-
-.prose-th\:text-sm :is(:where(th):not(:where([class~="not-prose"] *))) {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
 }
 
 .prose-th\:text-xs :is(:where(th):not(:where([class~="not-prose"] *))) {

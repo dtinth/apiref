@@ -23,6 +23,7 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="shortcut icon" href="/interface.svg" />
         <style>{`body ::-webkit-scrollbar {
     height: 0.5rem;
     width: 0.5rem;
