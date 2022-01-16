@@ -6,7 +6,7 @@ import {
   DocPageNavigationItem,
   getApiModel as getApiDoc,
 } from './DocModel.server'
-import { renderDocPage } from './DocRenderer'
+import { renderDocPage } from './DocRenderer.server'
 import { DocView, DocViewProps } from './DocView'
 import { KindIcon } from './KindIcon'
 import { Layout } from './Layout'
