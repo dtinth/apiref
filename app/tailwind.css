@@ -1600,6 +1600,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   line-height: 1.625;
 }
 
+.leading-loose {
+  line-height: 2;
+}
+
 .text-\#8b8685 {
   --tw-text-opacity: 1;
   color: rgb(139 134 133 / var(--tw-text-opacity));
@@ -1763,6 +1767,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .md\:border-r {
     border-right-width: 1px;
+  }
+
+  .md\:leading-relaxed {
+    line-height: 1.625;
   }
 }
 
