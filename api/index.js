@@ -1,7 +1,11 @@
 const { createRequestHandler } = require('@remix-run/vercel')
 
-// Any JSON file used during app runtime must be referenced here.
-// I spent a long time figuring out that this is actually needed.
+// Any JSON file used during app runtime must be referenced here
+// in order for the Remix app to not crash at runtime on Vercel.
+//
+// I spent a long time figuring out this workaround.
+//
+// Here's how it works:
 //
 // When a Remix app is deployed to Vercel, any file that is not
 // statically referenced in the app's source code will be pruned
