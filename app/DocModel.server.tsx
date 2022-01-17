@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from 'fs'
 import pMemoize from 'p-memoize'
 import axios from 'axios'
 import { resolve } from 'path'
-import { DiagnosticWriter } from './DiagnosticWriter'
+import { Diagnostic, DiagnosticWriter } from './DiagnosticWriter'
 
 export type PackageInfo = {
   name: string
@@ -91,6 +91,41 @@ async function fetchDocJson(
     `Fetching docModel file from "${docModelUrl}"`,
     () => axios.get(docModelUrl),
   )
+
+  if (process.env.GA_MP_API_SECRET) {
+    const gaDiag = new Diagnostic()
+    await time(gaDiag, `Sending statistics to Google Analytics`, () =>
+      axios
+        .post(
+          'https://www.google-analytics.com/mp/collect',
+          {
+            client_id: 'apirefserver',
+            events: [
+              {
+                name: 'package_fetch',
+                params: {
+                  package_identifier: packageIdentifier,
+                  package_name: String(packageJsonData.name),
+                  resolved_package: String(
+                    `${packageJsonData.name}@${packageJsonData.version}`,
+                  ),
+                },
+              },
+            ],
+          },
+          {
+            params: {
+              api_secret: process.env.GA_MP_API_SECRET,
+              measurement_id: 'G-5J92C1MDC0',
+            },
+            timeout: 500,
+          },
+        )
+        .catch((e) => {
+          console.error(e)
+        }),
+    )
+  }
 
   mkdirSync(targetFolder, { recursive: true })
   writeFileSync(
