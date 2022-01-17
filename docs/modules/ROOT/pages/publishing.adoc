@@ -1,11 +1,52 @@
-= Publishing an API reference
+= Publisher’s guide
 
+This guide is intended for library others who want to publish their API reference on https://apiref.page/[apiref.page].
 
-. Use https://api-extractor.com/[@microsoft/api-extractor] to generate a https://api-extractor.com/pages/setup/generating_docs/[doc model file]. If done correctly, you should have an `.api.json` file in your project. (You don't need to commit this file to your repository.)
+* https://apiref.page/[apiref.page] generates an API reference site from https://api-extractor.com/pages/overview/demo_docs/[API Extractor’s “doc model” file]. +
+** See the _xref:#generate[]_ section.
+* The doc model file should be published in your package to the https://npmjs.com/[npm] registry. +
+** See the _xref:#publish[]_ section.
+
+[#generate]
+== Generate a doc model file
+
+* Use the https://api-extractor.com/[API Extractor] tool to https://api-extractor.com/pages/setup/generating_docs/[generate] a https://api-extractor.com/pages/overview/demo_docs/[doc model] file.
+** API Extractor works by processing `.d.ts` files.
+*** For TypeScript libraries, just set `declaration` to `true` in your `tsconfig.json` file.
+*** For JavaScript libraries, you can write a `.d.ts` file by hand (easier) or use https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#--declaration-and---allowjs:[`tsc --allowJs --declaration --emitDeclarationOnly`] to generate `.d.ts` file from your JavaScript source.
+** Your library’s API surface must be “documentable” https://api-extractor.com/pages/tsdoc/doc_comment_syntax/[by API Extractor] and https://api-extractor.com/pages/setup/generating_docs/[API Documenter].
+*** apiref.page is based on API Extractor and API Documenter’s documentation model, which only encompasses a limited subset of TypeScript constructs.
+*** Any construct that cannot be modeled by API Extractor or API Documenter will not work with apiref.page either.
+*** It is not a goal to suppport all kinds of possible constructs. Rather, we https://github.com/microsoft/rushstack/issues/3002#issuecomment-1007063608[prefer standard coding stereotypes over flexible free-form expressions].
+* If done correctly, you will get an `.api.json` file.
+
+CAUTION: Using apiref in an existing project may require changing your API, so that it uses only the constructs supported by API Extractor and API Documenter. It may result in breaking changes.
+
+[#preview]
+== Previewing the documentation locally
+
+To iterate more quickly, you can preview the API reference locally.
+
+Make sure you have your `.api.json` file ready.
+
+. Install or upgrade the apiref CLI: `npm install --global apiref`
+. Run `apiref -i <path/to/your>.api.json` to start a local preview server.
+. Go to `\http://localhost:3000/`
+. When you make change to the `.api.json` file, just hit Refresh to see the changes.
+
+NOTE: The `apiref` npm package is updated quite often (whenever a new version of the website is deployed). Install the latest version to make sure that the local preview looks consistent with the live website.
+
+[#publish]
+== Publishing the API reference
+
 . Add a `docModel` field to your `package.json` file, pointing to the `.api.json` file.
-. Publish your package to npm. Make sure the package includes the `.api.json` file along with the other built files.
-. You can access the API reference of your package at these URLs:
-+
+. Make sure the package includes the `.api.json` file along with the other built files.
+. Publish your package to npm.
+
+[#access]
+== Viewing the API reference on apiref.page
+Once published, you can access the API reference of your package at these URLs:
+
 * `\https://apiref.page/package/{package-name}`
 * `\https://apiref.page/package/{package-name}@{version}`
 
