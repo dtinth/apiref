@@ -77,7 +77,7 @@ export function Layout(props: {
       {!!props.sidebar && (
         <aside
           className={clsx(
-            'md:fixed md:top-[58px] md:w-[20rem] md:bottom-0 md:left-0 md:overflow-y-auto overflow-x-hidden bg-#252423 leading-loose md:leading-relaxed md:border-r border-#454443 text-gray-300 z-10',
+            'md:fixed md:top-[58px] md:w-[20rem] md:bottom-0 md:left-0 md:overflow-y-auto overflow-x-hidden bg-#252423 leading-loose md:leading-relaxed coarse:!leading-loose md:border-r border-#454443 text-gray-300 z-10',
             responsiveMenu != 'none' &&
               'fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto border-r transition-transform',
             responsiveMenu === 'hide' && '-translate-x-full md:translate-x-0',

@@ -16,5 +16,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    ({ addVariant }) => {
+      addVariant('coarse', '@media (pointer: coarse)')
+    },
+  ],
 }
