@@ -84,6 +84,14 @@ async function fetchDocJson(
     throw new Error(`No docModel found in package.json`)
   }
 
+  const analyticsPromise = logAnalyticsEvent('package_fetch', {
+    package_identifier: packageIdentifier,
+    package_name: String(packageJsonData.name),
+    resolved_package: String(
+      `${packageJsonData.name}@${packageJsonData.version}`,
+    ),
+  })
+
   const resolvedDocModelPath = resolve('/', docModelPath)
   const docModelUrl = `https://unpkg.com/${packageIdentifier}${resolvedDocModelPath}`
   const docModelResponse = await time(
@@ -91,14 +99,6 @@ async function fetchDocJson(
     `Fetching docModel file from "${docModelUrl}"`,
     () => axios.get(docModelUrl),
   )
-
-  await logAnalyticsEvent('package_fetch', {
-    package_identifier: packageIdentifier,
-    package_name: String(packageJsonData.name),
-    resolved_package: String(
-      `${packageJsonData.name}@${packageJsonData.version}`,
-    ),
-  })
 
   mkdirSync(targetFolder, { recursive: true })
   writeFileSync(
@@ -109,6 +109,7 @@ async function fetchDocJson(
     `${targetFolder}/api.json`,
     JSON.stringify(docModelResponse.data, null, 2),
   )
+  await analyticsPromise
   return {
     filePath: `${targetFolder}/api.json`,
     packageInfo: {
