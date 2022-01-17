@@ -317,7 +317,7 @@ export async function renderDocPage(
       addMemberTableByKind(ApiItemKind.Class, 'Classes', 'Class')
       addMemberTableByKind(ApiItemKind.Enum, 'Enumerations', 'Enumeration')
       addMemberTableByKind(ApiItemKind.Function, 'Functions', 'Function')
-      addMemberTableByKind(ApiItemKind.Interface, 'Interface', 'Interface')
+      addMemberTableByKind(ApiItemKind.Interface, 'Interfaces', 'Interface')
       addMemberTableByKind(ApiItemKind.Namespace, 'Namespaces', 'Namespace')
       addMemberTableByKind(ApiItemKind.Variable, 'Variables', 'Variable')
       addMemberTableByKind(ApiItemKind.TypeAlias, 'Type Aliases', 'Type Alias')
