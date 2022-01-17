@@ -60,7 +60,7 @@ async function fetchDocJson(
 
   if (packageIdentifier === 'fixtures:node-core-library') {
     return {
-      filePath: require.resolve('../../fixtures/node-core-library.api.json'),
+      filePath: require.resolve('./fixtures/node-core-library.api.json'),
       packageInfo: {
         name: '@rushstack/node-core-library',
         version: '3.45.0',
