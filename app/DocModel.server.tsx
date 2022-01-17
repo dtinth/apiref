@@ -92,40 +92,13 @@ async function fetchDocJson(
     () => axios.get(docModelUrl),
   )
 
-  if (process.env.GA_MP_API_SECRET) {
-    const gaDiag = new Diagnostic()
-    await time(gaDiag, `Sending statistics to Google Analytics`, () =>
-      axios
-        .post(
-          'https://www.google-analytics.com/mp/collect',
-          {
-            client_id: 'apirefserver',
-            events: [
-              {
-                name: 'package_fetch',
-                params: {
-                  package_identifier: packageIdentifier,
-                  package_name: String(packageJsonData.name),
-                  resolved_package: String(
-                    `${packageJsonData.name}@${packageJsonData.version}`,
-                  ),
-                },
-              },
-            ],
-          },
-          {
-            params: {
-              api_secret: process.env.GA_MP_API_SECRET,
-              measurement_id: 'G-5J92C1MDC0',
-            },
-            timeout: 500,
-          },
-        )
-        .catch((e) => {
-          console.error(e)
-        }),
-    )
-  }
+  await logAnalyticsEvent('package_fetch', {
+    package_identifier: packageIdentifier,
+    package_name: String(packageJsonData.name),
+    resolved_package: String(
+      `${packageJsonData.name}@${packageJsonData.version}`,
+    ),
+  })
 
   mkdirSync(targetFolder, { recursive: true })
   writeFileSync(
@@ -144,6 +117,71 @@ async function fetchDocJson(
       homepage: getHomepage(packageJsonData),
     },
   }
+}
+
+async function logAnalyticsEvent(
+  eventName: string,
+  eventParams: Record<string, string>,
+) {
+  const promises: Promise<any>[] = []
+  const analyticsDiag = new Diagnostic()
+
+  if (process.env.GA_MP_API_SECRET) {
+    promises.push(
+      time(analyticsDiag, `Sending event to Google Analytics`, () =>
+        axios
+          .post(
+            'https://www.google-analytics.com/mp/collect',
+            {
+              client_id: 'apirefserver',
+              events: [{ name: eventName, params: eventParams }],
+            },
+            {
+              params: {
+                api_secret: process.env.GA_MP_API_SECRET,
+                measurement_id: 'G-5J92C1MDC0',
+              },
+              timeout: 500,
+            },
+          )
+          .catch((e) => {
+            analyticsDiag.write(
+              'Unable to send event to Google Analytics: ' + String(e),
+            )
+          }),
+      ),
+    )
+  }
+
+  if (process.env.AMPLITUDE_API_KEY) {
+    promises.push(
+      time(analyticsDiag, `Sending event to Amplitude`, () =>
+        axios
+          .post(
+            'https://api.amplitude.com/2/httpapi',
+            {
+              api_key: process.env.AMPLITUDE_API_KEY,
+              events: [
+                {
+                  user_id: 'apirefserver',
+                  device_id: 'apirefserver',
+                  event_type: eventName,
+                  event_properties: eventParams,
+                },
+              ],
+            },
+            { timeout: 500 },
+          )
+          .catch((e) => {
+            analyticsDiag.write(
+              'Unable to send event to Amplitude: ' + String(e),
+            )
+          }),
+      ),
+    )
+  }
+
+  await Promise.all(promises)
 }
 
 const doLoadApiModel = async (
