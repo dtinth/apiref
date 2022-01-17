@@ -26,6 +26,7 @@ import { renderDocPage } from './DocRenderer.server'
 import { DocView, DocViewProps } from './DocView'
 import { KindIcon } from './KindIcon'
 import { Layout } from './Layout'
+import { Diagnostic } from './DiagnosticWriter'
 
 type PageData = {
   title: string
@@ -35,6 +36,7 @@ type PageData = {
   docViewProps: DocViewProps
   packageName: string
   packageInfo?: PackageInfo
+  diagnostic: string
 }
 
 const getCacheControl = () =>
@@ -48,9 +50,12 @@ export const headers: HeadersFunction = () => {
   }
 }
 
-export const loader: LoaderFunction = async ({ params, context }) => {
+export const loader: LoaderFunction = async ({ params, request, context }) => {
   const segments = (params['*'] as string).split('/').filter((x) => x)
-  console.log(params['*'])
+  const diagnostic = new Diagnostic()
+  const start = Date.now()
+  diagnostic.write(`Handling request for "${request.url}"`)
+
   if (segments.length === 0) {
     throw new Response('Not Found - No package name specified.', {
       status: 404,
@@ -61,10 +66,10 @@ export const loader: LoaderFunction = async ({ params, context }) => {
     packageName += '/' + segments.shift()
   }
   const path = segments.join('/')
-  console.log({ packageName, path })
 
   const { pages, apiModel, linkGenerator, packageInfo } = await getApiDoc(
     packageName,
+    diagnostic,
   )
   const page = pages.getPage(path)
   if (!page) {
@@ -72,6 +77,11 @@ export const loader: LoaderFunction = async ({ params, context }) => {
       status: 404,
     })
   }
+
+  const end = Date.now()
+  diagnostic.write(
+    `Response data for "${request.url}" generated in ${end - start}ms`,
+  )
 
   const pageData: PageData = {
     baseUrl: '/package/' + packageName,
@@ -81,6 +91,7 @@ export const loader: LoaderFunction = async ({ params, context }) => {
     navigation: pages.getNavigation(),
     docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
     packageInfo,
+    diagnostic: diagnostic.messages.join('\n'),
   }
 
   return json(pageData, {
@@ -123,6 +134,7 @@ export default function Doc() {
       }
     >
       <DocView {...data.docViewProps} />
+      <div data-diagnostic={`\n\n${data.diagnostic}\n\n`} />
     </Layout>
   )
 }

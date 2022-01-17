@@ -14,6 +14,7 @@ import { mkdirSync, writeFileSync } from 'fs'
 import pMemoize from 'p-memoize'
 import axios from 'axios'
 import { resolve } from 'path'
+import { DiagnosticWriter } from './DiagnosticWriter'
 
 export type PackageInfo = {
   name: string
@@ -26,7 +27,30 @@ type DocJsonInfo = {
   packageInfo?: PackageInfo
 }
 
-async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
+async function time<T>(
+  diagnostic: DiagnosticWriter,
+  message: string,
+  f: () => Promise<T>,
+) {
+  const start = Date.now()
+  let failed = false
+  try {
+    return await f()
+  } catch (e) {
+    failed = true
+    throw e
+  } finally {
+    const end = Date.now()
+    diagnostic.write(
+      `${message} ${failed ? 'FAILED' : 'succeeded'} in ${end - start}ms`,
+    )
+  }
+}
+
+async function fetchDocJson(
+  packageIdentifier: string,
+  diagnostic: DiagnosticWriter,
+): Promise<DocJsonInfo> {
   if (process.env.APIREF_LOCAL) {
     if (packageIdentifier === 'apiref:local') {
       return { filePath: process.env.APIREF_LOCAL }
@@ -45,19 +69,29 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
     }
   }
 
-  const packageJsonResponse = await axios.get(
-    `https://unpkg.com/${packageIdentifier}/package.json`,
+  const targetFolder = `/tmp/apirefcache/docmodel/v1-${packageIdentifier}`
+
+  const packageJsonUrl = `https://unpkg.com/${packageIdentifier}/package.json`
+  const packageJsonResponse = await time(
+    diagnostic,
+    `Fetching package.json file from "${packageJsonUrl}"`,
+    () => axios.get(packageJsonUrl),
   )
   const packageJsonData = packageJsonResponse.data
   const docModelPath = packageJsonData.docModel
   if (!packageJsonData.docModel) {
+    diagnostic.write(`No docModel found in package.json`)
     throw new Error(`No docModel found in package.json`)
   }
+
   const resolvedDocModelPath = resolve('/', docModelPath)
-  const docModelResponse = await axios.get(
-    `https://unpkg.com/${packageIdentifier}${resolvedDocModelPath}`,
+  const docModelUrl = `https://unpkg.com/${packageIdentifier}${resolvedDocModelPath}`
+  const docModelResponse = await time(
+    diagnostic,
+    `Fetching docModel file from "${docModelUrl}"`,
+    () => axios.get(docModelUrl),
   )
-  const targetFolder = `/tmp/docmodel/${packageIdentifier}`
+
   mkdirSync(targetFolder, { recursive: true })
   writeFileSync(
     `${targetFolder}/package.json`,
@@ -77,10 +111,17 @@ async function fetchDocJson(packageIdentifier: string): Promise<DocJsonInfo> {
   }
 }
 
-const doLoadApiModel = async (packageIdentifier: string) => {
+const doLoadApiModel = async (
+  packageIdentifier: string,
+  diagnostic: DiagnosticWriter,
+) => {
   const apiModel = new ApiModel()
-  const docJsonInfo = await fetchDocJson(packageIdentifier)
-  apiModel.loadPackage(docJsonInfo.filePath)
+  const docJsonInfo = await fetchDocJson(packageIdentifier, diagnostic)
+  await time(
+    diagnostic,
+    `Reading docModel file from "${docJsonInfo.filePath}"`,
+    async () => apiModel.loadPackage(docJsonInfo.filePath),
+  )
   return { apiModel, docJsonInfo }
 }
 
@@ -105,9 +146,19 @@ function getHomepage(packageJsonData: any): string | undefined {
   return undefined
 }
 
-export async function getApiModel(packageIdentifier: string) {
-  const { apiModel, docJsonInfo } = await loadApiModel(packageIdentifier)
-  const pages = generatePages(apiModel)
+export async function getApiModel(
+  packageIdentifier: string,
+  diagnostic: DiagnosticWriter,
+) {
+  const { apiModel, docJsonInfo } = await loadApiModel(
+    packageIdentifier,
+    diagnostic,
+  )
+  const pages = await time(
+    diagnostic,
+    `Generating navigation tree of "${packageIdentifier}"`,
+    async () => generatePages(apiModel),
+  )
   const linkGenerator = new LinkGenerator(
     pages,
     `/package/${packageIdentifier}`,
