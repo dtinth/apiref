@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from 'remix'
+import { Link, LoaderFunction, redirect } from 'remix'
 import { Layout } from '~/Layout'
 import { Prose } from '~/Prose'
 import { Section } from '~/Section'
@@ -36,6 +36,9 @@ export default function Index() {
               <a href="https://docs.dt.in.th/apiref/publishing.html">
                 How to publish an API reference
               </a>
+            </li>
+            <li>
+              <Link to="/recent">Recently processed packages</Link>
             </li>
             <li>
               <a href="https://github.com/dtinth/apiref">
