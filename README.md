@@ -4,8 +4,7 @@ Automatically generated API reference sites for JS and TS libraries that use API
 
 ## Examples
 
-- [@dtinth/google-sign-in-controller](https://apiref.page/package/@dtinth/google-sign-in-controller)
-- [@spacet.me/chain](https://apiref.page/package/@spacet.me/chain)
+See <https://apiref.page/recent>
 
 ## Tech stack
 
