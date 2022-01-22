@@ -30,6 +30,16 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@fontsource/ibm-plex-sans@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/ibm-plex-sans/-/ibm-plex-sans-4.5.1.tgz#0aff4e48f470c1647c180255495d91a28b0a50e6"
+  integrity sha512-Jz+Jgjhrzv21MrsJbUV2sewRrCsKv51NuQFje1QWQbn2E4L1G58pxb6+H9N6EdELlvZvwBffvTYS4OWrF4r71A==
+
+"@fontsource/sarabun@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/sarabun/-/sarabun-4.5.0.tgz#a270090c7f8882b024915d52fa7d1057e84c411a"
+  integrity sha512-Yw1mUhSWFleJGgxGRS8y2mt8ZWYQeT2dAoaXbr/LR01MsO2hteSh2Abl+uYONZBW8B4zvBJjG7StNtzbH7ACGA==
+
 "@gar/promisify@^1.0.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"

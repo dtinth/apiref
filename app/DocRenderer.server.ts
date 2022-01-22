@@ -46,6 +46,21 @@ type TsdocRenderContext = DocRenderContext & {
   renderCode: (code: string) => RenderedTsdocNode
 }
 
+export function getSummary(page: Page) {
+  const tsdocItem =
+    page.info.item.kind === ApiItemKind.EntryPoint
+      ? page.info.item.parent
+      : page.info.item
+
+  if (tsdocItem instanceof ApiDocumentedItem) {
+    const tsdocComment = tsdocItem.tsdocComment
+    if (tsdocComment) {
+      return renderToText(tsdocComment.summarySection)
+    }
+  }
+  return ''
+}
+
 export async function renderDocPage(
   page: Page,
   context: DocRenderContext,
@@ -427,6 +442,54 @@ function renderDocNode(
   }
   console.warn(`Unhandled DocNode kind: ${node.kind}`)
   return undefined
+}
+
+function renderToText(node: DocNode | undefined): string {
+  if (!node) {
+    return ''
+  }
+  const renderChildren = (node: DocNode): string => {
+    return node
+      .getChildNodes()
+      .map((child) => renderToText(child))
+      .join('')
+  }
+  switch (node.kind) {
+    case 'Section': {
+      const section = node as DocSection
+      return renderChildren(section)
+    }
+    case 'Paragraph': {
+      const paragraph = node as DocParagraph
+      return renderChildren(paragraph)
+    }
+    case 'PlainText': {
+      const text = (node as DocPlainText).text
+      return text
+    }
+    case 'SoftBreak': {
+      return '\n'
+    }
+    case 'LinkTag': {
+      const linkTag = node as DocLinkTag
+      const text =
+        linkTag.linkText ||
+        linkTag.codeDestination?.emitAsTsdoc() ||
+        linkTag.urlDestination ||
+        ''
+      return text
+    }
+    case 'CodeSpan': {
+      const codeSpan = node as DocCodeSpan
+      return '`' + codeSpan.code + '`'
+    }
+    case 'FencedCode': {
+      const fencedCode = node as DocFencedCode
+      return '`' + fencedCode.code + '`'
+    }
+  }
+  console.warn(`Unhandled DocNode kind: ${node.kind}`)
+  return ''
 }
 
 function renderDocChildren(

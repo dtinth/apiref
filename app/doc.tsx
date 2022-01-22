@@ -22,17 +22,19 @@ import {
   getApiModel as getApiDoc,
   PackageInfo,
 } from './DocModel.server'
-import { renderDocPage } from './DocRenderer.server'
+import { getSummary, renderDocPage } from './DocRenderer.server'
 import { DocView, DocViewProps } from './DocView'
 import { KindIcon } from './KindIcon'
 import { Layout } from './Layout'
 import { Diagnostic } from './DiagnosticWriter'
+import { getCover } from './getCover'
 
 type PageData = {
   title: string
   slug: string
   navigation: DocPageNavigationItem[]
   baseUrl: string
+  summary: string
   docViewProps: DocViewProps
   packageName: string
   packageInfo?: PackageInfo
@@ -90,6 +92,7 @@ export const loader: LoaderFunction = async ({ params, request, context }) => {
     title: page.info.pageTitle,
     navigation: pages.getNavigation(),
     docViewProps: await renderDocPage(page, { apiModel, linkGenerator }),
+    summary: getSummary(page),
     packageInfo,
     diagnostic: diagnostic.messages.join('\n'),
   }
@@ -106,7 +109,16 @@ export const meta: MetaFunction = (args) => {
   const pkg = data.packageInfo
     ? `${data.packageInfo.name}@${data.packageInfo.version}`
     : data.packageName
-  return { title: data.title + ' — ' + pkg + ' — apiref.page' }
+  const sanitizedSummary = data.summary.replace(/\s+/g, ' ').trim()
+  return {
+    title: data.title + ' — ' + pkg + ' — apiref.page',
+    description: sanitizedSummary,
+    'og:image': getCover(
+      data.title,
+      sanitizedSummary.slice(0, 201),
+      data.title === data.packageInfo?.name ? 'apiref.page' : pkg,
+    ),
+  }
 }
 
 export default function Doc() {

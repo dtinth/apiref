@@ -19,6 +19,8 @@
     "start": "remix-serve build"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans": "^4.5.1",
+    "@fontsource/sarabun": "^4.5.0",
     "@microsoft/api-extractor-model": "^7.15.3",
     "@microsoft/tsdoc": "^0.13.2",
     "@remix-run/express": "^1.1.1",
