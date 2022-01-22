@@ -1730,10 +1730,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 @media (pointer: coarse) {
-  .coarse\:leading-loose {
-    line-height: 2;
-  }
-
   .coarse\:\!leading-loose {
     line-height: 2 !important;
   }

@@ -27,6 +27,7 @@
     "@remix-run/vercel": "^1.1.1",
     "@vercel/node": "^1.12.1",
     "axios": "^0.24.0",
+    "canvaskit-wasm": "^0.32.0",
     "clsx": "^1.1.1",
     "express": "^4.17.2",
     "lodash": "^4.17.21",
