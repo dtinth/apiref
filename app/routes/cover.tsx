@@ -5,7 +5,7 @@ import type { CanvasKit } from 'canvaskit-wasm'
 let ck: CanvasKit | undefined
 const getCanvasKit = () => {
   if (!ck) {
-    require.resolve('canvaskit-wasm/canvaskit.wasm')
+    require.resolve('canvaskit-wasm/bin/canvaskit.wasm')
     ck = require('canvaskit-wasm')({
       locateFile: (file: string) => {
         return path.resolve(require.resolve('canvaskit-wasm'), '..', file)
