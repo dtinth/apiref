@@ -40,7 +40,7 @@ import * as build from '@remix-run/dev/server-build'
 //
 // With that figured out, the workaround looks like this:
 //
-require('../fixtures/node-core-library.api.json')
+require('./fixtures/node-core-library.api.json')
 require('@microsoft/tsdoc/schemas/tsdoc.schema.json')
 require('shiki/languages/typescript.tmLanguage.json')
 require('shiki/themes/one-dark-pro.json')
