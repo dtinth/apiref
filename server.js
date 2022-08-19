@@ -1,4 +1,5 @@
-const { createRequestHandler } = require('@remix-run/vercel')
+import { createRequestHandler } from '@remix-run/vercel'
+import * as build from '@remix-run/dev/server-build'
 
 // Any JSON file used during app runtime must be referenced here
 // in order for the Remix app to not crash at runtime on Vercel.
@@ -44,6 +45,4 @@ require('@microsoft/tsdoc/schemas/tsdoc.schema.json')
 require('shiki/languages/typescript.tmLanguage.json')
 require('shiki/themes/one-dark-pro.json')
 
-module.exports = createRequestHandler({
-  build: require('./_build'),
-})
+export default createRequestHandler({ build, mode: process.env.NODE_ENV })
