@@ -7,11 +7,6 @@
 //   publicPath: '/build/',
 //   serverBuildDirectory: 'api/_build',
 //   ignoredRouteFiles: ['.*'],
-//   routes: async (defineRoutes) => {
-//     return defineRoutes((route) => {
-//       route('/package/*', 'doc.tsx')
-//     })
-//   },
 // }
 
 /** @type {import('@remix-run/dev').AppConfig} */
@@ -26,4 +21,9 @@ module.exports = {
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "api/index.js",
   // publicPath: "/build/",
+  routes: async (defineRoutes) => {
+    return defineRoutes((route) => {
+      route('/package/*', 'doc.tsx')
+    })
+  },
 }
