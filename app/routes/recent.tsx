@@ -1,6 +1,7 @@
 import { groupBy } from 'lodash'
 import { Link } from 'react-router-dom'
-import { HeadersFunction, json, LoaderFunction, useLoaderData } from 'remix'
+import { HeadersFunction, json, LoaderFunction } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { Layout } from '~/Layout'
 import { Prose } from '~/Prose'
 import { loadRecentlyProcessedPackages } from '~/RecentlyProcessedPackages.server'

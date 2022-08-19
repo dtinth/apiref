@@ -1,4 +1,4 @@
-import type { LoaderFunction } from 'remix'
+import type { LoaderFunction } from '@remix-run/node'
 // import { spawnSync } from 'child_process'
 
 export let loader: LoaderFunction = ({ request }) => {

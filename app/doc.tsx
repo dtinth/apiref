@@ -10,12 +10,10 @@ import { SiNpm } from 'react-icons/si'
 import {
   HeadersFunction,
   json,
-  Link,
   LoaderFunction,
   MetaFunction,
-  useLoaderData,
-  useTransition,
-} from 'remix'
+} from '@remix-run/node'
+import { Link, useLoaderData, useTransition } from '@remix-run/react'
 import {
   DocItemKind,
   DocPageNavigationItem,

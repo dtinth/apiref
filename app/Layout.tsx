@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import { Link } from 'remix'
+import { Link } from '@remix-run/react'
 import clsx from 'clsx'
 import { VscGithubInverted, VscMenu } from 'react-icons/vsc'
 

@@ -1,4 +1,4 @@
-import { LoaderFunction } from 'remix'
+import { LoaderFunction } from '@remix-run/node'
 import path from 'path'
 import { readFileSync } from 'fs'
 import type { CanvasKit } from 'canvaskit-wasm'

@@ -1,5 +1,5 @@
 import { Fragment, ReactNode } from 'react'
-import { Link } from 'remix'
+import { Link } from '@remix-run/react'
 import type { IThemedToken } from 'shiki'
 import { DocItemKind } from './DocModel.server'
 import { KindIcon } from './KindIcon'
