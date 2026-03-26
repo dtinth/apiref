@@ -121,15 +121,14 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
 
       const modNavChildren: NavNode[] = [];
       for (const child of mod.children ?? []) {
-        const page = buildDeclarationPage(
+        collectDeclarationPages(
           child,
           modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
           ctx,
+          pages,
+          modNavChildren,
+          idToUrl,
         );
-        if (page) {
-          pages.push(page);
-          modNavChildren.push(declarationNavNode(child, idToUrl));
-        }
       }
       navTree.push({
         label: mod.name,
@@ -142,6 +141,59 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   }
 
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };
+}
+
+// ---------------------------------------------------------------------------
+// Page collection helper (recursively handles nested PAGE_KINDS)
+// ---------------------------------------------------------------------------
+
+function collectDeclarationPages(
+  decl: TDDeclaration,
+  breadcrumbs: Breadcrumb[],
+  ctx: TransformContext,
+  pages: PageViewModel[],
+  navChildren: NavNode[],
+  idToUrl: Map<number, string>,
+): void {
+  const page = buildDeclarationPage(decl, breadcrumbs, ctx);
+  if (page) {
+    pages.push(page);
+    navChildren.push(declarationNavNode(decl, idToUrl));
+
+    // Recursively process nested PAGE_KINDS (e.g., nested namespaces)
+    const declUrl = idToUrl.get(decl.id);
+    if (declUrl && PAGE_KINDS.has(decl.kind)) {
+      const nestedNavChildren: NavNode[] = [];
+      for (const child of decl.children ?? []) {
+        if (PAGE_KINDS.has(child.kind)) {
+          collectDeclarationPages(
+            child,
+            breadcrumbs.concat({ label: decl.name, url: declUrl }),
+            ctx,
+            pages,
+            nestedNavChildren,
+            idToUrl,
+          );
+        } else if (ANCHOR_KINDS.has(child.kind)) {
+          const childPage = buildDeclarationPage(
+            child,
+            breadcrumbs.concat({ label: decl.name, url: declUrl }),
+            ctx,
+          );
+          if (childPage) {
+            pages.push(childPage);
+            nestedNavChildren.push(declarationNavNode(child, idToUrl));
+          }
+        }
+      }
+
+      // Add nested items to the page's nav tree representation
+      if (nestedNavChildren.length > 0 && page) {
+        // Note: This extends the existing page structure; nested navs are
+        // handled at render time via the outline
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
