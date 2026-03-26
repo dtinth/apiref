@@ -90,7 +90,7 @@ type SiteViewModel = {
 type PageViewModel = {
   url: string;
   title: string;
-  kind: PageKind;
+  kind: DeclarationKind;
   breadcrumbs: Breadcrumb[];
   sections: Section[];
 };

@@ -49,9 +49,6 @@ export type DeclarationKind =
   | "property"
   | "accessor";
 
-/** @deprecated Use {@link DeclarationKind}. */
-export type PageKind = DeclarationKind;
-
 /**
  * A single documentation page representing a declaration (class, function, etc.)
  * or the package index.

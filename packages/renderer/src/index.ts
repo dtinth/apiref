@@ -51,7 +51,6 @@ export type {
   SiteViewModel,
   PageViewModel,
   DeclarationKind,
-  PageKind,
   NavNode,
   Breadcrumb,
   Section,
