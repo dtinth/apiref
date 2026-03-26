@@ -4,5 +4,5 @@
 run = "bash -c 'cd packages/shell && SHELL_OUT_DIR=../../_site/assets vp build --watch'"
 
 [daemons.serve]
-run = "vp dlx http-server _site --port 8080 --gzip"
-ready_http = "http://localhost:8080"
+run = "vp dlx http-server _site --host 0.0.0.0 --port 39757 --gzip"
+ready_http = "http://localhost:39757"
