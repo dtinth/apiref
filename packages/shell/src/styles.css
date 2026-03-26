@@ -164,11 +164,11 @@ ar-shell {
   text-shadow: none;
 }
 
-h3.ar-card-header .ar-kind-icon {
+.ar-card-header .ar-kind-icon {
   @apply flex-none text-lg;
 }
 
-h3.ar-card-header .ar-card-kind {
+.ar-card-header .ar-card-kind {
   color: #8b8685;
   font-weight: normal;
 }
@@ -187,11 +187,19 @@ h3.ar-card-header .ar-card-kind {
 }
 
 .ar-card--link {
-  @apply transition-all hover:border-ar-accent-cyan hover:bg-black/20;
+  @apply transition-all;
 }
 
-.ar-card--link .ar-card-header {
-  @apply hover:text-ar-accent-yellow cursor-pointer;
+.ar-card--link:has(a.ar-card-header:hover) {
+  @apply border-ar-accent-yellow bg-black/20;
+}
+
+.ar-card--link a.ar-card-header {
+  @apply cursor-pointer;
+}
+
+.ar-card--link a.ar-card-header:hover {
+  @apply text-ar-accent-yellow;
 }
 
 a.ar-card-header {
