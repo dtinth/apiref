@@ -41,11 +41,11 @@ function MemberView({ member }: { member: MemberViewModel }) {
 
   return (
     <>
-      <div class="ar-member-card-header">
+      <h3 class="ar-member-card-header">
         <i class={`codicon ${iconClass} ar-kind-icon`} />
         <span>{signatures.length > 0 ? `${name}()` : name}</span>
         <span class="ar-member-card-kind">{memberKind}</span>
-      </div>
+      </h3>
 
       <div class="ar-member-card-body">
         {(flags.deprecated || flags.static || flags.abstract || flags.readonly) && (

@@ -152,11 +152,7 @@ function SectionView({ section }: { section: Section }) {
     case "constructor":
       return (
         <section class="ar-section ar-section--constructor">
-          <h2 class="ar-declaration-title">
-            <i class={`codicon ${getKindIcon("constructor")} ar-kind-icon`} />
-            <span>Constructor</span>
-            <span class="ar-declaration-kind">constructor</span>
-          </h2>
+          <h2 class="ar-section-title">Constructor</h2>
           {section.signatures.map((sig, i) => (
             <SignatureBlock key={i} sig={sig} label="new" />
           ))}
@@ -184,11 +180,7 @@ function SectionView({ section }: { section: Section }) {
     case "members":
       return (
         <section class="ar-section ar-section--members">
-          <h2 class="ar-declaration-title">
-            <i class={`codicon ${getKindIcon("method")} ar-kind-icon`} />
-            <span>{section.label}</span>
-            <span class="ar-declaration-kind">{section.label.toLowerCase()}</span>
-          </h2>
+          <h2 class="ar-section-title">{section.label}</h2>
           <MemberList members={section.members} />
         </section>
       );
