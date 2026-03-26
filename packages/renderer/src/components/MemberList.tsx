@@ -1,4 +1,4 @@
-import type { MemberViewModel, SignatureViewModel } from "../viewmodel.ts";
+import type { MemberViewModel, SignatureViewModel, DocNode } from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
@@ -10,6 +10,15 @@ interface MemberListProps {
 function getMemberKind(member: MemberViewModel): string {
   if (member.signatures.length > 0) return "method";
   return "property";
+}
+
+function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
+  return doc.map((node) => {
+    if (node.kind === "link") {
+      return { kind: "text", text: node.text };
+    }
+    return node;
+  });
 }
 
 export function MemberList({ members }: MemberListProps) {
@@ -33,10 +42,32 @@ export function MemberList({ members }: MemberListProps) {
 }
 
 function MemberView({ member }: { member: MemberViewModel }) {
-  const { name, flags, signatures, type, doc } = member;
+  const { name, flags, signatures, type, doc, url } = member;
   const memberKind = getMemberKind(member);
   const displayName = signatures.length > 0 ? `${name}()` : name;
 
+  // Abbreviated view for members with their own pages
+  if (url) {
+    const abbreviatedDoc = stripLinksFromDoc(doc);
+    return (
+      <>
+        <h3 class="ar-member-card-header">
+          <DeclarationTitle
+            kind={memberKind}
+            title={displayName}
+            kindLabelClass="ar-member-card-kind"
+          />
+        </h3>
+        {abbreviatedDoc.length > 0 && (
+          <div class="ar-member-card-body">
+            <DocView doc={abbreviatedDoc} />
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // Full view for members without their own pages
   return (
     <>
       <h3 class="ar-member-card-header">
