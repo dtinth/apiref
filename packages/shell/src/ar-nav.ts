@@ -11,6 +11,7 @@ export class ArNav extends LitElement {
 
   @property({ attribute: false }) nodes: NavNode[] = [];
   @property() currentUrl = "";
+  @property() baseHref = "";
 
   override render() {
     return html`<div class="ar-nav">${this.renderNodes(this.nodes, 0)}</div>`;
@@ -27,7 +28,7 @@ export class ArNav extends LitElement {
 
     return html`
       <a
-        href=${node.url}
+        href=${this.baseHref + node.url}
         class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
         <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>

@@ -6,16 +6,18 @@ import type {
   TypeParameterViewModel,
   ParameterViewModel,
 } from "../viewmodel.ts";
+import { useResolveLink } from "./PageContext.tsx";
 
 interface TypeViewProps {
   type: TypeViewModel;
 }
 
 export function TypeView({ type }: TypeViewProps) {
-  return <span class="ar-type">{renderType(type)}</span>;
+  const resolve = useResolveLink();
+  return <span class="ar-type">{renderType(type, resolve)}</span>;
 }
 
-function renderType(type: TypeViewModel): preact.ComponentChild {
+function renderType(type: TypeViewModel, resolve: (url: string) => string): preact.ComponentChild {
   switch (type.kind) {
     case "intrinsic":
       return <span class="ar-type-intrinsic">{type.name}</span>;
@@ -33,7 +35,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
               {type.typeArguments.map((a, i) => (
                 <Fragment key={i}>
                   {i > 0 && ", "}
-                  {renderType(a)}
+                  {renderType(a, resolve)}
                 </Fragment>
               ))}
               {">"}
@@ -43,7 +45,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
       );
       if (type.url) {
         return (
-          <a href={type.url} class="ar-type-ref">
+          <a href={resolve(type.url)} class="ar-type-ref">
             {inner}
           </a>
         );
@@ -57,7 +59,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
           {type.types.map((t, i) => (
             <Fragment key={i}>
               {i > 0 && <span class="ar-type-op"> | </span>}
-              {renderType(t)}
+              {renderType(t, resolve)}
             </Fragment>
           ))}
         </>
@@ -69,7 +71,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
           {type.types.map((t, i) => (
             <Fragment key={i}>
               {i > 0 && <span class="ar-type-op"> &amp; </span>}
-              {renderType(t)}
+              {renderType(t, resolve)}
             </Fragment>
           ))}
         </>
@@ -78,7 +80,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
     case "array":
       return (
         <>
-          {renderType(type.elementType)}
+          {renderType(type.elementType, resolve)}
           {"[]"}
         </>
       );
@@ -90,7 +92,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
           {type.elements.map((t, i) => (
             <Fragment key={i}>
               {i > 0 && ", "}
-              {renderType(t)}
+              {renderType(t, resolve)}
             </Fragment>
           ))}
           {"]"}
@@ -102,9 +104,9 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
         return (
           <>
             {"("}
-            {renderSignatureParams(type.signatures[0]!)}
+            {renderSignatureParams(type.signatures[0]!, resolve)}
             {") => "}
-            {renderType(type.signatures[0]!.returnType)}
+            {renderType(type.signatures[0]!.returnType, resolve)}
           </>
         );
       }
@@ -115,7 +117,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
             {type.members.map((member, i) => (
               <Fragment key={i}>
                 {i > 0 && "; "}
-                {renderReflectionTypeMember(member)}
+                {renderReflectionTypeMember(member, resolve)}
               </Fragment>
             ))}
             {" }"}
@@ -129,16 +131,16 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
       return (
         <>
           <span class="ar-type-keyword">{type.operator} </span>
-          {renderType(type.target)}
+          {renderType(type.target, resolve)}
         </>
       );
 
     case "indexed-access":
       return (
         <>
-          {renderType(type.objectType)}
+          {renderType(type.objectType, resolve)}
           {"["}
-          {renderType(type.indexType)}
+          {renderType(type.indexType, resolve)}
           {"]"}
         </>
       );
@@ -146,13 +148,13 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
     case "conditional":
       return (
         <>
-          {renderType(type.checkType)}
+          {renderType(type.checkType, resolve)}
           <span class="ar-type-keyword"> extends </span>
-          {renderType(type.extendsType)}
+          {renderType(type.extendsType, resolve)}
           {" ? "}
-          {renderType(type.trueType)}
+          {renderType(type.trueType, resolve)}
           {" : "}
-          {renderType(type.falseType)}
+          {renderType(type.falseType, resolve)}
         </>
       );
 
@@ -161,7 +163,10 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
   }
 }
 
-function renderReflectionTypeMember(block: SectionBlock) {
+function renderReflectionTypeMember(
+  block: SectionBlock,
+  resolve: (url: string) => string,
+): preact.ComponentChild {
   if (block.kind === "declaration-title") {
     return <>{block.name}</>;
   }
@@ -172,7 +177,7 @@ function renderReflectionTypeMember(block: SectionBlock) {
         {block.name}
         {block.optional ? "?" : ""}
         {": "}
-        {renderType(block.type)}
+        {renderType(block.type, resolve)}
       </>
     );
   }
@@ -182,9 +187,9 @@ function renderReflectionTypeMember(block: SectionBlock) {
     return (
       <>
         {": ("}
-        {renderSignatureParams(sig)}
+        {renderSignatureParams(sig, resolve)}
         {") => "}
-        {renderType(sig.returnType)}
+        {renderType(sig.returnType, resolve)}
       </>
     );
   }
@@ -192,7 +197,10 @@ function renderReflectionTypeMember(block: SectionBlock) {
   return null;
 }
 
-function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {
+function renderSignatureParams(
+  sig: SignatureViewModel,
+  resolve: (url: string) => string,
+): preact.ComponentChild {
   const parts: preact.ComponentChild[] = [];
   if (sig.typeParameters.length > 0) {
     parts.push(
@@ -201,7 +209,7 @@ function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {
         {sig.typeParameters.map((tp, i) => (
           <Fragment key={i}>
             {i > 0 && ", "}
-            {renderTypeParam(tp)}
+            {renderTypeParam(tp, resolve)}
           </Fragment>
         ))}
         {">"}
@@ -213,7 +221,7 @@ function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {
       {sig.parameters.map((p, i) => (
         <Fragment key={i}>
           {i > 0 && ", "}
-          {renderParam(p)}
+          {renderParam(p, resolve)}
         </Fragment>
       ))}
     </>,
@@ -221,39 +229,46 @@ function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {
   return <>{parts}</>;
 }
 
-function renderTypeParam(tp: TypeParameterViewModel): preact.ComponentChild {
+function renderTypeParam(
+  tp: TypeParameterViewModel,
+  resolve: (url: string) => string,
+): preact.ComponentChild {
   return (
     <>
       <span class="ar-type-param">{tp.name}</span>
       {tp.constraint && (
         <>
           <span class="ar-type-keyword"> extends </span>
-          {renderType(tp.constraint)}
+          {renderType(tp.constraint, resolve)}
         </>
       )}
       {tp.default && (
         <>
           {" = "}
-          {renderType(tp.default)}
+          {renderType(tp.default, resolve)}
         </>
       )}
     </>
   );
 }
 
-function renderParam(p: ParameterViewModel): preact.ComponentChild {
+function renderParam(
+  p: ParameterViewModel,
+  resolve: (url: string) => string,
+): preact.ComponentChild {
   return (
     <>
       <span class="ar-param-name">{p.name}</span>
       {p.optional && "?"}
       {": "}
-      {renderType(p.type)}
+      {renderType(p.type, resolve)}
     </>
   );
 }
 
 /** Render a full signature line, e.g. `<T>(param: Type): ReturnType` */
 export function SignatureLine({ sig, name }: { sig: SignatureViewModel; name: string }) {
+  const resolve = useResolveLink();
   return (
     <div class="ar-signature-line">
       <span class="ar-sig-name">{name}</span>
@@ -263,7 +278,7 @@ export function SignatureLine({ sig, name }: { sig: SignatureViewModel; name: st
           {sig.typeParameters.map((tp, i) => (
             <Fragment key={i}>
               {i > 0 && ", "}
-              {renderTypeParam(tp)}
+              {renderTypeParam(tp, resolve)}
             </Fragment>
           ))}
           {">"}
@@ -273,12 +288,12 @@ export function SignatureLine({ sig, name }: { sig: SignatureViewModel; name: st
       {sig.parameters.map((p, i) => (
         <Fragment key={i}>
           {i > 0 && ", "}
-          {renderParam(p)}
+          {renderParam(p, resolve)}
         </Fragment>
       ))}
       {")"}
       {": "}
-      {renderType(sig.returnType)}
+      {renderType(sig.returnType, resolve)}
     </div>
   );
 }

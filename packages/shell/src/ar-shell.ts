@@ -13,6 +13,7 @@ export interface ArMeta {
   breadcrumbs: Array<{ label: string; url: string }>;
   navTree: NavNode[];
   outline: OutlineSection[];
+  baseHref: string;
 }
 
 export interface NavNode {
@@ -87,6 +88,7 @@ export class ArShell extends LitElement {
       <ar-header
         .pkgName=${meta?.package ?? ""}
         .pkgVersion=${meta?.version ?? ""}
+        .baseHref=${meta?.baseHref ?? ""}
         .hasSidebar=${true}
         .sidebarOpen=${this.sidebarOpen}
         @toggle-sidebar=${this.toggleSidebar}
@@ -96,7 +98,13 @@ export class ArShell extends LitElement {
         class=${`ar-sidebar ${this.sidebarOpen ? "ar-sidebar--visible" : "ar-sidebar--hidden"}`}
         aria-label="Package navigation"
       >
-        ${meta ? html`<ar-nav .nodes=${meta.navTree} .currentUrl=${currentUrl}></ar-nav>` : nothing}
+        ${meta
+          ? html`<ar-nav
+              .nodes=${meta.navTree}
+              .currentUrl=${currentUrl}
+              .baseHref=${meta.baseHref}
+            ></ar-nav>`
+          : nothing}
       </nav>
 
       ${hasOutline

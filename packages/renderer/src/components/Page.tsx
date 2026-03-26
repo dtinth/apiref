@@ -10,21 +10,7 @@ import type {
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
-
-/**
- * Compute the base href for a page based on its URL depth.
- * This allows all relative links to work correctly regardless of page location.
- *
- * @example
- * computeBaseHref("index.html") // => "./"
- * computeBaseHref("index/Button.html") // => "../"
- * computeBaseHref("integrations/playwright/index.html") // => "../../"
- */
-function computeBaseHref(pageUrl: string): string {
-  const depth = pageUrl.split("/").length - 1;
-  if (depth === 0) return "./";
-  return Array(depth).fill("..").join("/") + "/";
-}
+import { PageContext, useResolveLink } from "./PageContext.tsx";
 
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
@@ -76,7 +62,9 @@ function buildOutline(sections: Section[]): OutlineSection[] {
 }
 
 export function Page({ site, page, options }: PageProps) {
-  const baseHref = computeBaseHref(page.url);
+  const depth = page.url.split("/").length - 1;
+  const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
+
   const meta = {
     package: site.package.name,
     version: site.package.version,
@@ -85,12 +73,12 @@ export function Page({ site, page, options }: PageProps) {
     breadcrumbs: page.breadcrumbs,
     navTree: site.navTree,
     outline: buildOutline(page.sections),
+    baseHref,
   };
 
   return (
     <html lang="en">
       <head>
-        <base href={baseHref} />
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>
@@ -118,7 +106,9 @@ export function Page({ site, page, options }: PageProps) {
       <body>
         <ar-shell>
           <main class="ar-content">
-            <PageContent page={page} />
+            <PageContext.Provider value={page.url}>
+              <PageContent page={page} />
+            </PageContext.Provider>
           </main>
         </ar-shell>
       </body>
@@ -257,13 +247,14 @@ function FlagsView({ flags }: { flags: MemberFlags }) {
 }
 
 function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
+  const resolve = useResolveLink();
   // Extract declaration-title from first section
   const titleBlock = card.sections[0]?.body[0];
   const titleFromCard = titleBlock?.kind === "declaration-title" ? titleBlock : null;
 
   const header = titleFromCard ? (
     card.url ? (
-      <a href={card.url} class="ar-card-header">
+      <a href={resolve(card.url)} class="ar-card-header">
         <DeclarationTitle
           kind={titleFromCard.declarationKind}
           title={titleFromCard.name}

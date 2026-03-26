@@ -9,6 +9,7 @@ export class ArHeader extends LitElement {
 
   @property() pkgName = "";
   @property() pkgVersion = "";
+  @property() baseHref = "";
   @property({ type: Boolean }) hasSidebar = false;
   @property({ type: Boolean }) sidebarOpen = false;
 
@@ -40,7 +41,7 @@ export class ArHeader extends LitElement {
               </svg>
             </button>`
           : ""}
-        <a href="index.html" class="ar-header-logo">
+        <a href=${this.baseHref + "index.html"} class="ar-header-logo">
           <span class="text-ar-muted">apiref</span>
           ${this.pkgName
             ? html`<span class="text-ar-muted">/</span

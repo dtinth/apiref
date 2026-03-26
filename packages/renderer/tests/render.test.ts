@@ -111,7 +111,7 @@ describe("render visual-storyboard", () => {
   test("cross-referenced types render as links", () => {
     // StoryboardWriter constructor takes StoryboardWriterOptions — should be a link
     const html = pages.get("index/StoryboardWriter.html")!;
-    expect(html).toContain('href="index/StoryboardWriterOptions.html"');
+    expect(html).toContain('href="StoryboardWriterOptions.html"');
   });
 
   test("ar-meta has correct title on class page", () => {
