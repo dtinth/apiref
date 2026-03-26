@@ -158,14 +158,16 @@ function collectDeclarationPages(
   const page = buildDeclarationPage(decl, breadcrumbs, ctx);
   if (page) {
     pages.push(page);
-    navChildren.push(declarationNavNode(decl, idToUrl));
+    const navNode = declarationNavNode(decl, idToUrl);
+    navChildren.push(navNode);
 
-    // Recursively process nested PAGE_KINDS (e.g., nested namespaces)
+    // Recursively process nested PAGE_KINDS and ANCHOR_KINDS
     const declUrl = idToUrl.get(decl.id);
     if (declUrl && PAGE_KINDS.has(decl.kind)) {
       const nestedNavChildren: NavNode[] = [];
       for (const child of decl.children ?? []) {
         if (PAGE_KINDS.has(child.kind)) {
+          // Nested namespace/class/interface - recurse
           collectDeclarationPages(
             child,
             breadcrumbs.concat({ label: decl.name, url: declUrl }),
@@ -175,6 +177,7 @@ function collectDeclarationPages(
             idToUrl,
           );
         } else if (ANCHOR_KINDS.has(child.kind)) {
+          // Methods, properties, constructors, etc.
           const childPage = buildDeclarationPage(
             child,
             breadcrumbs.concat({ label: decl.name, url: declUrl }),
@@ -187,11 +190,8 @@ function collectDeclarationPages(
         }
       }
 
-      // Add nested items to the page's nav tree representation
-      if (nestedNavChildren.length > 0 && page) {
-        // Note: This extends the existing page structure; nested navs are
-        // handled at render time via the outline
-      }
+      // Populate the namespace's nav node with its children
+      navNode.children = nestedNavChildren.sort(byLabel);
     }
   }
 }

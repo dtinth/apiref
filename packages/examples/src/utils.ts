@@ -20,7 +20,7 @@
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -46,7 +46,7 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
-  interval: number
+  interval: number,
 ): (...args: Parameters<T>) => void {
   let lastCall = 0;
 
@@ -80,7 +80,7 @@ export function throttle<T extends (...args: any[]) => any>(
 export async function retry<T>(
   operation: () => Promise<T>,
   maxAttempts: number = 3,
-  backoffMs: number = 100
+  backoffMs: number = 100,
 ): Promise<T> {
   let lastError: Error | undefined;
 
@@ -90,9 +90,7 @@ export async function retry<T>(
     } catch (error) {
       lastError = error as Error;
       if (attempt < maxAttempts - 1) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, backoffMs * Math.pow(2, attempt))
-        );
+        await new Promise((resolve) => setTimeout(resolve, backoffMs * Math.pow(2, attempt)));
       }
     }
   }
@@ -113,10 +111,7 @@ export async function retry<T>(
  * const config = deepMerge(defaults, userConfig);
  * ```
  */
-export function deepMerge<T extends Record<string, any>>(
-  target: T,
-  source: Partial<T>
-): T {
+export function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
   const result = { ...target };
 
   for (const key in source) {
@@ -211,15 +206,12 @@ export function omit<T extends Record<string, any>, K extends keyof T>(
  */
 export function groupBy<T, K extends string | number>(
   items: T[],
-  key: keyof T | ((item: T) => K)
+  key: keyof T | ((item: T) => K),
 ): Record<K, T[]> {
   const result: Record<K, T[]> = {} as any;
 
   for (const item of items) {
-    const groupKey =
-      typeof key === "function"
-        ? key(item)
-        : (item[key as keyof T] as unknown as K);
+    const groupKey = typeof key === "function" ? key(item) : (item[key as keyof T] as unknown as K);
 
     if (!result[groupKey]) {
       result[groupKey] = [];
@@ -246,10 +238,7 @@ export function groupBy<T, K extends string | number>(
  * );
  * ```
  */
-export async function pipe<T>(
-  initial: T,
-  operations: Array<(value: T) => Promise<T>>
-): Promise<T> {
+export async function pipe<T>(initial: T, operations: Array<(value: T) => Promise<T>>): Promise<T> {
   let result = initial;
   for (const operation of operations) {
     result = await operation(result);
@@ -274,7 +263,7 @@ export async function pipe<T>(
  */
 export function memoize<T extends (...args: any[]) => any>(
   fn: T,
-  keyResolver: (...args: Parameters<T>) => string = (...args) => JSON.stringify(args)
+  keyResolver: (...args: Parameters<T>) => string = (...args) => JSON.stringify(args),
 ): T {
   const cache = new Map<string, ReturnType<T>>();
 
@@ -304,9 +293,7 @@ export function memoize<T extends (...args: any[]) => any>(
  * process("  hello  ") // "HELLO"
  * ```
  */
-export function compose(
-  ...fns: Array<(x: any) => any>
-): (x: any) => any {
+export function compose(...fns: Array<(x: any) => any>): (x: any) => any {
   return (input: any) => {
     return fns.reduceRight((acc, fn) => fn(acc), input);
   };
@@ -325,10 +312,7 @@ export function compose(
  * // TypeScript will narrow user to non-null here
  * ```
  */
-export function assert(
-  condition: any,
-  message: string = "Assertion failed"
-): asserts condition {
+export function assert(condition: any, message: string = "Assertion failed"): asserts condition {
   if (!condition) {
     throw new Error(message);
   }

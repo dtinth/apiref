@@ -247,7 +247,7 @@ export namespace CachingPlugin {
       set(key: string, value: T): void {
         if (this.entries.size >= this.maxSize) {
           const oldestKey = Array.from(this.entries.entries()).sort(
-            ([, a], [, b]) => a.createdAt - b.createdAt
+            ([, a], [, b]) => a.createdAt - b.createdAt,
           )[0][0];
           this.entries.delete(oldestKey);
         }

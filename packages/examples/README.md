@@ -33,6 +33,7 @@ vp run render
 ### Core (`index.ts`)
 
 Generic utilities and foundational types:
+
 - `Cache<K, V>` — Multi-signature generic cache with fallback factory
 - `DataProcessor<T, R>` — Generic data processor with sync/async overloads
 - `Builder<T>` — Fluent builder pattern
@@ -42,6 +43,7 @@ Generic utilities and foundational types:
 ### Data (`data.ts`)
 
 Data access and repository patterns:
+
 - `Repository<T, ID>` — Abstract repository with CRUD operations
 - `QueryBuilder<T>` — Fluent database query builder with multiple `orderBy` signatures
 - `EventEmitter<Events>` — Generic event system
@@ -50,6 +52,7 @@ Data access and repository patterns:
 ### Utils (`utils.ts`)
 
 Functional utilities:
+
 - `debounce<T>()` — Function debouncing
 - `throttle<T>()` — Call throttling
 - `retry<T>()` — Exponential backoff retry
@@ -90,9 +93,7 @@ function createTuple<T extends readonly any[]>(items: T): T { ... }
 Result types, unions, and conditional types:
 
 ```typescript
-type Result<T, E = string> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
+type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 ```
 
 ### Async/Await and Promises

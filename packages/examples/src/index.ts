@@ -179,15 +179,9 @@ export class DataProcessor<T, R> {
    * @param options - Processing options with batch flag
    * @returns Promise resolving to array of results
    */
-  process(
-    items: T[],
-    options: ProcessOptions & { batch: true }
-  ): Promise<R[]>;
+  process(items: T[], options: ProcessOptions & { batch: true }): Promise<R[]>;
 
-  process(
-    data: T | T[],
-    options?: ProcessOptions & { batch?: boolean }
-  ): any {
+  process(data: T | T[], options?: ProcessOptions & { batch?: boolean }): any {
     if (options && (options.timeout !== undefined || options.cache)) {
       if (Array.isArray(data)) {
         return Promise.resolve(data.map(() => ({}) as R));
@@ -270,7 +264,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     readonly category: ErrorCategory,
-    readonly code?: string
+    readonly code?: string,
   ) {
     super(message);
     this.name = "ApiError";
@@ -309,9 +303,7 @@ export function parse(value: string | number | { value: number }): number {
  */
 export async function parseAsync(value: string): Promise<Result<number>>;
 export async function parseAsync(value: number): Promise<Result<number>>;
-export async function parseAsync(
-  value: string | number
-): Promise<Result<number>> {
+export async function parseAsync(value: string | number): Promise<Result<number>> {
   try {
     const num = parse(value as any);
     return { ok: true, value: num };

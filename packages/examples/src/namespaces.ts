@@ -168,7 +168,7 @@ export namespace UI {
          */
         export function validateObject(
           obj: Record<string, any>,
-          schema: ObjectSchema
+          schema: ObjectSchema,
         ): Record<string, string[]> {
           const errors: Record<string, string[]> = {};
 
@@ -181,21 +181,11 @@ export namespace UI {
             }
 
             if (typeof value === "string") {
-              if (
-                fieldSchema.minLength !== undefined &&
-                value.length < fieldSchema.minLength
-              ) {
-                fieldErrors.push(
-                  `Must be at least ${fieldSchema.minLength} characters`
-                );
+              if (fieldSchema.minLength !== undefined && value.length < fieldSchema.minLength) {
+                fieldErrors.push(`Must be at least ${fieldSchema.minLength} characters`);
               }
-              if (
-                fieldSchema.maxLength !== undefined &&
-                value.length > fieldSchema.maxLength
-              ) {
-                fieldErrors.push(
-                  `Must be no more than ${fieldSchema.maxLength} characters`
-                );
+              if (fieldSchema.maxLength !== undefined && value.length > fieldSchema.maxLength) {
+                fieldErrors.push(`Must be no more than ${fieldSchema.maxLength} characters`);
               }
             }
 
@@ -307,20 +297,14 @@ export namespace API {
          * Execute request interceptors.
          */
         executeRequest(options: Options): Options {
-          return this.requestInterceptors.reduce(
-            (opts, fn) => fn(opts),
-            options
-          );
+          return this.requestInterceptors.reduce((opts, fn) => fn(opts), options);
         }
 
         /**
          * Execute response interceptors.
          */
         executeResponse(response: any): any {
-          return this.responseInterceptors.reduce(
-            (resp, fn) => fn(resp),
-            response
-          );
+          return this.responseInterceptors.reduce((resp, fn) => fn(resp), response);
         }
       }
     }

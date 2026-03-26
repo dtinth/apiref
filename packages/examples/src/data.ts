@@ -189,15 +189,9 @@ export class QueryBuilder<T> {
    * @param direction - Sort direction
    * @returns This builder for chaining
    */
-  orderBy(
-    fields: (keyof T)[],
-    direction?: "asc" | "desc"
-  ): this;
+  orderBy(fields: (keyof T)[], direction?: "asc" | "desc"): this;
 
-  orderBy(
-    field: keyof T | (keyof T)[],
-    direction: "asc" | "desc" = "asc"
-  ): this {
+  orderBy(field: keyof T | (keyof T)[], direction: "asc" | "desc" = "asc"): this {
     this.filters.orderBy = field;
     this.filters.order = direction;
     return this;
@@ -262,10 +256,7 @@ export class EventEmitter<Events extends Record<string, any>> {
    * @param listener - Callback function
    * @returns Unsubscribe function
    */
-  on<K extends keyof Events>(
-    event: K,
-    listener: (payload: Events[K]) => void
-  ): () => void {
+  on<K extends keyof Events>(event: K, listener: (payload: Events[K]) => void): () => void {
     if (!this.listeners.has(String(event))) {
       this.listeners.set(String(event), new Set());
     }
@@ -281,10 +272,7 @@ export class EventEmitter<Events extends Record<string, any>> {
    * @param listener - Callback function
    * @returns Unsubscribe function
    */
-  once<K extends keyof Events>(
-    event: K,
-    listener: (payload: Events[K]) => void
-  ): () => void {
+  once<K extends keyof Events>(event: K, listener: (payload: Events[K]) => void): () => void {
     const wrapper = (payload: Events[K]) => {
       listener(payload);
       this.off(event, wrapper);
@@ -298,10 +286,7 @@ export class EventEmitter<Events extends Record<string, any>> {
    * @param event - Event name
    * @param listener - Callback to remove
    */
-  off<K extends keyof Events>(
-    event: K,
-    listener: (payload: Events[K]) => void
-  ): void {
+  off<K extends keyof Events>(event: K, listener: (payload: Events[K]) => void): void {
     this.listeners.get(String(event))?.delete(listener);
   }
 
