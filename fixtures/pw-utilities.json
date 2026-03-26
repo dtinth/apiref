@@ -1,0 +1,403 @@
+{
+	"schemaVersion": "2.0",
+	"id": 0,
+	"name": "pw-utilities",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 1,
+			"name": "LocatorLike",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 2,
+					"name": "evaluate",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "locator-like.ts",
+							"line": 2,
+							"character": 2,
+							"url": "https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/locator-like.ts#L2"
+						}
+					],
+					"signatures": [
+						{
+							"id": 3,
+							"name": "evaluate",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "locator-like.ts",
+									"line": 2,
+									"character": 2,
+									"url": "https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/locator-like.ts#L2"
+								}
+							],
+							"typeParameters": [
+								{
+									"id": 4,
+									"name": "R",
+									"variant": "typeParam",
+									"kind": 131072,
+									"flags": {}
+								}
+							],
+							"parameters": [
+								{
+									"id": 5,
+									"name": "pageFunction",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 6,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"signatures": [
+												{
+													"id": 7,
+													"name": "__type",
+													"variant": "signature",
+													"kind": 4096,
+													"flags": {},
+													"parameters": [
+														{
+															"id": 8,
+															"name": "element",
+															"variant": "param",
+															"kind": 32768,
+															"flags": {},
+															"type": {
+																"type": "reference",
+																"target": {
+																	"packageName": "typescript",
+																	"packagePath": "lib/lib.dom.d.ts",
+																	"qualifiedName": "Element"
+																},
+																"name": "Element",
+																"package": "typescript"
+															}
+														}
+													],
+													"type": {
+														"type": "union",
+														"types": [
+															{
+																"type": "reference",
+																"target": 4,
+																"name": "R",
+																"package": "pw-utilities",
+																"refersToTypeParameter": true
+															},
+															{
+																"type": "reference",
+																"target": {
+																	"packageName": "typescript",
+																	"packagePath": "lib/lib.es5.d.ts",
+																	"qualifiedName": "Promise"
+																},
+																"typeArguments": [
+																	{
+																		"type": "reference",
+																		"target": 4,
+																		"name": "R",
+																		"package": "pw-utilities",
+																		"refersToTypeParameter": true
+																	}
+																],
+																"name": "Promise",
+																"package": "typescript"
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 4,
+										"name": "R",
+										"package": "pw-utilities",
+										"refersToTypeParameter": true
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						2
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "locator-like.ts",
+					"line": 1,
+					"character": 17,
+					"url": "https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/locator-like.ts#L1"
+				}
+			]
+		},
+		{
+			"id": 9,
+			"name": "stabilize",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "stabilize.ts",
+					"line": 10,
+					"character": 22,
+					"url": "https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/stabilize.ts#L10"
+				}
+			],
+			"signatures": [
+				{
+					"id": 10,
+					"name": "stabilize",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Scrolls the element into view and waits for its position to stop changing\nacross animation frames before taking a screenshot.\n\nInjects a temporary red outline overlay so the element is visible in the\nscreenshot even before the stabilization loop completes."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "stabilize.ts",
+							"line": 10,
+							"character": 22,
+							"url": "https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/stabilize.ts#L10"
+						}
+					],
+					"parameters": [
+						{
+							"id": 11,
+							"name": "locator",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Pick"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 1,
+										"name": "LocatorLike",
+										"package": "pw-utilities"
+									},
+									{
+										"type": "literal",
+										"value": "evaluate"
+									}
+								],
+								"name": "Pick",
+								"package": "typescript"
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Promise"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "void"
+							}
+						],
+						"name": "Promise",
+						"package": "typescript"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Interfaces",
+			"children": [
+				1
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				9
+			]
+		}
+	],
+	"packageName": "pw-utilities",
+	"readme": [
+		{
+			"kind": "text",
+			"text": "# pw-utilities\n\nPlaywright utilities for stabilizing elements before taking screenshots.\n\n## Installation\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm install pw-utilities\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n## API\n\n### "
+		},
+		{
+			"kind": "code",
+			"text": "`stabilize(locator)`"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nScrolls the element into view and waits for its position to stop changing across animation frames before taking a screenshot. Injects a temporary red outline overlay so the element is visible in the screenshot even before the stabilization loop completes.\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```ts\nimport { stabilize } from \"pw-utilities\";\n\nconst locator = page.locator(\"#my-element\");\nawait stabilize(locator);\nawait locator.screenshot();\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n### "
+		},
+		{
+			"kind": "code",
+			"text": "`LocatorLike`"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nA duck-typed interface compatible with Playwright's "
+		},
+		{
+			"kind": "code",
+			"text": "`Locator`"
+		},
+		{
+			"kind": "text",
+			"text": ". This library does not depend on "
+		},
+		{
+			"kind": "code",
+			"text": "`@playwright/test`"
+		},
+		{
+			"kind": "text",
+			"text": " at runtime — it uses structural typing for compatibility."
+		}
+	],
+	"symbolIdMap": {
+		"0": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"1": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "LocatorLike"
+		},
+		"2": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "LocatorLike.evaluate"
+		},
+		"3": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "LocatorLike.evaluate"
+		},
+		"4": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "R"
+		},
+		"5": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "pageFunction"
+		},
+		"6": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "__type"
+		},
+		"7": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "__type"
+		},
+		"8": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/locator-like.ts",
+			"qualifiedName": "element"
+		},
+		"9": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/stabilize.ts",
+			"qualifiedName": "stabilize"
+		},
+		"10": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/stabilize.ts",
+			"qualifiedName": "stabilize"
+		},
+		"11": {
+			"packageName": "pw-utilities",
+			"packagePath": "src/stabilize.ts",
+			"qualifiedName": "locator"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "src/index.ts",
+			"2": "README.md",
+			"3": ""
+		},
+		"reflections": {
+			"1": 0,
+			"2": 0,
+			"3": 0
+		}
+	}
+}
