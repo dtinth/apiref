@@ -1,5 +1,6 @@
 import { Fragment } from "preact";
 import type {
+  MemberViewModel,
   TypeViewModel,
   SignatureViewModel,
   TypeParameterViewModel,
@@ -111,17 +112,10 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
         return (
           <>
             {"{ "}
-            {type.members.map((m, i) => (
+            {type.members.map((member, i) => (
               <Fragment key={i}>
                 {i > 0 && "; "}
-                {m.name}
-                {m.flags.optional ? "?" : ""}
-                {m.type && (
-                  <>
-                    {": "}
-                    {renderType(m.type)}
-                  </>
-                )}
+                {renderReflectionMember(member)}
               </Fragment>
             ))}
             {" }"}
@@ -165,6 +159,31 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
     case "unknown":
       return <span class="ar-type-unknown">{type.raw}</span>;
   }
+}
+
+function renderReflectionMember(member: MemberViewModel) {
+  const typeSubsection = member.subsections.find((section) => section.kind === "type-declaration");
+  const signatureSubsection = member.subsections.find((section) => section.kind === "signatures");
+
+  return (
+    <>
+      {member.name}
+      {member.flags.optional ? "?" : ""}
+      {typeSubsection?.kind === "type-declaration" ? (
+        <>
+          {": "}
+          {renderType(typeSubsection.type)}
+        </>
+      ) : signatureSubsection?.kind === "signatures" && signatureSubsection.signatures[0] ? (
+        <>
+          {": ("}
+          {renderSignatureParams(signatureSubsection.signatures[0])}
+          {") => "}
+          {renderType(signatureSubsection.signatures[0].returnType)}
+        </>
+      ) : null}
+    </>
+  );
 }
 
 function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {
