@@ -11,12 +11,16 @@
     "type": "git",
     "url": "git+https://github.com/dtinth/apiref.git"
   },
+  "bin": {
+    "apiref-render": "./dist/cli.mjs"
+  },
   "files": [
     "dist"
   ],
   "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
+    "./cli": "./dist/cli.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {
