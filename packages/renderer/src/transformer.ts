@@ -16,12 +16,12 @@ import type {
   DeclarationKind,
   DocNode,
   MemberFlags,
-  MemberViewModel,
   NavNode,
   PageViewModel,
   ParameterDocViewModel,
   ParameterViewModel,
   Section,
+  SectionBlock,
   SignatureViewModel,
   SiteViewModel,
   TypeParameterViewModel,
@@ -219,12 +219,11 @@ function buildPackageIndexPage(
 
   if (project.readme && project.readme.length > 0) {
     sections.push({
-      kind: "summary",
-      doc: transformCommentParts(project.readme, ctx),
+      body: [{ kind: "doc", doc: transformCommentParts(project.readme, ctx) }],
     });
   } else if (project.comment) {
     const doc = transformComment(project.comment, ctx);
-    if (doc.length > 0) sections.push({ kind: "summary", doc });
+    if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
   }
 
   if (isSingleEntry) {
@@ -236,17 +235,15 @@ function buildPackageIndexPage(
         .map((id) => idToDecl.get(id))
         .filter((d): d is TDDeclaration => d !== undefined);
       sections.push({
-        kind: "members",
-        label: group.title,
-        members: members.map((d) => declarationAsMember(d, ctx)),
+        title: group.title,
+        body: members.map((d) => declarationAsCard(d, ctx)),
       });
     }
   } else {
     // List modules
     sections.push({
-      kind: "members",
-      label: "Modules",
-      members: topLevel.map((d) => declarationAsMember(d, ctx)),
+      title: "Modules",
+      body: topLevel.map((d) => declarationAsCard(d, ctx)),
     });
   }
 
@@ -269,7 +266,7 @@ function buildModulePage(
 
   if (mod.comment) {
     const doc = transformComment(mod.comment, ctx);
-    if (doc.length > 0) sections.push({ kind: "summary", doc });
+    if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
   }
 
   const children = mod.children ?? [];
@@ -281,9 +278,8 @@ function buildModulePage(
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
-      kind: "members",
-      label: group.title,
-      members: members.map((d) => declarationAsMember(d, ctx)),
+      title: group.title,
+      body: members.map((d) => declarationAsCard(d, ctx)),
     });
   }
 
@@ -309,6 +305,11 @@ function buildDeclarationPage(
 
   const sections: Section[] = [];
 
+  // Prepend declaration-title section
+  sections.push({
+    body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }],
+  });
+
   // Summary from comment (prefer signature comment for functions)
   const commentSource =
     decl.kind === Kind.Function || decl.kind === Kind.Variable
@@ -317,7 +318,7 @@ function buildDeclarationPage(
 
   if (commentSource) {
     const doc = transformComment(commentSource, ctx);
-    if (doc.length > 0) sections.push({ kind: "summary", doc });
+    if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
   }
 
   switch (decl.kind) {
@@ -368,21 +369,10 @@ function buildClassSections(decl: TDDeclaration, ctx: TransformContext): Section
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
 
-    if (group.title === "Constructors") {
-      const ctor = members[0];
-      if (ctor?.signatures) {
-        sections.push({
-          kind: "constructor",
-          signatures: ctor.signatures.map((s) => transformSignature(s, ctx)),
-        });
-      }
-    } else {
-      sections.push({
-        kind: "members",
-        label: group.title,
-        members: members.map((d) => declarationAsMember(d, ctx)),
-      });
-    }
+    sections.push({
+      title: group.title === "Constructors" ? "Constructor" : group.title,
+      body: members.map((d) => declarationAsCard(d, ctx)),
+    });
   }
   return sections;
 }
@@ -398,9 +388,8 @@ function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Sectio
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
-      kind: "members",
-      label: group.title,
-      members: members.map((d) => declarationAsMember(d, ctx)),
+      title: group.title,
+      body: members.map((d) => declarationAsCard(d, ctx)),
     });
   }
   return sections;
@@ -413,13 +402,13 @@ function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Sect
   const transformedSigs = sigs.map((s) => transformSignature(s, ctx));
   const sections: Section[] = [
     {
-      kind: "signatures",
-      signatures: transformedSigs,
+      title: "Signatures",
+      body: [{ kind: "signatures", signatures: transformedSigs }],
     },
   ];
 
   for (const parameters of parameterDocsForSignatures(transformedSigs)) {
-    sections.push({ kind: "parameters", parameters });
+    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters }] });
   }
 
   return sections;
@@ -427,7 +416,7 @@ function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Sect
 
 function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
   if (!decl.type) return [];
-  return [{ kind: "type-declaration", type: transformType(decl.type, ctx) }];
+  return [{ body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }] }];
 }
 
 function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
@@ -435,23 +424,25 @@ function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[
   if (children.length === 0) return [];
   return [
     {
-      kind: "members",
-      label: "Members",
-      members: children.map((d) => declarationAsMember(d, ctx)),
+      title: "Members",
+      body: children.map((d) => declarationAsCard(d, ctx)),
     },
   ];
 }
 
 function buildVariableSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
   if (!decl.type) return [];
-  return [{ kind: "type-declaration", type: transformType(decl.type, ctx) }];
+  return [{ body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }] }];
 }
 
 // ---------------------------------------------------------------------------
 // Member / signature helpers
 // ---------------------------------------------------------------------------
 
-function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): MemberViewModel {
+function declarationAsCard(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): SectionBlock & { kind: "card" } {
   const anchor = decl.kind === Kind.Constructor ? "constructor" : decl.name;
   const flags = transformFlags(decl.flags);
 
@@ -463,16 +454,13 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
   if (allTags.includes("@deprecated")) flags.deprecated = true;
 
   const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-
   const type = decl.type ? transformType(decl.type, ctx) : null;
-
   const commentSource = decl.signatures?.[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
-
   const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
   const kind = declarationKindForMember(decl, signatures);
-  const title = decl.name;
-  const subsections = buildMemberSubsections({
+
+  const cardSections = buildCardSections({
     name: decl.name,
     flags,
     signatures,
@@ -481,7 +469,16 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
     url,
   });
 
-  return { anchor, name: decl.name, title, kind, flags, url, subsections };
+  return {
+    kind: "card",
+    anchor,
+    url,
+    flags,
+    sections: [
+      { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
+      ...cardSections,
+    ],
+  };
 }
 
 function declarationKindForMember(
@@ -507,7 +504,7 @@ function inferMemberKind(
   return "property";
 }
 
-function buildMemberSubsections(input: {
+function buildCardSections(input: {
   name: string;
   flags: MemberFlags;
   signatures: SignatureViewModel[];
@@ -517,30 +514,47 @@ function buildMemberSubsections(input: {
 }): Section[] {
   if (input.url) {
     const summary = stripLinksFromDoc(input.doc);
-    return summary.length > 0 ? [{ kind: "summary", doc: summary }] : [];
+    return summary.length > 0 ? [{ body: [{ kind: "doc", doc: summary }] }] : [];
   }
 
-  const subsections: Section[] = [];
+  const sections: Section[] = [];
+
+  // Flags (if renderable)
   if (hasRenderableMemberFlags(input.flags)) {
-    subsections.push({ kind: "flags", flags: input.flags });
+    sections.push({ body: [{ kind: "flags", flags: input.flags }] });
   }
+
+  // Signatures or type declaration
   if (input.signatures.length > 0) {
-    subsections.push({ kind: "signatures", signatures: input.signatures });
+    sections.push({
+      title: "Signature",
+      body: [{ kind: "signatures", signatures: input.signatures }],
+    });
   } else if (input.type) {
-    subsections.push({
-      kind: "type-declaration",
-      name: input.name,
-      type: input.type,
-      optional: input.flags.optional ?? false,
+    sections.push({
+      title: "Type",
+      body: [
+        {
+          kind: "type-declaration",
+          name: input.name,
+          type: input.type,
+          optional: input.flags.optional ?? false,
+        },
+      ],
     });
   }
+
+  // Doc
   if (input.doc.length > 0) {
-    subsections.push({ kind: "summary", doc: input.doc });
+    sections.push({ body: [{ kind: "doc", doc: input.doc }] });
   }
+
+  // Parameters
   for (const parameters of parameterDocsForSignatures(input.signatures)) {
-    subsections.push({ kind: "parameters", parameters });
+    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters }] });
   }
-  return subsections;
+
+  return sections;
 }
 
 function hasRenderableMemberFlags(flags: MemberFlags): boolean {
@@ -679,7 +693,7 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
     case "reflection": {
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-      const members = (decl.children ?? []).map((c) => declarationAsMember(c, ctx));
+      const members = (decl.children ?? []).map((c) => declarationAsCard(c, ctx));
       return { kind: "reflection", signatures: sigs, members };
     }
 

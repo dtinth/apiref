@@ -77,46 +77,37 @@ export interface Breadcrumb {
 }
 
 /**
- * A content section within a page or member card.
+ * A content block within a section.
  *
- * Different section kinds render different content:
- * - `summary`: Documentation text/description
- * - `constructor`: Class constructor(s) with signatures (page-level only)
+ * Blocks are the atomic units of content rendering. Types include:
+ * - `declaration-title`: Member or page title with kind badge
+ * - `doc`: Documentation text
  * - `signatures`: Callable signatures (functions, methods)
- * - `members`: Listed members (properties, methods, etc.) (page-level only)
- * - `type-declaration`: Type alias or variable type definition, or property type
- * - `flags`: Modifier badges (deprecated, static, abstract, readonly) (member-level)
- * - `parameters`: Parameter documentation list (member-level)
+ * - `card`: A member/item rendered as a card (methods, properties, etc.)
+ * - `type-declaration`: Type alias or variable type definition
+ * - `flags`: Modifier badges (deprecated, static, abstract, readonly)
+ * - `parameters`: Parameter documentation list
  */
-export type Section =
-  | { kind: "summary"; doc: DocNode[] }
-  | { kind: "constructor"; signatures: SignatureViewModel[] }
+export type SectionBlock =
+  | { kind: "declaration-title"; name: string; declarationKind: DeclarationKind }
+  | { kind: "doc"; doc: DocNode[] }
   | { kind: "signatures"; signatures: SignatureViewModel[] }
-  | { kind: "members"; label: string; members: MemberViewModel[] }
+  | { kind: "card"; anchor: string; url?: string; flags: MemberFlags; sections: Section[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
   | { kind: "flags"; flags: MemberFlags }
   | { kind: "parameters"; parameters: ParameterDocViewModel[] };
 
 /**
- * A member (property, method, accessor, etc.) of a class or interface.
+ * A section with optional title and flat list of content blocks.
  *
- * Stores only metadata plus render-oriented subsections.
+ * Sections appear at both page level and inside cards. Both use the same structure
+ * to support recursive composition.
  */
-export interface MemberViewModel {
-  /** URL anchor for this member (used in table of contents and links). */
-  anchor: string;
-  /** Member name. */
-  name: string;
-  /** Display title shown in the card header. */
-  title: string;
-  /** Kind of member (method, property, class, interface, function, etc.). */
-  kind: DeclarationKind;
-  /** Optional modifiers and flags. */
-  flags: MemberFlags;
-  /** URL to this member's page, if it has its own page. */
-  url?: string;
-  /** Render-ready subsections shown inside the member card. */
-  subsections: Section[];
+export interface Section {
+  /** Optional section title (e.g., "Methods", "Parameters", "Signature"). */
+  title?: string;
+  /** Content blocks in this section. */
+  body: SectionBlock[];
 }
 
 /** Parameter documentation entry pre-shaped for rendering in a member subsection. */
@@ -226,7 +217,7 @@ export type TypeViewModel =
   | { kind: "array"; elementType: TypeViewModel }
   | { kind: "tuple"; elements: TypeViewModel[] }
   | { kind: "intrinsic"; name: string }
-  | { kind: "reflection"; signatures: SignatureViewModel[]; members: MemberViewModel[] }
+  | { kind: "reflection"; signatures: SignatureViewModel[]; members: SectionBlock[] }
   | { kind: "type-operator"; operator: string; target: TypeViewModel }
   | { kind: "indexed-access"; objectType: TypeViewModel; indexType: TypeViewModel }
   | {

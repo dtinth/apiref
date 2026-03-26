@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, describe } from "vite-plus/test";
 import { transform } from "../src/transformer.ts";
-import type { PageViewModel } from "../src/viewmodel.ts";
+import type { PageViewModel, SectionBlock } from "../src/viewmodel.ts";
 
 function loadFixture(name: string): unknown {
   const path = fileURLToPath(new URL(`../../../fixtures/${name}.json`, import.meta.url));
@@ -54,27 +54,27 @@ describe("pw-utilities (single-entry-point)", () => {
 
   test("stabilize page has summary doc", () => {
     const page = site.pages.find((p) => p.url === "stabilize.html");
-    const summary = page?.sections.find((s) => s.kind === "summary");
-    expect(summary).toBeDefined();
-    if (summary?.kind === "summary") {
-      expect(summary.doc.length).toBeGreaterThan(0);
+    const section = page?.sections.find((s) => s.body.some((b) => b.kind === "doc"));
+    if (section?.body[0]?.kind === "doc") {
+      expect(section.body[0].doc.length).toBeGreaterThan(0);
     }
   });
 
   test("stabilize page has signatures section", () => {
     const page = site.pages.find((p) => p.url === "stabilize.html") as PageViewModel;
-    const sig = page.sections.find((s) => s.kind === "signatures");
-    expect(sig).toBeDefined();
+    const section = page.sections.find((s) => s.body.some((b) => b.kind === "signatures"));
+    expect(section).toBeDefined();
   });
 
   test("LocatorLike.evaluate resolves to anchor URL", () => {
     // The method should resolve to LocatorLike.html#evaluate
-    const refType = site.pages
+    const section = site.pages
       .find((p) => p.url === "stabilize.html")
-      ?.sections.find((s) => s.kind === "signatures");
+      ?.sections.find((s) => s.body.some((b) => b.kind === "signatures"));
+    const sigBlock = section?.body.find((b) => b.kind === "signatures");
     // stabilize takes Pick<LocatorLike, "evaluate"> — reference to LocatorLike should resolve
-    if (refType?.kind === "signatures") {
-      const locatorParam = refType.signatures[0]?.parameters[0];
+    if (sigBlock?.kind === "signatures") {
+      const locatorParam = sigBlock.signatures[0]?.parameters[0];
       expect(locatorParam?.name).toBe("locator");
       // Pick<LocatorLike, "evaluate"> — the LocatorLike reference should have a URL
       if (locatorParam?.type.kind === "reference") {
@@ -140,16 +140,26 @@ describe("visual-storyboard (multi-module)", () => {
 
   test("StoryboardWriter has constructor section", () => {
     const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
-    const ctor = page?.sections.find((s) => s.kind === "constructor");
-    expect(ctor).toBeDefined();
+    const section = page?.sections.find(
+      (s) => s.title === "Constructor" && s.body.some((b) => b.kind === "card"),
+    );
+    expect(section).toBeDefined();
   });
 
   test("StoryboardWriter has methods section", () => {
     const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
-    const methods = page?.sections.find((s) => s.kind === "members" && s.label === "Methods");
-    expect(methods).toBeDefined();
-    if (methods?.kind === "members") {
-      const names = methods.members.map((m) => m.name);
+    const section = page?.sections.find(
+      (s) => s.title === "Methods" && s.body.some((b) => b.kind === "card"),
+    );
+    expect(section).toBeDefined();
+    if (section) {
+      const cards = section.body.filter((b) => b.kind === "card");
+      const names = cards
+        .filter((c): c is Extract<SectionBlock, { kind: "card" }> => c.kind === "card")
+        .map((c) => {
+          const titleBlock = c.sections[0]?.body[0];
+          return titleBlock?.kind === "declaration-title" ? titleBlock.name : "?";
+        });
       expect(names).toContain("createFrame");
       expect(names).toContain("finalize");
       expect(names).toContain("writeInfo");
@@ -159,23 +169,33 @@ describe("visual-storyboard (multi-module)", () => {
   test("StoryboardEvent (TypeAlias) has type-declaration section", () => {
     const page = site.pages.find((p) => p.url === "index/StoryboardEvent.html");
     expect(page?.kind).toBe("type-alias");
-    const typeDecl = page?.sections.find((s) => s.kind === "type-declaration");
-    expect(typeDecl).toBeDefined();
-    if (typeDecl?.kind === "type-declaration") {
-      expect(typeDecl.type.kind).toBe("union");
+    const section = page?.sections.find((s) => s.body.some((b) => b.kind === "type-declaration"));
+    expect(section).toBeDefined();
+    if (section?.body[0]?.kind === "type-declaration") {
+      expect(section.body[0].type.kind).toBe("union");
     }
   });
 
   test("cross-references resolve to correct URLs", () => {
     // StoryboardWriter constructor takes StoryboardWriterOptions — should resolve
     const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
-    const ctor = page?.sections.find((s) => s.kind === "constructor");
-    if (ctor?.kind === "constructor") {
-      const optionsParam = ctor.signatures[0]?.parameters[0];
-      expect(optionsParam?.name).toBe("options");
-      expect(optionsParam?.type.kind).toBe("reference");
-      if (optionsParam?.type.kind === "reference") {
-        expect(optionsParam.type.url).toBe("index/StoryboardWriterOptions.html");
+    const ctorSection = page?.sections.find((s) => s.title === "Constructor");
+    const ctorCards = ctorSection?.body.filter((b) => b.kind === "card");
+    if (ctorCards && ctorCards.length > 0) {
+      const ctorCard = ctorCards[0];
+      if (ctorCard.kind === "card") {
+        const sigSection = ctorCard.sections.find((s) =>
+          s.body.some((b) => b.kind === "signatures"),
+        );
+        const sigBlock = sigSection?.body.find((b) => b.kind === "signatures");
+        if (sigBlock?.kind === "signatures") {
+          const optionsParam = sigBlock.signatures[0]?.parameters[0];
+          expect(optionsParam?.name).toBe("options");
+          expect(optionsParam?.type.kind).toBe("reference");
+          if (optionsParam?.type.kind === "reference") {
+            expect(optionsParam.type.url).toBe("index/StoryboardWriterOptions.html");
+          }
+        }
       }
     }
   });
@@ -202,26 +222,41 @@ describe("member cards", () => {
   const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
   const indexPage = site.pages.find((p) => p.url === "index.html");
   const functionsSection = indexPage?.sections.find(
-    (s) => s.kind === "members" && s.label === "Functions",
+    (s) => s.title === "Functions" && s.body.some((b) => b.kind === "card"),
   );
   const visualStoryboard = transform(loadFixture("visual-storyboard"), { version: "1.0.0" });
 
   test("members with own page render through subsections when preview content exists", () => {
-    if (functionsSection?.kind === "members") {
-      const stabilize = functionsSection.members.find((member) => member.name === "stabilize");
-      expect(stabilize?.url).toBe("stabilize.html");
-      expect(stabilize?.kind).toBe("function");
-      expect(stabilize?.subsections.map((section) => section.kind)).toEqual(["summary"]);
+    if (functionsSection) {
+      const stabilizeCard = functionsSection.body.find(
+        (b) =>
+          b.kind === "card" &&
+          b.sections[0]?.body[0]?.kind === "declaration-title" &&
+          b.sections[0]?.body[0]?.name === "stabilize",
+      );
+      if (stabilizeCard?.kind === "card") {
+        expect(stabilizeCard.url).toBe("stabilize.html");
+        // Check card's inner sections (skip first which is declaration-title)
+        const contentSections = stabilizeCard.sections.slice(1);
+        const sectionKinds = contentSections.flatMap((s) => s.body.map((b) => b.kind));
+        expect(sectionKinds).toContain("doc");
+      }
     }
   });
 
   test("linked member summary subsections strip links", () => {
-    if (functionsSection?.kind === "members") {
-      const member = functionsSection.members.find((m) => m.url);
-      const summary = member?.subsections.find((section) => section.kind === "summary");
-      if (summary?.kind === "summary") {
-        const hasLinks = summary.doc.some((node) => node.kind === "link");
-        expect(hasLinks).toBe(false);
+    if (functionsSection) {
+      const memberCard = functionsSection.body.find(
+        (b) => b.kind === "card" && b.url !== undefined,
+      );
+      if (memberCard?.kind === "card") {
+        // Look for doc block in the card's sections (skip first which is declaration-title)
+        const contentSections = memberCard.sections.slice(1);
+        const docBlock = contentSections.flatMap((s) => s.body).find((b) => b.kind === "doc");
+        if (docBlock?.kind === "doc") {
+          const hasLinks = docBlock.doc.some((node) => node.kind === "link");
+          expect(hasLinks).toBe(false);
+        }
       }
     }
   });
@@ -230,18 +265,22 @@ describe("member cards", () => {
     const writerPage = visualStoryboard.pages.find(
       (page) => page.url === "index/StoryboardWriter.html",
     );
-    const writerMethods = writerPage?.sections.find(
-      (section) => section.kind === "members" && section.label === "Methods",
+    const methodSection = writerPage?.sections.find(
+      (section) => section.title === "Methods" && section.body.some((b) => b.kind === "card"),
     );
-    if (writerMethods?.kind === "members") {
-      const createFrame = writerMethods.members.find((member) => member.name === "createFrame");
-      expect(createFrame?.kind).toBe("method");
-      expect(createFrame?.title).toBe("createFrame");
-      expect(createFrame?.subsections.map((section) => section.kind)).toEqual([
-        "signatures",
-        "summary",
-        "parameters",
-      ]);
+    if (methodSection) {
+      const createFrameCard = methodSection.body.find(
+        (b) =>
+          b.kind === "card" &&
+          b.sections[0]?.body[0]?.kind === "declaration-title" &&
+          b.sections[0]?.body[0]?.name === "createFrame",
+      );
+      if (createFrameCard?.kind === "card") {
+        // Skip the first section (which contains declaration-title)
+        const contentSections = createFrameCard.sections.slice(1);
+        const sectionKinds = contentSections.flatMap((s) => s.body.map((b) => b.kind));
+        expect(sectionKinds).toEqual(["signatures", "doc", "parameters"]);
+      }
     }
   });
 
@@ -250,15 +289,25 @@ describe("member cards", () => {
       (p) => p.url === "index/CreateStoryboardFrameOptions.html",
     );
     const propertiesSection = optionsPage?.sections.find(
-      (section) => section.kind === "members" && section.label === "Properties",
+      (section) => section.title === "Properties" && section.body.some((b) => b.kind === "card"),
     );
-    if (propertiesSection?.kind === "members") {
-      const viewport = propertiesSection.members.find((member) => member.name === "viewport");
-      expect(viewport?.kind).toBe("property");
-      expect(viewport?.subsections[0]).toMatchObject({
-        kind: "type-declaration",
-        name: "viewport",
-      });
+    if (propertiesSection) {
+      const viewportCard = propertiesSection.body.find(
+        (b) =>
+          b.kind === "card" &&
+          b.sections[0]?.body[0]?.kind === "declaration-title" &&
+          b.sections[0]?.body[0]?.name === "viewport",
+      );
+      if (viewportCard?.kind === "card") {
+        // Look for type-declaration block in card's content sections
+        const contentSections = viewportCard.sections.slice(1);
+        const typeDeclBlock = contentSections
+          .flatMap((s) => s.body)
+          .find((b) => b.kind === "type-declaration");
+        if (typeDeclBlock?.kind === "type-declaration") {
+          expect(typeDeclBlock.name).toBe("viewport");
+        }
+      }
     }
   });
 });

@@ -54,7 +54,7 @@ export type {
   NavNode,
   Breadcrumb,
   Section,
-  MemberViewModel,
+  SectionBlock,
   MemberFlags,
   ParameterDocViewModel,
   SignatureViewModel,

@@ -1,6 +1,6 @@
 import { Fragment } from "preact";
 import type {
-  MemberViewModel,
+  SectionBlock,
   TypeViewModel,
   SignatureViewModel,
   TypeParameterViewModel,
@@ -161,44 +161,35 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
   }
 }
 
-function renderReflectionTypeMember(member: MemberViewModel) {
-  let typeSubsection: Extract<
-    MemberViewModel["subsections"][number],
-    { kind: "type-declaration" }
-  > | null = null;
-  let signatureSubsection: Extract<
-    MemberViewModel["subsections"][number],
-    { kind: "signatures" }
-  > | null = null;
-
-  for (const subsection of member.subsections) {
-    if (subsection.kind === "type-declaration") {
-      typeSubsection = subsection;
-    } else if (subsection.kind === "signatures") {
-      signatureSubsection = subsection;
-    }
-    if (typeSubsection && signatureSubsection) break;
+function renderReflectionTypeMember(block: SectionBlock) {
+  if (block.kind === "declaration-title") {
+    return <>{block.name}</>;
   }
 
-  return (
-    <>
-      {member.name}
-      {member.flags.optional ? "?" : ""}
-      {typeSubsection?.kind === "type-declaration" ? (
-        <>
-          {": "}
-          {renderType(typeSubsection.type)}
-        </>
-      ) : signatureSubsection?.kind === "signatures" && signatureSubsection.signatures[0] ? (
-        <>
-          {": ("}
-          {renderSignatureParams(signatureSubsection.signatures[0])}
-          {") => "}
-          {renderType(signatureSubsection.signatures[0].returnType)}
-        </>
-      ) : null}
-    </>
-  );
+  if (block.kind === "type-declaration") {
+    return (
+      <>
+        {block.name}
+        {block.optional ? "?" : ""}
+        {": "}
+        {renderType(block.type)}
+      </>
+    );
+  }
+
+  if (block.kind === "signatures" && block.signatures[0]) {
+    const sig = block.signatures[0];
+    return (
+      <>
+        {": ("}
+        {renderSignatureParams(sig)}
+        {") => "}
+        {renderType(sig.returnType)}
+      </>
+    );
+  }
+
+  return null;
 }
 
 function renderSignatureParams(sig: SignatureViewModel): preact.ComponentChild {

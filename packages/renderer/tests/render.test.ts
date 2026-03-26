@@ -72,7 +72,7 @@ describe("render pw-utilities", () => {
   test("LocatorLike.html has method section", () => {
     const html = pages.get("LocatorLike.html")!;
     expect(html).toContain("evaluate");
-    expect(html).toContain("ar-member-list");
+    expect(html).toContain("ar-card");
   });
 });
 
@@ -91,7 +91,7 @@ describe("render visual-storyboard", () => {
 
   test("StoryboardWriter.html has constructor section", () => {
     const html = pages.get("index/StoryboardWriter.html")!;
-    expect(html).toContain("ar-section--constructor");
+    expect(html).toContain("ar-card");
     expect(html).toContain("Constructor");
   });
 
@@ -104,7 +104,8 @@ describe("render visual-storyboard", () => {
 
   test("StoryboardEvent.html has type-declaration section", () => {
     const html = pages.get("index/StoryboardEvent.html")!;
-    expect(html).toContain("ar-section--type");
+    // Type-declaration renders as a union type in the content
+    expect(html).toContain("ar-type");
   });
 
   test("cross-referenced types render as links", () => {

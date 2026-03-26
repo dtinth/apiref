@@ -159,53 +159,53 @@ ar-shell {
   line-height: 1.33333;
 }
 
-h3.ar-member-card-header {
+h3.ar-card-header {
   @apply text-xl font-semibold text-ar-accent-cyan flex items-center gap-2 mb-2;
 }
 
-h3.ar-member-card-header .ar-kind-icon {
+h3.ar-card-header .ar-kind-icon {
   @apply flex-none text-lg;
 }
 
-h3.ar-member-card-header .ar-member-card-kind {
+h3.ar-card-header .ar-card-kind {
   color: #8b8685;
   font-weight: normal;
 }
 
-/* ── Member items (class properties, methods, etc.) ────────────────────── */
-.ar-member-card {
+/* ── Card items (class properties, methods, etc.) ────────────────────── */
+.ar-card {
   @apply border border-ar-border rounded px-4 py-3 mb-3 space-y-2 bg-[#252423];
 }
 
-.ar-member-card-header {
+.ar-card-header {
   @apply flex items-center gap-2 text-sm;
 }
 
-.ar-member-card-header .ar-kind-icon {
+.ar-card-header .ar-kind-icon {
   @apply flex-none text-sm;
 }
 
-.ar-member-card--link {
+.ar-card--link {
   @apply block cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
 }
 
-.ar-member-card--link h3 {
+.ar-card--link h3 {
   @apply hover:text-ar-accent-yellow;
 }
 
-.ar-member-card--link:hover {
+.ar-card--link:hover {
   text-decoration: none;
 }
 
-.ar-member-card-body {
+.ar-card-body {
   @apply space-y-2 text-sm;
 }
 
-.ar-member-card-section {
+.ar-card-section {
   @apply border-t border-ar-border/50 pt-2 mt-2;
 }
 
-.ar-member-card-section-label {
+.ar-card-section-label {
   @apply text-xs font-semibold text-ar-muted uppercase tracking-wide mb-1;
 }
 

@@ -1,13 +1,14 @@
 import type {
   DeclarationKind,
+  MemberFlags,
   PageViewModel,
   Section,
+  SectionBlock,
   SignatureViewModel,
   SiteViewModel,
 } from "../viewmodel.ts";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
-import { MemberList } from "./MemberList.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 
 /**
@@ -51,28 +52,24 @@ interface OutlineSection {
 function buildOutline(sections: Section[]): OutlineSection[] {
   const result: OutlineSection[] = [];
   for (const section of sections) {
-    if (section.kind === "constructor") {
-      result.push({
-        label: "Constructor",
-        items: [
-          {
-            label: "constructor",
-            anchor: "constructor",
-            kind: "constructor",
-            flags: {},
-          },
-        ],
-      });
-    } else if (section.kind === "members") {
-      result.push({
-        label: section.label,
-        items: section.members.map((m) => ({
-          label: m.name,
-          anchor: m.anchor,
-          kind: m.kind,
-          flags: { deprecated: m.flags.deprecated },
-        })),
-      });
+    if (section.title) {
+      const items: OutlineItem[] = [];
+      for (const block of section.body) {
+        if (block.kind === "card") {
+          const titleBlock = block.sections[0]?.body[0];
+          if (titleBlock?.kind === "declaration-title") {
+            items.push({
+              label: titleBlock.name,
+              anchor: block.anchor,
+              kind: titleBlock.declarationKind,
+              flags: { deprecated: block.flags.deprecated },
+            });
+          }
+        }
+      }
+      if (items.length > 0) {
+        result.push({ label: section.title, items });
+      }
     }
   }
   return result;
@@ -132,89 +129,168 @@ export function Page({ site, page, options }: PageProps) {
 function PageContent({ page }: { page: PageViewModel }) {
   return (
     <article class={`ar-declaration ar-declaration--${page.kind}`}>
-      <h1 class="ar-declaration-title">
-        <DeclarationTitle kind={page.kind} title={page.title} />
-      </h1>
       {page.sections.map((section, i) => (
-        <SectionView key={i} section={section} pageName={page.title} />
+        <SectionView key={i} section={section} pageName={page.title} context="page" />
       ))}
     </article>
   );
 }
 
-function SectionView({ section, pageName }: { section: Section; pageName?: string }) {
-  switch (section.kind) {
-    case "summary":
-      return <DocView doc={section.doc} />;
+function SectionView({
+  section,
+  pageName,
+  context,
+}: {
+  section: Section;
+  pageName?: string;
+  context: "page" | "card";
+}) {
+  // Special case: bare doc block (page summary)
+  if (!section.title && section.body.length === 1 && section.body[0].kind === "doc") {
+    return <DocView doc={section.body[0].doc} />;
+  }
 
-    case "constructor":
-      return (
-        <section class="ar-section ar-section--constructor">
-          <h2 class="ar-section-title">Constructor</h2>
-          {section.signatures.map((sig, i) => (
-            <SignatureBlock key={i} sig={sig} label="new" />
-          ))}
-        </section>
-      );
+  const content = (
+    <>
+      {section.title && <h2 class="ar-section-title">{section.title}</h2>}
+      {section.body.map((block, i) => (
+        <BlockView key={i} block={block} pageName={pageName} context={context} />
+      ))}
+    </>
+  );
+
+  return context === "page" ? (
+    <section class="ar-section">{content}</section>
+  ) : (
+    <div class="ar-card-section">{content}</div>
+  );
+}
+
+function BlockView({
+  block,
+  pageName,
+  context,
+}: {
+  block: SectionBlock;
+  pageName?: string;
+  context: "page" | "card";
+}) {
+  switch (block.kind) {
+    case "declaration-title":
+      if (context === "page") {
+        return (
+          <h1 class="ar-declaration-title">
+            <DeclarationTitle kind={block.declarationKind} title={block.name} />
+          </h1>
+        );
+      } else {
+        // In card, this is handled by CardView instead
+        return null;
+      }
+
+    case "doc":
+      return <DocView doc={block.doc} />;
 
     case "signatures":
-      return (
-        <section class="ar-section ar-section--signatures">
-          <h2 class="ar-section-title">Call Signatures</h2>
-          {section.signatures.map((sig, i) => (
-            <SignatureBlock key={i} sig={sig} label={pageName} />
-          ))}
-        </section>
-      );
+      if (context === "page") {
+        return (
+          <>
+            {block.signatures.map((sig, i) => (
+              <SignatureBlock key={i} sig={sig} label={pageName} />
+            ))}
+          </>
+        );
+      } else {
+        // In card, use SignatureLine
+        return (
+          <div class="ar-signature">
+            {block.signatures.map((sig, i) => (
+              <SignatureLine key={i} sig={sig} name={pageName || ""} />
+            ))}
+          </div>
+        );
+      }
+
+    case "card":
+      return <CardView card={block} />;
 
     case "type-declaration":
       return (
-        <section class="ar-section ar-section--type">
-          <div class="ar-signature">
-            <TypeView type={section.type} />
-          </div>
-        </section>
-      );
-
-    case "members":
-      return (
-        <section class="ar-section ar-section--members">
-          <h2 class="ar-section-title">{section.label}</h2>
-          <MemberList members={section.members} />
-        </section>
-      );
-
-    case "flags":
-      return (
-        <div class="ar-section-flags">
-          {section.flags.deprecated && (
-            <span class="ar-badge ar-badge--deprecated">deprecated</span>
-          )}
-          {section.flags.static && <span class="ar-badge ar-badge--static">static</span>}
-          {section.flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
-          {section.flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
+        <div class="ar-signature">
+          <TypeView type={block.type} />
         </div>
       );
 
+    case "flags":
+      return <FlagsView flags={block.flags} />;
+
     case "parameters":
       return (
-        <section class="ar-section ar-section--parameters">
-          <h2 class="ar-section-title">Parameters</h2>
-          <dl class="ar-param-list">
-            {section.parameters.map((p) => (
-              <>
-                <dt key={`dt-${p.name}`} class="ar-param-name">
-                  {p.name}
-                </dt>
-                <dd key={`dd-${p.name}`} class="ar-param-doc">
-                  <DocView doc={p.doc} />
-                </dd>
-              </>
-            ))}
-          </dl>
-        </section>
+        <dl class="ar-param-list">
+          {block.parameters.map((p) => (
+            <>
+              <dt key={`dt-${p.name}`} class="ar-param-name">
+                {p.name}
+              </dt>
+              <dd key={`dd-${p.name}`} class="ar-param-doc">
+                <DocView doc={p.doc} />
+              </dd>
+            </>
+          ))}
+        </dl>
       );
+
+    default:
+      return null;
   }
+}
+
+function FlagsView({ flags }: { flags: MemberFlags }) {
+  return (
+    <div>
+      {flags.deprecated && <span class="ar-badge ar-badge--deprecated">deprecated</span>}
+      {flags.static && <span class="ar-badge ar-badge--static">static</span>}
+      {flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
+      {flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
+    </div>
+  );
+}
+
+function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
+  // Extract declaration-title from first section
+  const titleBlock = card.sections[0]?.body[0];
+  const titleFromCard = titleBlock?.kind === "declaration-title" ? titleBlock : null;
+
+  const cardContent = (
+    <>
+      {titleFromCard && (
+        <h3 class="ar-card-header">
+          <DeclarationTitle
+            kind={titleFromCard.declarationKind}
+            title={titleFromCard.name}
+            kindLabelClass="ar-card-kind"
+          />
+        </h3>
+      )}
+      {card.sections.length > 0 && (
+        <div class="ar-card-body">
+          {card.sections.slice(1).map((section, i) => (
+            <SectionView key={i} section={section} context="card" />
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  return card.url ? (
+    <a href={card.url} id={card.anchor} class="ar-card ar-card--link">
+      {cardContent}
+    </a>
+  ) : (
+    <div id={card.anchor} class="ar-card">
+      {cardContent}
+    </div>
+  );
 }
 
 function SignatureBlock({ sig, label }: { sig: SignatureViewModel; label?: string }) {
