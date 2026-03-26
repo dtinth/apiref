@@ -123,7 +123,7 @@ ar-shell {
 }
 
 .ar-section-title {
-  @apply text-base font-semibold text-ar-muted uppercase tracking-wide mb-3;
+  @apply text-lg font-semibold text-ar-text mb-4;
 }
 
 h3.ar-member-card-header {
