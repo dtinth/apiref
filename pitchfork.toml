@@ -1,7 +1,7 @@
 # Dev workflow orchestration
 
 [daemons.shell]
-run = "bash -c 'cd packages/shell && SHELL_OUT_DIR=../../_site/assets vite build --watch'"
+run = "bash -c 'cd packages/shell && SHELL_OUT_DIR=../../_site/assets vp build --watch'"
 
 [daemons.serve]
 run = "vp dlx http-server _site --port 8080 --gzip"
