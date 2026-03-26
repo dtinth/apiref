@@ -110,11 +110,56 @@ ar-shell {
 }
 
 .ar-declaration-title {
-  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2;
+  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2 mb-6;
+}
+
+.ar-declaration-title .ar-kind-icon {
+  @apply flex-none text-base;
+}
+
+.ar-declaration-kind {
+  @apply text-ar-muted font-normal text-sm ml-auto;
+}
+
+h2.ar-declaration-title {
+  @apply text-lg font-semibold text-ar-accent-cyan mb-3;
+}
+
+h2.ar-declaration-title .ar-kind-icon {
+  @apply text-sm;
 }
 
 .ar-section-title {
   @apply text-base font-semibold text-ar-muted uppercase tracking-wide mb-3;
+}
+
+/* ── Member items (class properties, methods, etc.) ────────────────────── */
+.ar-member-card {
+  @apply border border-ar-border rounded px-4 py-3 mb-3 space-y-2;
+}
+
+.ar-member-card-header {
+  @apply flex items-center gap-2 font-mono text-sm;
+}
+
+.ar-member-card-header .ar-kind-icon {
+  @apply flex-none text-sm;
+}
+
+.ar-member-card-kind {
+  @apply text-ar-muted font-normal ml-auto text-xs;
+}
+
+.ar-member-card-body {
+  @apply space-y-2 text-sm;
+}
+
+.ar-member-card-section {
+  @apply border-t border-ar-border/50 pt-2 mt-2;
+}
+
+.ar-member-card-section-label {
+  @apply text-xs font-semibold text-ar-muted uppercase tracking-wide mb-1;
 }
 
 /* ── Member list ────────────────────────────────────────────────────────── */

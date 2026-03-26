@@ -9,6 +9,25 @@ import { DocView } from "./DocView.tsx";
 import { TypeView, SignatureLine } from "./TypeView.tsx";
 import { MemberList } from "./MemberList.tsx";
 
+const KIND_ICONS: Record<string, string> = {
+  class: "codicon-symbol-class",
+  interface: "codicon-symbol-interface",
+  function: "codicon-symbol-function",
+  "type-alias": "codicon-symbol-type-parameter",
+  variable: "codicon-symbol-variable",
+  enum: "codicon-symbol-enum",
+  module: "codicon-symbol-module",
+  namespace: "codicon-symbol-namespace",
+  "package-index": "codicon-symbol-package",
+  constructor: "codicon-symbol-method",
+  method: "codicon-symbol-method",
+  property: "codicon-symbol-field",
+};
+
+function getKindIcon(kind: string): string {
+  return KIND_ICONS[kind] ?? "codicon-symbol-misc";
+}
+
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
   shellBaseUrl: string;
@@ -110,9 +129,14 @@ export function Page({ site, page, options }: PageProps) {
 }
 
 function PageContent({ page }: { page: PageViewModel }) {
+  const iconClass = getKindIcon(page.kind);
   return (
     <article class={`ar-declaration ar-declaration--${page.kind}`}>
-      <h1 class="ar-declaration-title">{page.title}</h1>
+      <h1 class="ar-declaration-title">
+        <i class={`codicon ${iconClass} ar-kind-icon`} />
+        <span>{page.title}</span>
+        <span class="ar-declaration-kind">{page.kind}</span>
+      </h1>
       {page.sections.map((section, i) => (
         <SectionView key={i} section={section} />
       ))}
@@ -128,12 +152,14 @@ function SectionView({ section }: { section: Section }) {
     case "constructor":
       return (
         <section class="ar-section ar-section--constructor">
-          <h2 class="ar-section-title">Constructor</h2>
-          <div class="ar-signature">
-            {section.signatures.map((sig, i) => (
-              <SignatureBlock key={i} sig={sig} label="new" />
-            ))}
-          </div>
+          <h2 class="ar-declaration-title">
+            <i class={`codicon ${getKindIcon("constructor")} ar-kind-icon`} />
+            <span>Constructor</span>
+            <span class="ar-declaration-kind">constructor</span>
+          </h2>
+          {section.signatures.map((sig, i) => (
+            <SignatureBlock key={i} sig={sig} label="new" />
+          ))}
         </section>
       );
 
@@ -158,7 +184,11 @@ function SectionView({ section }: { section: Section }) {
     case "members":
       return (
         <section class="ar-section ar-section--members">
-          <h2 class="ar-section-title">{section.label}</h2>
+          <h2 class="ar-declaration-title">
+            <i class={`codicon ${getKindIcon("method")} ar-kind-icon`} />
+            <span>{section.label}</span>
+            <span class="ar-declaration-kind">{section.label.toLowerCase()}</span>
+          </h2>
           <MemberList members={section.members} />
         </section>
       );
