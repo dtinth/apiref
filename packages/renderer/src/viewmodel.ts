@@ -98,6 +98,8 @@ export interface MemberViewModel {
   anchor: string;
   /** Member name. */
   name: string;
+  /** Kind of member (method, property, class, interface, function, etc.). */
+  kind: string;
   /** Optional modifiers and flags. */
   flags: MemberFlags;
   /** Signatures if this member is callable (methods, getters, setters). */
@@ -108,8 +110,6 @@ export interface MemberViewModel {
   doc: DocNode[];
   /** URL to this member's page, if it has its own page. */
   url?: string;
-  /** Kind of declaration (class, interface, function, etc.) for members with their own page. */
-  kind?: string;
 }
 
 /**

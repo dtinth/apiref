@@ -457,16 +457,30 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
   const commentSource = decl.signatures?.[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
 
-  // Add URL and kind if this declaration has its own page
+  // Determine kind: either from declaration (if it has its own page) or inferred from shape
+  let kind: string;
   let url: string | undefined;
-  let kind: string | undefined;
   if (PAGE_KINDS.has(decl.kind)) {
     url = ctx.idToUrl.get(decl.id);
     const pageKind = reflectionKindToPageKind(decl.kind);
-    if (pageKind) kind = pageKind;
+    kind = pageKind ?? "unknown";
+  } else {
+    // Infer member kind from declaration type or signatures
+    kind = inferMemberKind(decl, signatures);
   }
 
-  return { anchor, name: decl.name, flags, signatures, type, doc, url, kind };
+  return { anchor, name: decl.name, kind, flags, signatures, type, doc, url };
+}
+
+function inferMemberKind(decl: TDDeclaration, signatures: SignatureViewModel[]): string {
+  // Constructor
+  if (decl.kind === Kind.Constructor) return "constructor";
+  // Accessor (getter/setter)
+  if (decl.getSignature || decl.setSignature) return "accessor";
+  // Method or function (has signatures)
+  if (signatures.length > 0) return "method";
+  // Default to property
+  return "property";
 }
 
 function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {

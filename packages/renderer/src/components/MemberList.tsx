@@ -7,14 +7,6 @@ interface MemberListProps {
   members: MemberViewModel[];
 }
 
-function getMemberKind(member: MemberViewModel): string {
-  // Use explicit kind if available (for declarations with their own pages)
-  if (member.kind) return member.kind;
-  // Otherwise infer from signatures/type
-  if (member.signatures.length > 0) return "method";
-  return "property";
-}
-
 function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
   return doc.map((node) => {
     if (node.kind === "link") {
@@ -45,8 +37,7 @@ export function MemberList({ members }: MemberListProps) {
 }
 
 function MemberView({ member }: { member: MemberViewModel }) {
-  const { name, flags, signatures, type, doc, url } = member;
-  const memberKind = getMemberKind(member);
+  const { name, kind, flags, signatures, type, doc, url } = member;
   const displayName = signatures.length > 0 ? `${name}()` : name;
 
   // Abbreviated view for members with their own pages
@@ -55,11 +46,7 @@ function MemberView({ member }: { member: MemberViewModel }) {
     return (
       <>
         <h3 class="ar-member-card-header">
-          <DeclarationTitle
-            kind={memberKind}
-            title={displayName}
-            kindLabelClass="ar-member-card-kind"
-          />
+          <DeclarationTitle kind={kind} title={displayName} kindLabelClass="ar-member-card-kind" />
         </h3>
         {abbreviatedDoc.length > 0 && (
           <div class="ar-member-card-body">
@@ -74,11 +61,7 @@ function MemberView({ member }: { member: MemberViewModel }) {
   return (
     <>
       <h3 class="ar-member-card-header">
-        <DeclarationTitle
-          kind={memberKind}
-          title={displayName}
-          kindLabelClass="ar-member-card-kind"
-        />
+        <DeclarationTitle kind={kind} title={displayName} kindLabelClass="ar-member-card-kind" />
       </h3>
 
       <div class="ar-member-card-body">
