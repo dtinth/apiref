@@ -117,10 +117,6 @@ ar-shell {
   @apply flex-none text-2xl md:text-3xl;
 }
 
-.ar-declaration--package-index .ar-kind-icon {
-  color: #cccccc;
-}
-
 .ar-declaration-kind {
   @apply text-[#8b8685] font-normal text-2xl md:text-3xl;
 }
@@ -153,7 +149,7 @@ h3.ar-member-card-header .ar-member-card-kind {
 }
 
 .ar-member-card-header {
-  @apply flex items-center gap-2 font-mono text-sm;
+  @apply flex items-center gap-2 text-sm;
 }
 
 .ar-member-card-header .ar-kind-icon {
