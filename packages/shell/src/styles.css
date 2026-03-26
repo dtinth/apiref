@@ -435,6 +435,18 @@ h3.ar-member-card-header .ar-member-card-kind {
 .ar-kind-icon--package-index {
   color: #cccccc;
 }
+.ar-kind-icon--method {
+  color: #b180d7;
+}
+.ar-kind-icon--property {
+  color: #75beff;
+}
+.ar-kind-icon--accessor {
+  color: #75beff;
+}
+.ar-kind-icon--constructor {
+  color: #ee9d28;
+}
 
 /* ── Outline sidebar ────────────────────────────────────────────────────── */
 .ar-outline-sidebar {

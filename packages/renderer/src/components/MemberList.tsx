@@ -1,13 +1,7 @@
 import type { MemberViewModel, SignatureViewModel } from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
-
-const MEMBER_KIND_ICONS: Record<string, string> = {
-  method: "codicon-symbol-method",
-  property: "codicon-symbol-field",
-  accessor: "codicon-symbol-field",
-  constructor: "codicon-symbol-method",
-};
+import { DeclarationTitle } from "./DeclarationTitle.tsx";
 
 interface MemberListProps {
   members: MemberViewModel[];
@@ -16,10 +10,6 @@ interface MemberListProps {
 function getMemberKind(member: MemberViewModel): string {
   if (member.signatures.length > 0) return "method";
   return "property";
-}
-
-function getMemberKindIcon(kind: string): string {
-  return MEMBER_KIND_ICONS[kind] ?? "codicon-symbol-misc";
 }
 
 export function MemberList({ members }: MemberListProps) {
@@ -45,14 +35,16 @@ export function MemberList({ members }: MemberListProps) {
 function MemberView({ member }: { member: MemberViewModel }) {
   const { name, flags, signatures, type, doc } = member;
   const memberKind = getMemberKind(member);
-  const iconClass = getMemberKindIcon(memberKind);
+  const displayName = signatures.length > 0 ? `${name}()` : name;
 
   return (
     <>
       <h3 class="ar-member-card-header">
-        <i class={`codicon ${iconClass} ar-kind-icon`} />
-        <span>{signatures.length > 0 ? `${name}()` : name}</span>
-        <span class="ar-member-card-kind">{memberKind}</span>
+        <DeclarationTitle
+          kind={memberKind}
+          title={displayName}
+          kindLabelClass="ar-member-card-kind"
+        />
       </h3>
 
       <div class="ar-member-card-body">
