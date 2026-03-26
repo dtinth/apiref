@@ -745,6 +745,51 @@ function transformParameter(param: TDParameter, ctx: TransformContext): Paramete
   };
 }
 
+// ---------------------------------------------------------------------------
+// Reflection type member blocks
+// ---------------------------------------------------------------------------
+
+function buildReflectionMemberBlocks(decl: TDDeclaration, ctx: TransformContext): SectionBlock[] {
+  const flags = transformFlags(decl.flags);
+  const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
+  const type = decl.type ? transformType(decl.type, ctx) : null;
+
+  // For reflection type members, create minimal blocks for inline rendering
+  // Only include type info, not full documentation
+  if (signatures.length > 0) {
+    // Function/method property: name: (params) => returnType
+    return [
+      {
+        kind: "declaration-title",
+        name: decl.name,
+        declarationKind: inferMemberKind(decl, signatures),
+      },
+      { kind: "signatures", signatures },
+    ];
+  }
+
+  if (type) {
+    // Property with a type: name: type or name?: type
+    return [
+      {
+        kind: "type-declaration",
+        name: decl.name,
+        type,
+        optional: flags.optional,
+      },
+    ];
+  }
+
+  // No type info available, render as empty property
+  return [
+    {
+      kind: "type-declaration",
+      name: decl.name,
+      type: { kind: "unknown", raw: "unknown" },
+    },
+  ];
+}
+
 function transformTypeParameter(
   tp: TDTypeParameter,
   ctx: TransformContext,
@@ -830,7 +875,8 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
     case "reflection": {
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-      const members = (decl.children ?? []).flatMap((c) => declarationAsCards(c, ctx));
+      // For reflection members, extract just the essential type info (not full cards)
+      const members = (decl.children ?? []).flatMap((c) => buildReflectionMemberBlocks(c, ctx));
       return { kind: "reflection", signatures: sigs, members };
     }
 

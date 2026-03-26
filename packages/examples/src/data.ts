@@ -108,7 +108,7 @@ export interface User {
  * User repository implementation.
  */
 export class UserRepository extends Repository<User, string> {
-  async find(id: string): Promise<User | null> {
+  async find(_id: string): Promise<User | null> {
     return null;
   }
 
@@ -116,7 +116,7 @@ export class UserRepository extends Repository<User, string> {
     return [];
   }
 
-  async findPaginated(page: number, pageSize: number): Promise<PaginatedResponse<User>> {
+  async findPaginated(page: number, _pageSize: number): Promise<PaginatedResponse<User>> {
     return {
       items: [],
       pagination: { page, pageCount: 0, total: 0 },
@@ -127,11 +127,11 @@ export class UserRepository extends Repository<User, string> {
     return { id: "1", ...data };
   }
 
-  async update(id: string, updates: Partial<Omit<User, "id">>): Promise<User | null> {
+  async update(_id: string, _updates: Partial<Omit<User, "id">>): Promise<User | null> {
     return null;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(_id: string): Promise<boolean> {
     return false;
   }
 }

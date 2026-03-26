@@ -47,11 +47,11 @@ export namespace AuthPlugin {
       algorithm?: string;
     }
 
-    export function sign(payload: any, options: Options): string {
+    export function sign(_payload: any, _options: Options): string {
       return "token";
     }
 
-    export function verify(token: string, options: Options): any {
+    export function verify(_token: string, _options: Options): any {
       return {};
     }
   }
@@ -188,7 +188,7 @@ export namespace LoggingPlugin {
         this.write(message);
       }
 
-      private write(message: string): void {
+      private write(_message: string): void {
         // Implementation would write to file
       }
     }
@@ -273,11 +273,11 @@ export namespace CachingPlugin {
     export class RedisCache<T> {
       constructor(private config: RemoteConfig) {}
 
-      async get(key: string): Promise<T | undefined> {
+      async get(_key: string): Promise<T | undefined> {
         return undefined;
       }
 
-      async set(key: string, value: T, ttl?: number): Promise<void> {}
+      async set(_key: string, _value: T, _ttl?: number): Promise<void> {}
     }
   }
 }
