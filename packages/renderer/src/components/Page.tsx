@@ -32,6 +32,13 @@ export function Page({ site, page, options }: PageProps) {
         <title>
           {page.title} — {site.package.name}
         </title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css" />
         <link rel="stylesheet" href={`${options.shellBaseUrl}/styles.css`} />
         <script
           type="application/json"

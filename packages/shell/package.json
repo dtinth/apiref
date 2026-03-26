@@ -29,6 +29,7 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
+    "@tailwindcss/typography": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "lit": "catalog:",
     "tailwindcss": "catalog:"

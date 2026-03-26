@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* ── Design tokens ─────────────────────────────────────────────────────── */
 @theme {
@@ -11,12 +12,16 @@
   --color-ar-accent-cyan: #bbeeff;
   --color-ar-accent-green: #d7fc70;
   --color-ar-accent-yellow: #ffffbb;
+
+  --font-sans: "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
 body {
-  @apply bg-ar-bg text-ar-text;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  @apply bg-ar-bg text-ar-text font-sans;
 }
 
 /* ── Layout: shell ──────────────────────────────────────────────────────── */
@@ -182,9 +187,115 @@ ar-shell {
   @apply text-gray-400;
 }
 
-/* ── Description / doc ──────────────────────────────────────────────────── */
+/* ── Description / doc — Prose typography ──────────────────────────────── */
 .ar-description {
-  @apply text-gray-300 leading-relaxed whitespace-pre-wrap;
+  @apply prose;
+
+  /* Color overrides */
+  --tw-prose-body: #e9e8e7;
+  --tw-prose-headings: #e9e8e7;
+  --tw-prose-bullets: #8b8685;
+  --tw-prose-counters: #8b8685;
+  --tw-prose-captions: #8b8685;
+  --tw-prose-hr: #656463;
+  --tw-prose-pre-bg: #252423;
+  --tw-prose-pre-code: #e9d7c5;
+  --tw-prose-code: #e9d7c5;
+  --tw-prose-quote-borders: #555453;
+  --tw-prose-quotes: #e9d7c5;
+  --tw-prose-links: #ffffbb;
+  --tw-prose-bold: #fff;
+  --tw-prose-lead: inherit;
+  --tw-prose-th-borders: #8b8685;
+  --tw-prose-td-borders: #656463;
+
+  overflow-wrap: break-word;
+  letter-spacing: 0.01em;
+  max-width: none;
+
+  & a {
+    text-decoration: none;
+    font-weight: inherit;
+  }
+  & a:hover {
+    text-decoration: underline;
+  }
+  & :where(code):not(:where(pre *)) {
+    box-shadow: 0 1px 0 #252423;
+    border-radius: 2px;
+    border: solid #555453;
+    border-width: 1px 1px 2px;
+    background: #252423;
+    padding: 2.5px 5px;
+    font-weight: inherit;
+  }
+  & :where(code)::before {
+    content: none;
+  }
+  & :where(code)::after {
+    content: none;
+  }
+  & pre code {
+    box-shadow: unset;
+    border-radius: unset;
+    border: unset;
+    border-width: unset;
+    background: unset;
+    padding: unset;
+  }
+  & h1 {
+    color: #8b8685;
+    text-shadow: 2px 2px #00000040;
+  }
+  & h2 {
+    color: #d7fc70;
+    text-shadow: 2px 2px #d7fc7026;
+  }
+  & h3 {
+    color: #febfea;
+    text-shadow: 2px 2px #00000040;
+  }
+  & h4 {
+    color: #bbeeff;
+    text-shadow: 2px 2px #00000040;
+  }
+  & blockquote {
+    font-style: inherit;
+    font-weight: inherit;
+  }
+  & details {
+    border: 1px solid #656463;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    margin: 1.25rem 0;
+    box-shadow: 2px 2px 0 #00000040;
+  }
+  & summary {
+    cursor: pointer;
+    padding: 0.25em 0.5em;
+    margin: -0.25em -0.5em;
+  }
+  & summary::marker {
+    color: #8b8685;
+  }
+  & thead th {
+    color: #8b8685;
+  }
+  & figure {
+    text-align: center;
+  }
+  & figcaption {
+    margin-top: 0;
+  }
+  & figcaption a {
+    color: inherit;
+  }
+  & figcaption strong {
+    color: inherit;
+  }
+  & figure > p:has(img) + figcaption {
+    margin-top: -1rem;
+  }
 }
 
 .ar-inline-code {
