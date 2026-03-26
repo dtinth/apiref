@@ -202,33 +202,54 @@ describe("member cards", () => {
   const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
   const indexPage = site.pages.find((p) => p.url === "index.html");
   const interfacesSection = indexPage?.sections.find((s) => s.kind === "members");
+  const locatorLikePage = site.pages.find((p) => p.url === "LocatorLike.html");
+  const methodsSection = locatorLikePage?.sections.find(
+    (s) => s.kind === "members" && s.label === "Methods",
+  );
 
-  test("members with own page have abbreviatedDoc", () => {
+  test("members with own page render through subsections", () => {
     if (interfacesSection?.kind === "members") {
       const locatorLike = interfacesSection.members.find((m) => m.name === "LocatorLike");
       expect(locatorLike?.url).toBe("LocatorLike.html");
-      expect(locatorLike?.abbreviatedDoc).toBeDefined();
+      expect(locatorLike?.kind).toBe("interface");
+      expect(locatorLike?.subsections.map((section) => section.kind)).toEqual(["summary"]);
     }
   });
 
-  test("abbreviatedDoc strips links", () => {
+  test("linked member summary subsections strip links", () => {
     if (interfacesSection?.kind === "members") {
       const member = interfacesSection.members.find((m) => m.url);
-      if (member?.abbreviatedDoc) {
-        const hasLinks = member.abbreviatedDoc.some((node) => node.kind === "link");
+      const summary = member?.subsections.find((section) => section.kind === "summary");
+      if (summary?.kind === "summary") {
+        const hasLinks = summary.doc.some((node) => node.kind === "link");
         expect(hasLinks).toBe(false);
       }
     }
   });
 
-  test("members with own page have kind set", () => {
-    if (interfacesSection?.kind === "members") {
-      const members = interfacesSection.members.filter((m) => m.url);
-      for (const member of members) {
-        expect(member.kind).toBeDefined();
-        expect(typeof member.kind).toBe("string");
-        expect(member.kind.length).toBeGreaterThan(0);
-      }
+  test("inline method members expose render-oriented subsections", () => {
+    if (methodsSection?.kind === "members") {
+      const evaluate = methodsSection.members.find((member) => member.name === "evaluate");
+      expect(evaluate?.kind).toBe("method");
+      expect(evaluate?.title).toBe("evaluate()");
+      expect(evaluate?.subsections.some((section) => section.kind === "signatures")).toBe(true);
+      expect(evaluate?.subsections.some((section) => section.kind === "summary")).toBe(true);
+    }
+  });
+
+  test("inline property members use a type subsection", () => {
+    const visualStoryboard = transform(loadFixture("visual-storyboard"), { version: "1.0.0" });
+    const optionsPage = visualStoryboard.pages.find((p) => p.url === "index/CreateStoryboardFrameOptions.html");
+    const propertiesSection = optionsPage?.sections.find(
+      (section) => section.kind === "members" && section.label === "Properties",
+    );
+    if (propertiesSection?.kind === "members") {
+      const viewport = propertiesSection.members.find((member) => member.name === "viewport");
+      expect(viewport?.kind).toBe("property");
+      expect(viewport?.subsections[0]).toMatchObject({
+        kind: "type-declaration",
+        name: "viewport",
+      });
     }
   });
 });
