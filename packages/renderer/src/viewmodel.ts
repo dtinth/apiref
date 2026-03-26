@@ -108,6 +108,8 @@ export interface MemberViewModel {
   doc: DocNode[];
   /** URL to this member's page, if it has its own page. */
   url?: string;
+  /** Kind of declaration (class, interface, function, etc.) for members with their own page. */
+  kind?: string;
 }
 
 /**

@@ -8,6 +8,9 @@ interface MemberListProps {
 }
 
 function getMemberKind(member: MemberViewModel): string {
+  // Use explicit kind if available (for declarations with their own pages)
+  if (member.kind) return member.kind;
+  // Otherwise infer from signatures/type
   if (member.signatures.length > 0) return "method";
   return "property";
 }
