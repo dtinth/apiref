@@ -14,11 +14,13 @@ import {
 import type {
   SiteViewModel,
   PageViewModel,
-  PageKind,
+  DeclarationKind,
   NavNode,
   Section,
   MemberViewModel,
   MemberFlags,
+  MemberSubsection,
+  ParameterDocViewModel,
   SignatureViewModel,
   ParameterViewModel,
   TypeParameterViewModel,
@@ -300,7 +302,7 @@ function buildDeclarationPage(
   const url = ctx.idToUrl.get(decl.id);
   if (!url) return null;
 
-  const kind = reflectionKindToPageKind(decl.kind);
+  const kind = reflectionKindToDeclarationKind(decl.kind);
   if (!kind) return null;
 
   const sections: Section[] = [];
@@ -457,26 +459,34 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
   const commentSource = decl.signatures?.[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
 
-  // Determine kind: either from declaration (if it has its own page) or inferred from shape
-  let kind: string;
-  let url: string | undefined;
-  let abbreviatedDoc: DocNode[] | undefined;
+  const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
+  const kind = declarationKindForMember(decl, signatures);
+  const title = signatures.length > 0 ? `${decl.name}()` : decl.name;
+  const subsections = buildMemberSubsections({
+    name: decl.name,
+    flags,
+    signatures,
+    type,
+    doc,
+    url,
+  });
 
-  if (PAGE_KINDS.has(decl.kind)) {
-    url = ctx.idToUrl.get(decl.id);
-    const pageKind = reflectionKindToPageKind(decl.kind);
-    kind = pageKind ?? "unknown";
-    // Pre-compute abbreviated doc (links stripped) for members with their own pages
-    abbreviatedDoc = stripLinksFromDoc(doc);
-  } else {
-    // Infer member kind from declaration type or signatures
-    kind = inferMemberKind(decl, signatures);
-  }
-
-  return { anchor, name: decl.name, kind, flags, signatures, type, doc, url, abbreviatedDoc };
+  return { anchor, name: decl.name, title, kind, flags, url, subsections };
 }
 
-function inferMemberKind(decl: TDDeclaration, signatures: SignatureViewModel[]): string {
+function declarationKindForMember(
+  decl: TDDeclaration,
+  signatures: SignatureViewModel[],
+): DeclarationKind {
+  const pageKind = reflectionKindToDeclarationKind(decl.kind);
+  if (pageKind) return pageKind;
+  return inferMemberKind(decl, signatures);
+}
+
+function inferMemberKind(
+  decl: TDDeclaration,
+  signatures: SignatureViewModel[],
+): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
   // Constructor
   if (decl.kind === Kind.Constructor) return "constructor";
   // Accessor (getter/setter)
@@ -485,6 +495,56 @@ function inferMemberKind(decl: TDDeclaration, signatures: SignatureViewModel[]):
   if (signatures.length > 0) return "method";
   // Default to property
   return "property";
+}
+
+function buildMemberSubsections(input: {
+  name: string;
+  flags: MemberFlags;
+  signatures: SignatureViewModel[];
+  type: TypeViewModel | null;
+  doc: DocNode[];
+  url?: string;
+}): MemberSubsection[] {
+  if (input.url) {
+    const summary = stripLinksFromDoc(input.doc);
+    return summary.length > 0 ? [{ kind: "summary", doc: summary }] : [];
+  }
+
+  const subsections: MemberSubsection[] = [];
+  if (hasRenderableMemberFlags(input.flags)) {
+    subsections.push({ kind: "flags", flags: input.flags });
+  }
+  if (input.signatures.length > 0) {
+    subsections.push({ kind: "signatures", signatures: input.signatures });
+  } else if (input.type) {
+    subsections.push({
+      kind: "type-declaration",
+      name: input.name,
+      type: input.type,
+      optional: input.flags.optional ?? false,
+    });
+  }
+  if (input.doc.length > 0) {
+    subsections.push({ kind: "summary", doc: input.doc });
+  }
+  for (const parameters of parameterDocsForSignatures(input.signatures)) {
+    subsections.push({ kind: "parameters", parameters });
+  }
+  return subsections;
+}
+
+function hasRenderableMemberFlags(flags: MemberFlags): boolean {
+  return Boolean(flags.deprecated || flags.static || flags.abstract || flags.readonly);
+}
+
+function parameterDocsForSignatures(signatures: SignatureViewModel[]): ParameterDocViewModel[][] {
+  return signatures
+    .map((signature) =>
+      signature.parameters
+        .filter((parameter) => parameter.doc.length > 0)
+        .map((parameter) => ({ name: parameter.name, doc: parameter.doc })),
+    )
+    .filter((parameters) => parameters.length > 0);
 }
 
 function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
@@ -645,7 +705,7 @@ function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
 
 function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
   const url = idToUrl.get(decl.id) ?? "index.html";
-  const kindName = reflectionKindToPageKind(decl.kind) ?? "unknown";
+  const kindName = reflectionKindToDeclarationKind(decl.kind) ?? "unknown";
   const deprecated =
     decl.flags.isDeprecated ?? decl.comment?.modifierTags?.includes("@deprecated") ?? false;
   return {
@@ -661,7 +721,7 @@ function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): 
 // Utility
 // ---------------------------------------------------------------------------
 
-function reflectionKindToPageKind(kind: number): PageKind | null {
+function reflectionKindToDeclarationKind(kind: number): DeclarationKind | null {
   switch (kind) {
     case Kind.Class:
       return "class";

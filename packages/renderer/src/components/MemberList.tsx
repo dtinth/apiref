@@ -1,4 +1,4 @@
-import type { MemberViewModel, SignatureViewModel } from "../viewmodel.ts";
+import type { MemberSubsection, MemberViewModel } from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
@@ -28,98 +28,81 @@ export function MemberList({ members }: MemberListProps) {
 }
 
 function MemberView({ member }: { member: MemberViewModel }) {
-  const { name, kind, flags, signatures, type, doc, url, abbreviatedDoc } = member;
-  const displayName = signatures.length > 0 ? `${name}()` : name;
-
-  // Abbreviated view for members with their own pages
-  if (url && abbreviatedDoc) {
-    return (
-      <>
-        <h3 class="ar-member-card-header">
-          <DeclarationTitle kind={kind} title={displayName} kindLabelClass="ar-member-card-kind" />
-        </h3>
-        {abbreviatedDoc.length > 0 && (
-          <div class="ar-member-card-body">
-            <DocView doc={abbreviatedDoc} />
-          </div>
-        )}
-      </>
-    );
-  }
-
-  // Full view for members without their own pages
+  const { name, kind, title, subsections } = member;
   return (
     <>
       <h3 class="ar-member-card-header">
-        <DeclarationTitle kind={kind} title={displayName} kindLabelClass="ar-member-card-kind" />
+        <DeclarationTitle kind={kind} title={title} kindLabelClass="ar-member-card-kind" />
       </h3>
 
-      <div class="ar-member-card-body">
-        {(flags.deprecated || flags.static || flags.abstract || flags.readonly) && (
-          <div>
-            {flags.deprecated && <span class="ar-badge ar-badge--deprecated">deprecated</span>}
-            {flags.static && <span class="ar-badge ar-badge--static">static</span>}
-            {flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
-            {flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
-          </div>
-        )}
-
-        {signatures.length > 0 ? (
-          <div class="ar-member-card-section">
-            <div class="ar-member-card-section-label">Signature</div>
-            <div class="ar-signature">
-              {signatures.map((sig, i) => (
-                <SignatureLine key={i} sig={sig} name={name} />
-              ))}
-            </div>
-          </div>
-        ) : type ? (
-          <div class="ar-member-card-section">
-            <div class="ar-member-card-section-label">Type</div>
-            <div class="ar-signature">
-              <span class="ar-sig-name">{name}</span>
-              {flags.optional && "?"}
-              {": "}
-              <TypeView type={type} />
-            </div>
-          </div>
-        ) : null}
-
-        {doc.length > 0 && (
-          <div class="ar-member-card-section">
-            <DocView doc={doc} />
-          </div>
-        )}
-
-        {signatures.map(
-          (sig, i) =>
-            sig.parameters.some((p) => p.doc.length > 0) && (
-              <div key={i} class="ar-member-card-section">
-                <div class="ar-member-card-section-label">Parameters</div>
-                <ParamDocs sig={sig} />
-              </div>
-            ),
-        )}
-      </div>
+      {subsections.length > 0 && (
+        <div class="ar-member-card-body">{subsections.map((section, index) => renderSubsection(section, index, name))}</div>
+      )}
     </>
   );
 }
 
-function ParamDocs({ sig }: { sig: SignatureViewModel }) {
-  const paramsWithDocs = sig.parameters.filter((p) => p.doc.length > 0);
-  if (paramsWithDocs.length === 0) return null;
-  return (
-    <dl class="ar-param-list">
-      {paramsWithDocs.map((p) => (
-        <>
-          <dt key={`dt-${p.name}`} class="ar-param-name">
-            {p.name}
-          </dt>
-          <dd key={`dd-${p.name}`} class="ar-param-doc">
-            <DocView doc={p.doc} />
-          </dd>
-        </>
-      ))}
-    </dl>
-  );
+function renderSubsection(subsection: MemberSubsection, index: number, memberName: string) {
+  switch (subsection.kind) {
+    case "flags":
+      return (
+        <div key={index}>
+          {subsection.flags.deprecated && <span class="ar-badge ar-badge--deprecated">deprecated</span>}
+          {subsection.flags.static && <span class="ar-badge ar-badge--static">static</span>}
+          {subsection.flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
+          {subsection.flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
+        </div>
+      );
+
+    case "summary":
+      return (
+        <div key={index} class="ar-member-card-section">
+          <DocView doc={subsection.doc} />
+        </div>
+      );
+
+    case "signatures":
+      return (
+        <div key={index} class="ar-member-card-section">
+          <div class="ar-member-card-section-label">Signature</div>
+          <div class="ar-signature">
+            {subsection.signatures.map((sig, i) => (
+              <SignatureLine key={i} sig={sig} name={memberName} />
+            ))}
+          </div>
+        </div>
+      );
+
+    case "type-declaration":
+      return (
+        <div key={index} class="ar-member-card-section">
+          <div class="ar-member-card-section-label">Type</div>
+          <div class="ar-signature">
+            <span class="ar-sig-name">{subsection.name}</span>
+            {subsection.optional && "?"}
+            {": "}
+            <TypeView type={subsection.type} />
+          </div>
+        </div>
+      );
+
+    case "parameters":
+      return (
+        <div key={index} class="ar-member-card-section">
+          <div class="ar-member-card-section-label">Parameters</div>
+          <dl class="ar-param-list">
+            {subsection.parameters.map((parameter) => (
+              <>
+                <dt key={`dt-${parameter.name}`} class="ar-param-name">
+                  {parameter.name}
+                </dt>
+                <dd key={`dd-${parameter.name}`} class="ar-param-doc">
+                  <DocView doc={parameter.doc} />
+                </dd>
+              </>
+            ))}
+          </dl>
+        </div>
+      );
+  }
 }

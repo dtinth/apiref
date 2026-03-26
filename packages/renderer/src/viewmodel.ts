@@ -24,7 +24,7 @@ export interface SiteViewModel {
 }
 
 /**
- * The kind of declaration a page represents.
+ * The kind of declaration a page or member represents.
  * - `package-index`: The root documentation page
  * - `module`: A module or namespace grouping exports
  * - `class`, `interface`: Class or interface declaration
@@ -32,8 +32,9 @@ export interface SiteViewModel {
  * - `type-alias`: TypeScript type alias
  * - `enum`: Enumeration
  * - `namespace`: TypeScript namespace
+ * - `constructor`, `method`, `property`, `accessor`: Member declarations
  */
-export type PageKind =
+export type DeclarationKind =
   | "package-index"
   | "module"
   | "class"
@@ -42,7 +43,14 @@ export type PageKind =
   | "type-alias"
   | "variable"
   | "enum"
-  | "namespace";
+  | "namespace"
+  | "constructor"
+  | "method"
+  | "property"
+  | "accessor";
+
+/** @deprecated Use {@link DeclarationKind}. */
+export type PageKind = DeclarationKind;
 
 /**
  * A single documentation page representing a declaration (class, function, etc.)
@@ -56,7 +64,7 @@ export interface PageViewModel {
   /** Display title (usually the declaration name or package name). */
   title: string;
   /** The kind of declaration this page documents. */
-  kind: PageKind;
+  kind: DeclarationKind;
   /** Breadcrumb navigation path (e.g., Package > Module > Class). */
   breadcrumbs: Breadcrumb[];
   /** Content sections (summary, members, signatures, etc.). */
@@ -91,27 +99,39 @@ export type Section =
 /**
  * A member (property, method, accessor, etc.) of a class or interface.
  *
- * Can have optional signatures (for callable members) and/or a type (for properties).
+ * Stores only metadata plus render-oriented subsections.
  */
 export interface MemberViewModel {
   /** URL anchor for this member (used in table of contents and links). */
   anchor: string;
   /** Member name. */
   name: string;
+  /** Display title shown in the card header. */
+  title: string;
   /** Kind of member (method, property, class, interface, function, etc.). */
-  kind: string;
+  kind: DeclarationKind;
   /** Optional modifiers and flags. */
   flags: MemberFlags;
-  /** Signatures if this member is callable (methods, getters, setters). */
-  signatures: SignatureViewModel[];
-  /** Type if this member has a static type (properties, fields). */
-  type: TypeViewModel | null;
-  /** JSDoc/TSDoc comments. */
-  doc: DocNode[];
   /** URL to this member's page, if it has its own page. */
   url?: string;
-  /** Pre-stripped doc for abbreviated view (when url exists). Links removed to avoid nested links. */
-  abbreviatedDoc?: DocNode[];
+  /** Render-ready subsections shown inside the member card. */
+  subsections: MemberSubsection[];
+}
+
+/** Render-ready subsection inside a member card. */
+export type MemberSubsection =
+  | { kind: "flags"; flags: MemberFlags }
+  | { kind: "summary"; doc: DocNode[] }
+  | { kind: "signatures"; signatures: SignatureViewModel[] }
+  | { kind: "type-declaration"; name: string; type: TypeViewModel; optional: boolean }
+  | { kind: "parameters"; parameters: ParameterDocViewModel[] };
+
+/** Parameter documentation entry pre-shaped for rendering in a member subsection. */
+export interface ParameterDocViewModel {
+  /** Parameter name. */
+  name: string;
+  /** Parameter documentation. */
+  doc: DocNode[];
 }
 
 /**

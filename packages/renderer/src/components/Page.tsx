@@ -1,4 +1,10 @@
-import type { PageViewModel, SiteViewModel, Section, SignatureViewModel } from "../viewmodel.ts";
+import type {
+  DeclarationKind,
+  PageViewModel,
+  SiteViewModel,
+  Section,
+  SignatureViewModel,
+} from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { TypeView, SignatureLine } from "./TypeView.tsx";
 import { MemberList } from "./MemberList.tsx";
@@ -33,7 +39,7 @@ interface PageProps {
 interface OutlineItem {
   label: string;
   anchor: string;
-  kind: string;
+  kind: DeclarationKind;
   flags: { deprecated?: boolean };
 }
 
