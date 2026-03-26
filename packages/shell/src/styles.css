@@ -140,7 +140,7 @@ h3.ar-member-card-header .ar-kind-icon {
 }
 
 h3.ar-member-card-header .ar-member-card-kind {
-  @apply text-ar-accent-cyan font-normal text-sm ml-1;
+  color: #8b8685;
 }
 
 /* ── Member items (class properties, methods, etc.) ────────────────────── */
@@ -154,10 +154,6 @@ h3.ar-member-card-header .ar-member-card-kind {
 
 .ar-member-card-header .ar-kind-icon {
   @apply flex-none text-sm;
-}
-
-.ar-member-card-kind {
-  @apply text-ar-muted font-normal text-xs;
 }
 
 .ar-member-card--link {
