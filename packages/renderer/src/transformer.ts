@@ -461,7 +461,7 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
 
   const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
   const kind = declarationKindForMember(decl, signatures);
-  const title = signatures.length > 0 ? `${decl.name}()` : decl.name;
+  const title = kindUsesCallSyntax(kind) ? `${decl.name}()` : decl.name;
   const subsections = buildMemberSubsections({
     name: decl.name,
     flags,
@@ -545,6 +545,10 @@ function parameterDocsForSignatures(signatures: SignatureViewModel[]): Parameter
         .map((parameter) => ({ name: parameter.name, doc: parameter.doc })),
     )
     .filter((parameters) => parameters.length > 0);
+}
+
+function kindUsesCallSyntax(kind: DeclarationKind): boolean {
+  return kind === "function" || kind === "method";
 }
 
 function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
