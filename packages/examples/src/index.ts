@@ -331,3 +331,98 @@ export function merge<T extends Record<string, any>>(...objects: T[]): T {
 export function createTuple<T extends readonly any[]>(items: T): T {
   return items;
 }
+
+// -----------------------------------------------------------------------
+// Multi-natured exports
+// -----------------------------------------------------------------------
+
+/**
+ * Default validation function.
+ *
+ * @param value - Value to validate
+ * @returns true if valid
+ */
+function createValidator(pattern: RegExp): (value: string) => boolean {
+  return (value) => pattern.test(value);
+}
+
+/**
+ * Email validator function with configurable patterns namespace.
+ *
+ * Can be used as a function: `validator.isEmail("test@example.com")`
+ * Or configured via namespace: `validator.patterns.strict`
+ */
+export namespace Validator {
+  /** Common validation patterns */
+  export namespace patterns {
+    /** Strict email pattern */
+    export const strictEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    /** Relaxed email pattern */
+    export const relaxedEmail = /^.+@.+\..+$/;
+    /** URL pattern */
+    export const url = /^https?:\/\/.+/;
+  }
+
+  /** Default email validator */
+  export const isEmail = createValidator(patterns.strictEmail);
+
+  /** Default URL validator */
+  export const isUrl = createValidator(patterns.url);
+}
+
+/**
+ * Event emitter factory with associated namespace for event types.
+ *
+ * Can be used as a function: `createEmitter<MyEvents>()`
+ * Or typed via namespace: `Emitter.EventMap`
+ */
+export function createEmitter<T extends Record<string, any>>(): {
+  on<K extends keyof T>(event: K, listener: (data: T[K]) => void): void;
+  emit<K extends keyof T>(event: K, data: T[K]): void;
+} {
+  const listeners = new Map<string, Set<(data: any) => void>>();
+
+  return {
+    on(event, listener) {
+      if (!listeners.has(String(event))) {
+        listeners.set(String(event), new Set());
+      }
+      listeners.get(String(event))!.add(listener);
+    },
+    emit(event, data) {
+      listeners.get(String(event))?.forEach((fn) => fn(data));
+    },
+  };
+}
+
+/**
+ * Namespace containing emitter-related types and utilities.
+ */
+export namespace createEmitter {
+  /** Base event map interface for type-safe event emitters */
+  export interface EventMap {
+    [key: string]: any;
+  }
+
+  /** Options for creating an emitter */
+  export interface Options {
+    /** Maximum number of listeners before warning */
+    maxListeners?: number;
+  }
+}
+
+/**
+ * Configuration object that also serves as a type template.
+ *
+ * Can be used as a value: `defaultConfig`
+ * Or as a type template: `type Config = typeof defaultConfig`
+ */
+export const defaultConfig = {
+  timeout: 5000,
+  retries: 3,
+  cache: true,
+  debug: false,
+} as const;
+
+/** Type derived from the default config */
+export type AppConfig = typeof defaultConfig;
