@@ -82,7 +82,6 @@ export class ArShell extends LitElement {
     const { meta } = this;
     const currentUrl = location.pathname.replace(/^\//, "") || "index.html";
     const outline = meta?.outline ?? [];
-    const hasOutline = outline.length > 0;
 
     return html`
       <ar-header
@@ -107,13 +106,11 @@ export class ArShell extends LitElement {
           : nothing}
       </nav>
 
-      ${hasOutline
-        ? html`<aside class="ar-outline-sidebar" aria-label="Page outline">
-            <ar-outline .sections=${outline}></ar-outline>
-          </aside>`
-        : nothing}
+      <aside class="ar-outline-sidebar" aria-label="Page outline">
+        <ar-outline .sections=${outline}></ar-outline>
+      </aside>
 
-      <div class=${`ar-main ${hasOutline ? "ar-main--with-outline" : ""}`}>
+      <div class="ar-main ar-main--with-outline">
         <div class="ar-content-wrap" ${ref(this.onContentRef)}></div>
       </div>
     `;

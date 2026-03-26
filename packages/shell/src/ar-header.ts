@@ -42,9 +42,9 @@ export class ArHeader extends LitElement {
             </button>`
           : ""}
         <a href=${this.baseHref + "index.html"} class="ar-header-logo">
-          <span class="text-ar-muted">apiref</span>
+          <span class="ar-header-brand">apiref</span>
           ${this.pkgName
-            ? html`<span class="text-ar-muted">/</span
+            ? html`<span class="ar-header-separator">/</span
                 ><span class="ar-header-pkg">${this.pkgName}</span
                 ><span class="ar-header-version">${this.pkgVersion}</span>`
             : ""}

@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./bootstrap.ts";
 export { ArShell } from "./ar-shell.ts";
 export { ArHeader } from "./ar-header.ts";
 export { ArNav } from "./ar-nav.ts";

@@ -42,6 +42,25 @@ describe("render pw-utilities", () => {
     expect(html).toContain(`${SHELL}/shell.js`);
   });
 
+  test("index.html renders semantic shell HTML instead of shell custom elements", () => {
+    const html = pages.get("index.html")!;
+    expect(html).toContain('data-ar-shell');
+    expect(html).toContain('aria-label="Package navigation"');
+    expect(html).toContain('aria-label="Page outline"');
+    expect(html).not.toContain("<ar-shell");
+    expect(html).not.toContain("<ar-header");
+    expect(html).not.toContain("<ar-nav");
+    expect(html).not.toContain("<ar-outline");
+  });
+
+  test("semantic shell HTML does not include Tailwind utility classes", () => {
+    const html = pages.get("index.html")!;
+    expect(html).not.toContain("text-ar-muted");
+    expect(html).not.toContain("md:hidden");
+    expect(html).not.toContain("xl:block");
+    expect(html).not.toContain("line-through opacity-60");
+  });
+
   test("index.html contains ar-meta JSON blob", () => {
     const html = pages.get("index.html")!;
     expect(html).toContain('id="ar-meta"');
@@ -62,6 +81,12 @@ describe("render pw-utilities", () => {
     const html = pages.get("stabilize.html")!;
     // Part of the summary text from the fixture
     expect(html).toContain("Scrolls the element into view");
+  });
+
+  test("stabilize.html always renders the outline container", () => {
+    const html = pages.get("stabilize.html")!;
+    expect(html).toContain('aria-label="Page outline"');
+    expect(html).toContain('class="ar-main ar-main--with-outline"');
   });
 
   test("stabilize.html contains ar-declaration--function class", () => {

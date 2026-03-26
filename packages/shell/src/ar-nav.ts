@@ -29,7 +29,7 @@ export class ArNav extends LitElement {
     return html`
       <a
         href=${this.baseHref + node.url}
-        class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
+        class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "ar-nav-item--deprecated" : ""}`}
       >
         <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
         <span>${node.label}</span>

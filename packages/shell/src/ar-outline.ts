@@ -37,7 +37,7 @@ export class ArOutline extends LitElement {
     return html`
       <a
         href=${"#" + item.anchor}
-        class=${`ar-outline-item ${item.flags.deprecated ? "line-through opacity-60" : ""}`}
+        class=${`ar-outline-item ${item.flags.deprecated ? "ar-outline-item--deprecated" : ""}`}
       >
         <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${item.kind}`}></i>
         <span>${item.label}</span>

@@ -25,7 +25,8 @@ body {
 }
 
 /* ── Layout: shell ──────────────────────────────────────────────────────── */
-ar-shell {
+ar-shell,
+.ar-shell {
   display: block;
 }
 
@@ -35,6 +36,11 @@ ar-shell {
 
 .ar-header-logo {
   @apply px-[18px] text-ar-muted text-lg font-medium flex items-center gap-2 flex-none;
+}
+
+.ar-header-brand,
+.ar-header-separator {
+  @apply text-ar-muted;
 }
 
 .ar-header-pkg {
@@ -126,6 +132,10 @@ ar-shell {
 
 .ar-nav-item--active.ar-nav-item--depth-4 {
   padding-left: calc(5rem - 2px);
+}
+
+.ar-nav-item--deprecated {
+  @apply line-through opacity-60;
 }
 
 .ar-nav-item-icon {
@@ -511,6 +521,10 @@ a.ar-card-header {
 .ar-outline-item {
   @apply flex items-center gap-1.5 px-1 py-0.5 text-xs text-gray-400 hover:text-white
          hover:bg-white/5 rounded transition-colors cursor-pointer w-full truncate;
+}
+
+.ar-outline-item--deprecated {
+  @apply line-through opacity-60;
 }
 
 .ar-outline-item .codicon {

@@ -1,6 +1,7 @@
 import type {
   DeclarationKind,
   MemberFlags,
+  NavNode,
   PageViewModel,
   Section,
   SectionBlock,
@@ -35,6 +36,22 @@ interface OutlineSection {
   items: OutlineItem[];
 }
 
+const KIND_ICONS: Partial<Record<DeclarationKind, string>> = {
+  class: "codicon-symbol-class",
+  interface: "codicon-symbol-interface",
+  function: "codicon-symbol-function",
+  "type-alias": "codicon-symbol-type-parameter",
+  variable: "codicon-symbol-variable",
+  enum: "codicon-symbol-enum",
+  module: "codicon-symbol-module",
+  namespace: "codicon-symbol-namespace",
+  "package-index": "codicon-symbol-package",
+  constructor: "codicon-symbol-method",
+  method: "codicon-symbol-method",
+  property: "codicon-symbol-field",
+  accessor: "codicon-symbol-property",
+};
+
 function buildOutline(sections: Section[]): OutlineSection[] {
   const result: OutlineSection[] = [];
   for (const section of sections) {
@@ -61,9 +78,14 @@ function buildOutline(sections: Section[]): OutlineSection[] {
   return result;
 }
 
+function getKindIcon(kind: string): string {
+  return KIND_ICONS[kind as DeclarationKind] ?? "codicon-symbol-misc";
+}
+
 export function Page({ site, page, options }: PageProps) {
   const depth = page.url.split("/").length - 1;
   const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
+  const outline = buildOutline(page.sections);
 
   const meta = {
     package: site.package.name,
@@ -72,7 +94,7 @@ export function Page({ site, page, options }: PageProps) {
     kind: page.kind,
     breadcrumbs: page.breadcrumbs,
     navTree: site.navTree,
-    outline: buildOutline(page.sections),
+    outline,
     baseHref,
   };
 
@@ -104,15 +126,111 @@ export function Page({ site, page, options }: PageProps) {
         <script type="module" src={`${options.shellBaseUrl}/shell.js`} />
       </head>
       <body>
-        <ar-shell>
-          <main class="ar-content">
-            <PageContext.Provider value={page.url}>
-              <PageContent page={page} />
-            </PageContext.Provider>
+        <div class="ar-shell" data-ar-shell>
+          <header class="ar-header" data-ar-header>
+            <button
+              type="button"
+              class="ar-header-menu-btn"
+              data-ar-sidebar-toggle
+              aria-controls="ar-sidebar"
+              aria-label="Toggle navigation"
+              aria-expanded="false"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <a href={baseHref + "index.html"} class="ar-header-logo">
+              <span class="ar-header-brand">apiref</span>
+              {site.package.name ? (
+                <>
+                  <span class="ar-header-separator">/</span>
+                  <span class="ar-header-pkg">{site.package.name}</span>
+                  <span class="ar-header-version">{site.package.version}</span>
+                </>
+              ) : null}
+            </a>
+          </header>
+
+          <nav
+            id="ar-sidebar"
+            class="ar-sidebar ar-sidebar--hidden"
+            data-ar-sidebar
+            aria-label="Package navigation"
+          >
+            <div class="ar-nav">{site.navTree.map((node) => renderNavNode(node, 0, page.url, baseHref))}</div>
+          </nav>
+
+          <aside class="ar-outline-sidebar" data-ar-outline aria-label="Page outline">
+            {outline.length > 0 ? (
+              <div class="ar-outline">
+                <div class="ar-outline-title">Outline</div>
+                {outline.map((section) => renderOutlineSection(section, outline.length > 1))}
+              </div>
+            ) : (
+              <div class="ar-outline"></div>
+            )}
+          </aside>
+
+          <main class="ar-main ar-main--with-outline">
+            <div class="ar-content-wrap">
+              <PageContext.Provider value={page.url}>
+                <PageContent page={page} />
+              </PageContext.Provider>
+            </div>
           </main>
-        </ar-shell>
+        </div>
       </body>
     </html>
+  );
+}
+
+function renderNavNode(node: NavNode, depth: number, currentUrl: string, baseHref: string) {
+  const isActive = node.url === currentUrl;
+  const iconClass = getKindIcon(node.kind);
+  return (
+    <>
+      <a
+        href={baseHref + node.url}
+        class={`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "ar-nav-item--deprecated" : ""}`}
+      >
+        <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`} />
+        <span>{node.label}</span>
+      </a>
+      {node.children.map((child) => renderNavNode(child, depth + 1, currentUrl, baseHref))}
+    </>
+  );
+}
+
+function renderOutlineSection(section: OutlineSection, showLabel: boolean) {
+  if (section.items.length === 0) return null;
+  return (
+    <div class="ar-outline-section">
+      {showLabel ? <div class="ar-outline-section-label">{section.label}</div> : null}
+      {section.items.map((item) => renderOutlineItem(item))}
+    </div>
+  );
+}
+
+function renderOutlineItem(item: OutlineItem) {
+  const iconClass = getKindIcon(item.kind);
+  return (
+    <a
+      href={`#${item.anchor}`}
+      class={`ar-outline-item ${item.flags.deprecated ? "ar-outline-item--deprecated" : ""}`}
+    >
+      <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${item.kind}`} />
+      <span>{item.label}</span>
+    </a>
   );
 }
 
