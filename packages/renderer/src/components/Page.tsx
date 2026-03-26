@@ -90,6 +90,10 @@ function getKindIconClassName(kind: string) {
   return joinClasses("codicon", getKindIcon(kind), "ar-kind-icon", `ar-kind-icon--${kind}`);
 }
 
+function formatKindLabel(kind: string) {
+  return kind.replace(/-/g, " ");
+}
+
 export function Page({ site, page, options }: PageProps) {
   const depth = page.url.split("/").length - 1;
   const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
@@ -268,7 +272,7 @@ function OutlineItemView({ item }: { item: OutlineItem }) {
     <a
       href={`#${item.anchor}`}
       class={joinClasses("ar-outline-item", item.flags.deprecated && "ar-outline-item--deprecated")}
-      aria-label={`Jump to ${item.kind} ${item.label}`}
+      aria-label={`Jump to ${formatKindLabel(item.kind)} ${item.label}`}
     >
       <i class={getKindIconClassName(item.kind)} />
       <span>{item.label}</span>
