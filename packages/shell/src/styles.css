@@ -141,6 +141,7 @@ h3.ar-member-card-header .ar-kind-icon {
 
 h3.ar-member-card-header .ar-member-card-kind {
   color: #8b8685;
+  font-weight: normal;
 }
 
 /* ── Member items (class properties, methods, etc.) ────────────────────── */
