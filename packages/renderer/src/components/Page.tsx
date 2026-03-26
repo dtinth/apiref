@@ -1,14 +1,14 @@
 import type {
   DeclarationKind,
   PageViewModel,
-  SiteViewModel,
   Section,
   SignatureViewModel,
+  SiteViewModel,
 } from "../viewmodel.ts";
-import { DocView } from "./DocView.tsx";
-import { TypeView, SignatureLine } from "./TypeView.tsx";
-import { MemberList } from "./MemberList.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
+import { DocView } from "./DocView.tsx";
+import { MemberList } from "./MemberList.tsx";
+import { SignatureLine, TypeView } from "./TypeView.tsx";
 
 /**
  * Compute the base href for a page based on its URL depth.
@@ -54,7 +54,14 @@ function buildOutline(sections: Section[]): OutlineSection[] {
     if (section.kind === "constructor") {
       result.push({
         label: "Constructor",
-        items: [{ label: "constructor", anchor: "constructor", kind: "constructor", flags: {} }],
+        items: [
+          {
+            label: "constructor",
+            anchor: "constructor",
+            kind: "constructor",
+            flags: {},
+          },
+        ],
       });
     } else if (section.kind === "members") {
       result.push({
@@ -153,6 +160,7 @@ function SectionView({ section, pageName }: { section: Section; pageName?: strin
     case "signatures":
       return (
         <section class="ar-section ar-section--signatures">
+          <h2 class="ar-section-title">Call Signatures</h2>
           {section.signatures.map((sig, i) => (
             <SignatureBlock key={i} sig={sig} label={pageName} />
           ))}
@@ -173,6 +181,37 @@ function SectionView({ section, pageName }: { section: Section; pageName?: strin
         <section class="ar-section ar-section--members">
           <h2 class="ar-section-title">{section.label}</h2>
           <MemberList members={section.members} />
+        </section>
+      );
+
+    case "flags":
+      return (
+        <div class="ar-section-flags">
+          {section.flags.deprecated && (
+            <span class="ar-badge ar-badge--deprecated">deprecated</span>
+          )}
+          {section.flags.static && <span class="ar-badge ar-badge--static">static</span>}
+          {section.flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
+          {section.flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
+        </div>
+      );
+
+    case "parameters":
+      return (
+        <section class="ar-section ar-section--parameters">
+          <h2 class="ar-section-title">Parameters</h2>
+          <dl class="ar-param-list">
+            {section.parameters.map((p) => (
+              <>
+                <dt key={`dt-${p.name}`} class="ar-param-name">
+                  {p.name}
+                </dt>
+                <dd key={`dd-${p.name}`} class="ar-param-doc">
+                  <DocView doc={p.doc} />
+                </dd>
+              </>
+            ))}
+          </dl>
         </section>
       );
   }

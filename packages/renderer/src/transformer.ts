@@ -1,32 +1,31 @@
 import {
+  ANCHOR_KINDS,
   Kind,
   PAGE_KINDS,
-  ANCHOR_KINDS,
-  type TDProject,
-  type TDDeclaration,
-  type TDType,
-  type TDSignature,
-  type TDParameter,
-  type TDTypeParameter,
-  type TDCommentPart,
   type TDComment,
+  type TDCommentPart,
+  type TDDeclaration,
+  type TDParameter,
+  type TDProject,
+  type TDSignature,
+  type TDType,
+  type TDTypeParameter,
 } from "./typedoc.ts";
 import type {
-  SiteViewModel,
-  PageViewModel,
+  Breadcrumb,
   DeclarationKind,
-  NavNode,
-  Section,
-  MemberViewModel,
+  DocNode,
   MemberFlags,
-  MemberSubsection,
+  MemberViewModel,
+  NavNode,
+  PageViewModel,
   ParameterDocViewModel,
-  SignatureViewModel,
   ParameterViewModel,
+  Section,
+  SignatureViewModel,
+  SiteViewModel,
   TypeParameterViewModel,
   TypeViewModel,
-  DocNode,
-  Breadcrumb,
 } from "./viewmodel.ts";
 
 /**
@@ -219,7 +218,10 @@ function buildPackageIndexPage(
   const sections: Section[] = [];
 
   if (project.readme && project.readme.length > 0) {
-    sections.push({ kind: "summary", doc: transformCommentParts(project.readme, ctx) });
+    sections.push({
+      kind: "summary",
+      doc: transformCommentParts(project.readme, ctx),
+    });
   } else if (project.comment) {
     const doc = transformComment(project.comment, ctx);
     if (doc.length > 0) sections.push({ kind: "summary", doc });
@@ -407,12 +409,20 @@ function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Sectio
 function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
   const sigs = decl.signatures ?? [];
   if (sigs.length === 0) return [];
-  return [
+
+  const transformedSigs = sigs.map((s) => transformSignature(s, ctx));
+  const sections: Section[] = [
     {
       kind: "signatures",
-      signatures: sigs.map((s) => transformSignature(s, ctx)),
+      signatures: transformedSigs,
     },
   ];
+
+  for (const parameters of parameterDocsForSignatures(transformedSigs)) {
+    sections.push({ kind: "parameters", parameters });
+  }
+
+  return sections;
 }
 
 function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
@@ -461,7 +471,7 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
 
   const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
   const kind = declarationKindForMember(decl, signatures);
-  const title = kindUsesCallSyntax(kind) ? `${decl.name}()` : decl.name;
+  const title = decl.name;
   const subsections = buildMemberSubsections({
     name: decl.name,
     flags,
@@ -504,13 +514,13 @@ function buildMemberSubsections(input: {
   type: TypeViewModel | null;
   doc: DocNode[];
   url?: string;
-}): MemberSubsection[] {
+}): Section[] {
   if (input.url) {
     const summary = stripLinksFromDoc(input.doc);
     return summary.length > 0 ? [{ kind: "summary", doc: summary }] : [];
   }
 
-  const subsections: MemberSubsection[] = [];
+  const subsections: Section[] = [];
   if (hasRenderableMemberFlags(input.flags)) {
     subsections.push({ kind: "flags", flags: input.flags });
   }
@@ -545,10 +555,6 @@ function parameterDocsForSignatures(signatures: SignatureViewModel[]): Parameter
         .map((parameter) => ({ name: parameter.name, doc: parameter.doc })),
     )
     .filter((parameters) => parameters.length > 0);
-}
-
-function kindUsesCallSyntax(kind: DeclarationKind): boolean {
-  return kind === "function" || kind === "method";
 }
 
 function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
@@ -624,16 +630,28 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
     }
 
     case "union":
-      return { kind: "union", types: tdType.types.map((t) => transformType(t, ctx)) };
+      return {
+        kind: "union",
+        types: tdType.types.map((t) => transformType(t, ctx)),
+      };
 
     case "intersection":
-      return { kind: "intersection", types: tdType.types.map((t) => transformType(t, ctx)) };
+      return {
+        kind: "intersection",
+        types: tdType.types.map((t) => transformType(t, ctx)),
+      };
 
     case "array":
-      return { kind: "array", elementType: transformType(tdType.elementType, ctx) };
+      return {
+        kind: "array",
+        elementType: transformType(tdType.elementType, ctx),
+      };
 
     case "tuple":
-      return { kind: "tuple", elements: tdType.elements.map((t) => transformType(t, ctx)) };
+      return {
+        kind: "tuple",
+        elements: tdType.elements.map((t) => transformType(t, ctx)),
+      };
 
     case "typeOperator":
       return {
@@ -763,7 +781,10 @@ function inferGroups(decls: TDDeclaration[]): Array<{ title: string; children: n
     }
     arr.push(decl.id);
   }
-  return Array.from(groupMap.entries()).map(([title, children]) => ({ title, children }));
+  return Array.from(groupMap.entries()).map(([title, children]) => ({
+    title,
+    children,
+  }));
 }
 
 function kindGroupTitle(kind: number): string {

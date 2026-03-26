@@ -77,21 +77,25 @@ export interface Breadcrumb {
 }
 
 /**
- * A content section within a page.
+ * A content section within a page or member card.
  *
  * Different section kinds render different content:
  * - `summary`: Documentation text/description
- * - `constructor`: Class constructor(s) with signatures
+ * - `constructor`: Class constructor(s) with signatures (page-level only)
  * - `signatures`: Callable signatures (functions, methods)
- * - `members`: Listed members (properties, methods, etc.) within a class/interface
- * - `type-declaration`: Type alias or variable type definition
+ * - `members`: Listed members (properties, methods, etc.) (page-level only)
+ * - `type-declaration`: Type alias or variable type definition, or property type
+ * - `flags`: Modifier badges (deprecated, static, abstract, readonly) (member-level)
+ * - `parameters`: Parameter documentation list (member-level)
  */
 export type Section =
   | { kind: "summary"; doc: DocNode[] }
   | { kind: "constructor"; signatures: SignatureViewModel[] }
   | { kind: "signatures"; signatures: SignatureViewModel[] }
   | { kind: "members"; label: string; members: MemberViewModel[] }
-  | { kind: "type-declaration"; type: TypeViewModel };
+  | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
+  | { kind: "flags"; flags: MemberFlags }
+  | { kind: "parameters"; parameters: ParameterDocViewModel[] };
 
 /**
  * A member (property, method, accessor, etc.) of a class or interface.
@@ -112,16 +116,8 @@ export interface MemberViewModel {
   /** URL to this member's page, if it has its own page. */
   url?: string;
   /** Render-ready subsections shown inside the member card. */
-  subsections: MemberSubsection[];
+  subsections: Section[];
 }
-
-/** Render-ready subsection inside a member card. */
-export type MemberSubsection =
-  | { kind: "flags"; flags: MemberFlags }
-  | { kind: "summary"; doc: DocNode[] }
-  | { kind: "signatures"; signatures: SignatureViewModel[] }
-  | { kind: "type-declaration"; name: string; type: TypeViewModel; optional: boolean }
-  | { kind: "parameters"; parameters: ParameterDocViewModel[] };
 
 /** Parameter documentation entry pre-shaped for rendering in a member subsection. */
 export interface ParameterDocViewModel {

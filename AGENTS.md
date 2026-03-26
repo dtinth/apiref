@@ -85,6 +85,7 @@ For GitHub Actions, consider using [`voidzero-dev/setup-vp`](https://github.com/
 
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp check` and `vp test` to validate changes.
+<!--VITE PLUS END-->
 
 ## apiref Development Workflow
 
@@ -99,5 +100,3 @@ Run `pitchfork start --all` to:
 
 - **Shell package changes** (ar-nav.ts, ar-outline.ts, styles.css, etc.): Changes auto-rebuild via pitchfork. Refresh the browser to see updates.
 - **Renderer package changes** (transformer, viewmodel, Page.tsx, etc.): Run `vp run render` to regenerate the static site, then refresh the browser.
-
-<!--VITE PLUS END-->

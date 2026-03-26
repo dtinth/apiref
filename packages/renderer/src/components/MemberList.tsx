@@ -1,4 +1,4 @@
-import type { MemberSubsection, MemberViewModel } from "../viewmodel.ts";
+import type { Section, MemberViewModel } from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
@@ -44,7 +44,7 @@ function MemberView({ member }: { member: MemberViewModel }) {
   );
 }
 
-function renderSubsection(subsection: MemberSubsection, index: number, memberName: string) {
+function renderSubsection(subsection: Section, index: number, memberName: string) {
   switch (subsection.kind) {
     case "flags":
       return (
@@ -82,9 +82,9 @@ function renderSubsection(subsection: MemberSubsection, index: number, memberNam
         <div key={index} class="ar-member-card-section">
           <div class="ar-member-card-section-label">Type</div>
           <div class="ar-signature">
-            <span class="ar-sig-name">{subsection.name}</span>
+            {subsection.name && <span class="ar-sig-name">{subsection.name}</span>}
             {subsection.optional && "?"}
-            {": "}
+            {subsection.name && ": "}
             <TypeView type={subsection.type} />
           </div>
         </div>
@@ -108,5 +108,9 @@ function renderSubsection(subsection: MemberSubsection, index: number, memberNam
           </dl>
         </div>
       );
+
+    // Page-level kinds that shouldn't appear in member subsections
+    default:
+      return null;
   }
 }

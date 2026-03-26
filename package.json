@@ -7,7 +7,7 @@
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
     "dev": "vp run website#dev",
     "prepare": "vp config",
-    "render": "node packages/renderer/dist/cli.mjs fixtures/visual-storyboard.json --out _site --assets-base /assets"
+    "render": "vp run @apiref/renderer#build && node packages/renderer/dist/cli.mjs fixtures/visual-storyboard.json --out _site --assets-base /assets"
   },
   "devDependencies": {
     "typedoc": "catalog:",

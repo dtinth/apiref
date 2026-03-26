@@ -236,7 +236,7 @@ describe("member cards", () => {
     if (writerMethods?.kind === "members") {
       const createFrame = writerMethods.members.find((member) => member.name === "createFrame");
       expect(createFrame?.kind).toBe("method");
-      expect(createFrame?.title).toBe("createFrame()");
+      expect(createFrame?.title).toBe("createFrame");
       expect(createFrame?.subsections.map((section) => section.kind)).toEqual([
         "signatures",
         "summary",

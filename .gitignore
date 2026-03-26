@@ -26,3 +26,4 @@ _site
 
 # AI agent worktrees
 .claude/worktrees/
+mise.local.toml

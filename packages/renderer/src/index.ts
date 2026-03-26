@@ -55,7 +55,6 @@ export type {
   Breadcrumb,
   Section,
   MemberViewModel,
-  MemberSubsection,
   MemberFlags,
   ParameterDocViewModel,
   SignatureViewModel,
