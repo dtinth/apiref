@@ -1,0 +1,39 @@
+{
+  "name": "@apiref/renderer",
+  "version": "0.0.0",
+  "description": "TypeDoc JSON → static HTML documentation site generator",
+  "homepage": "https://github.com/dtinth/apiref#readme",
+  "bugs": {
+    "url": "https://github.com/dtinth/apiref/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dtinth/apiref.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "bumpp": "^11.0.1",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  }
+}

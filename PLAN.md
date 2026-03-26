@@ -84,15 +84,15 @@ Provenance attestation is [Sigstore](https://sigstore.dev)-based. Verification c
 
 Schema (Grist table `Jobs`):
 
-| Column | Type | Notes |
-|---|---|---|
-| `package` | Text | e.g. `playwright` |
-| `version` | Text | e.g. `1.44.0` |
-| `status` | Choice | `pending`, `generating`, `rendering`, `done`, `failed` |
-| `requested_at` | DateTime | |
-| `error` | Text | populated on failure |
-| `generated_at` | DateTime | when typedoc.json was uploaded |
-| `rendered_at` | DateTime | when HTML was uploaded |
+| Column         | Type     | Notes                                                  |
+| -------------- | -------- | ------------------------------------------------------ |
+| `package`      | Text     | e.g. `playwright`                                      |
+| `version`      | Text     | e.g. `1.44.0`                                          |
+| `status`       | Choice   | `pending`, `generating`, `rendering`, `done`, `failed` |
+| `requested_at` | DateTime |                                                        |
+| `error`        | Text     | populated on failure                                   |
+| `generated_at` | DateTime | when typedoc.json was uploaded                         |
+| `rendered_at`  | DateTime | when HTML was uploaded                                 |
 
 **Concurrency note:** Grist is not a real message queue. If two workers happen to pick up the same job, the worst outcome is that the same documentation gets generated twice — wasted effort, but not harmful (no money moves, no data is corrupted, the second upload just overwrites the first with identical content). No optimistic locking needed.
 
@@ -120,6 +120,7 @@ Input: TypeDoc JSON (schema version 2.0, `kind` numbers per [`ReflectionKind`](h
 Output: `SiteViewModel` JSON.
 
 Key responsibilities:
+
 - Decide which TypeDoc reflections become pages vs. anchors within a page (see mapping below).
 - Build a slug for every reflection that gets a URL; deduplicate slugs.
 - Resolve all cross-references (`id` → absolute URL within the site) before the HTML stage.
@@ -131,6 +132,7 @@ Input: `SiteViewModel` JSON.
 Output: a directory of static `.html` files.
 
 Key responsibilities:
+
 - Render each `PageViewModel` to HTML using [Preact](https://preactjs.com/) + [`preact-render-to-string`](https://github.com/preactjs/preact-render-to-string). No Preact runtime is shipped to the browser.
 - Emit semantic HTML with `ar-*` class names (see CSS architecture).
 - Render type signatures with syntax highlighting ([Shiki](https://shiki.matsu.io/)).
@@ -140,26 +142,27 @@ Key responsibilities:
 
 TypeDoc `kind` → page or anchor:
 
-| Kind | Number | Becomes |
-|---|---|---|
-| Project | 1 | `index.html` (package index listing modules) |
-| Module | 2 | `{module}/index.html` |
-| Class | 128 | `{module}/{Name}.html` |
-| Interface | 256 | `{module}/{Name}.html` |
-| Function | 64 | `{module}/{name}.html` |
-| TypeAlias | 2097152 | `{module}/{Name}.html` |
-| Variable | 32 | `{module}/{name}.html` |
-| Enum | 8 | `{module}/{Name}.html` |
-| Namespace | 4 | `{module}/{name}/index.html` |
-| Constructor | 512 | Anchor `#constructor` on class page |
-| Property | 1024 | Anchor `#{name}` on parent page |
-| Method | 2048 | Anchor `#{name}` on parent page |
-| Accessor | 262144 | Anchor `#{name}` on parent page |
-| EnumMember | 16 | Anchor `#{name}` on enum page |
+| Kind        | Number  | Becomes                                      |
+| ----------- | ------- | -------------------------------------------- |
+| Project     | 1       | `index.html` (package index listing modules) |
+| Module      | 2       | `{module}/index.html`                        |
+| Class       | 128     | `{module}/{Name}.html`                       |
+| Interface   | 256     | `{module}/{Name}.html`                       |
+| Function    | 64      | `{module}/{name}.html`                       |
+| TypeAlias   | 2097152 | `{module}/{Name}.html`                       |
+| Variable    | 32      | `{module}/{name}.html`                       |
+| Enum        | 8       | `{module}/{Name}.html`                       |
+| Namespace   | 4       | `{module}/{name}/index.html`                 |
+| Constructor | 512     | Anchor `#constructor` on class page          |
+| Property    | 1024    | Anchor `#{name}` on parent page              |
+| Method      | 2048    | Anchor `#{name}` on parent page              |
+| Accessor    | 262144  | Anchor `#{name}` on parent page              |
+| EnumMember  | 16      | Anchor `#{name}` on enum page                |
 
 Single-entry-point packages skip the module level: `index.html` is both the package index and the module listing.
 
 Example URL tree for `visual-storyboard`:
+
 ```
 index.html
 index/index.html
@@ -173,9 +176,9 @@ transports/file/index.html
 transports/file/FileTransport.html
 ```
 
-#### ViewModel types (`@apiref/viewmodel`)
+#### ViewModel types (internal to `@apiref/renderer`)
 
-Shared type definitions imported by both transformer and renderer:
+Not a public API — lives in `packages/renderer/src/viewmodel.ts`. Defined here for reference:
 
 ```typescript
 type SiteViewModel = {
@@ -238,8 +241,8 @@ A separate package of [Web Components](https://developer.mozilla.org/en-US/docs/
 Every generated HTML page loads two CDN resources:
 
 ```html
-<link rel="stylesheet" href="https://cdn.example.com/shell@{version}/styles.css">
-<script type="module"  src="https://cdn.example.com/shell@{version}/shell.js"></script>
+<link rel="stylesheet" href="https://cdn.example.com/shell@{version}/styles.css" />
+<script type="module" src="https://cdn.example.com/shell@{version}/shell.js"></script>
 ```
 
 `styles.css` is a compiled [Tailwind CSS](https://tailwindcss.com/) bundle (with the [`@tailwindcss/typography`](https://tailwindcss.com/docs/typography-plugin) plugin) that defines all `ar-*` content classes via `@apply`. Shell component templates use Tailwind utility classes directly in their markup.
@@ -248,14 +251,14 @@ The shell reads a metadata blob embedded in each page to populate navigation, br
 
 ```html
 <script type="application/json" id="ar-meta">
-{
-  "package": "playwright",
-  "version": "1.44.0",
-  "title": "Page",
-  "kind": "class",
-  "breadcrumbs": [{ "label": "playwright", "href": "../index.html" }],
-  "navTree": [ ... ]
-}
+  {
+    "package": "playwright",
+    "version": "1.44.0",
+    "title": "Page",
+    "kind": "class",
+    "breadcrumbs": [{ "label": "playwright", "href": "../index.html" }],
+    "navTree": [ ... ]
+  }
 </script>
 ```
 
@@ -276,17 +279,27 @@ This means the renderer has no knowledge of Tailwind. It emits HTML like:
 <div class="ar-declaration ar-declaration--class">
   <div class="ar-signature">...</div>
   <div class="ar-description">...</div>
-  <ul class="ar-member-list"> ... </ul>
+  <ul class="ar-member-list">
+    ...
+  </ul>
 </div>
 ```
 
 And the shell CSS defines what those mean:
 
 ```css
-.ar-declaration       { @apply bg-white rounded-lg border border-gray-200 p-6 mb-4; }
-.ar-signature         { @apply font-mono text-sm bg-gray-50 p-3 rounded; }
-.ar-description       { @apply prose prose-gray max-w-none; }
-.ar-member-list       { @apply divide-y divide-gray-100 mt-4; }
+.ar-declaration {
+  @apply bg-white rounded-lg border border-gray-200 p-6 mb-4;
+}
+.ar-signature {
+  @apply font-mono text-sm bg-gray-50 p-3 rounded;
+}
+.ar-description {
+  @apply prose prose-gray max-w-none;
+}
+.ar-member-list {
+  @apply divide-y divide-gray-100 mt-4;
+}
 ```
 
 [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) are used for theming tokens shared between shell and content:
@@ -294,27 +307,27 @@ And the shell CSS defines what those mean:
 ```css
 :root {
   --ar-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --ar-color-kind-class:     #3b82f6;
+  --ar-color-kind-class: #3b82f6;
   --ar-color-kind-interface: #8b5cf6;
-  --ar-color-kind-function:  #10b981;
-  --ar-color-kind-type:      #f59e0b;
+  --ar-color-kind-function: #10b981;
+  --ar-color-kind-type: #f59e0b;
 }
 ```
 
 **Content class vocabulary:**
 
-| Class | Purpose |
-|---|---|
-| `ar-declaration` | Top-level declaration block |
+| Class                    | Purpose                                                     |
+| ------------------------ | ----------------------------------------------------------- |
+| `ar-declaration`         | Top-level declaration block                                 |
 | `ar-declaration--{kind}` | Modifier for kind (class, interface, function, type, enum…) |
-| `ar-signature` | Type signature line |
-| `ar-description` | JSDoc prose (gets `prose` typography styles) |
-| `ar-member-list` | List of methods / properties |
-| `ar-member` | Individual member row |
-| `ar-type` | Inline type reference (may be a link) |
-| `ar-badge` | Kind pill label |
-| `ar-tag` | `@param`, `@returns`, `@throws` block |
-| `ar-source-link` | "Defined in foo.ts:42" link |
+| `ar-signature`           | Type signature line                                         |
+| `ar-description`         | JSDoc prose (gets `prose` typography styles)                |
+| `ar-member-list`         | List of methods / properties                                |
+| `ar-member`              | Individual member row                                       |
+| `ar-type`                | Inline type reference (may be a link)                       |
+| `ar-badge`               | Kind pill label                                             |
+| `ar-tag`                 | `@param`, `@returns`, `@throws` block                       |
+| `ar-source-link`         | "Defined in foo.ts:42" link                                 |
 
 ### Object storage
 
@@ -338,27 +351,23 @@ npm scope: `@apiref`
 
 ### Published packages
 
-| Package | Description |
-|---|---|
-| `@apiref/viewmodel` | Shared TypeScript types for the `SiteViewModel` intermediate format |
-| `@apiref/transformer` | TypeDoc JSON → `SiteViewModel` transformation logic |
-| `@apiref/renderer` | `SiteViewModel` → static HTML files (CLI + library) |
-| `@apiref/shell` | Web components + compiled Tailwind CSS bundle (CDN-deployed) |
+| Package            | Description                                                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `@apiref/renderer` | TypeDoc JSON → static HTML. Internally: transform to ViewModel then render to HTML. The ViewModel is an internal type, not a public API. |
+| `@apiref/shell`    | Web components + compiled Tailwind CSS bundle (CDN-deployed)                                                                             |
 
 ### Internal packages (not published)
 
-| Package | Description |
-|---|---|
+| Package  | Description                                                            |
+| -------- | ---------------------------------------------------------------------- |
 | `worker` | Containerized generation worker: `pkg@version` → TypeDoc JSON → upload |
-| `intake` | Intake API + web form: validates provenance, writes to Grist queue |
+| `intake` | Intake API + web form: validates provenance, writes to Grist queue     |
 
 ### Monorepo layout
 
 ```
 packages/
-  viewmodel/    — @apiref/viewmodel
-  transformer/  — @apiref/transformer
-  renderer/     — @apiref/renderer
+  renderer/     — @apiref/renderer (transformer + renderer, ViewModel is internal)
   shell/        — @apiref/shell
   worker/       — internal worker (not published)
   intake/       — internal intake service (not published)
