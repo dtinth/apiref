@@ -167,18 +167,22 @@ export function Page({ site, page, options }: PageProps) {
             data-ar-sidebar
             aria-label="Package navigation"
           >
-            <div class="ar-nav">{site.navTree.map((node) => renderNavNode(node, 0, page.url, baseHref))}</div>
+            <div class="ar-nav">
+              {site.navTree.map((node) => (
+                <NavNodeView key={node.url} node={node} depth={0} currentUrl={page.url} baseHref={baseHref} />
+              ))}
+            </div>
           </nav>
 
           <aside class="ar-outline-sidebar" data-ar-outline aria-label="Page outline">
             {outline.length > 0 ? (
               <div class="ar-outline">
                 <div class="ar-outline-title">Outline</div>
-                {outline.map((section) => renderOutlineSection(section, outline.length > 1))}
+                {outline.map((section) => (
+                  <OutlineSectionView key={section.label} section={section} showLabel={outline.length > 1} />
+                ))}
               </div>
-            ) : (
-              <div class="ar-outline"></div>
-            )}
+            ) : null}
           </aside>
 
           <main class="ar-main ar-main--with-outline">
@@ -194,7 +198,17 @@ export function Page({ site, page, options }: PageProps) {
   );
 }
 
-function renderNavNode(node: NavNode, depth: number, currentUrl: string, baseHref: string) {
+function NavNodeView({
+  node,
+  depth,
+  currentUrl,
+  baseHref,
+}: {
+  node: NavNode;
+  depth: number;
+  currentUrl: string;
+  baseHref: string;
+}) {
   const isActive = node.url === currentUrl;
   const iconClass = getKindIcon(node.kind);
   return (
@@ -206,22 +220,38 @@ function renderNavNode(node: NavNode, depth: number, currentUrl: string, baseHre
         <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`} />
         <span>{node.label}</span>
       </a>
-      {node.children.map((child) => renderNavNode(child, depth + 1, currentUrl, baseHref))}
+      {node.children.map((child) => (
+        <NavNodeView
+          key={child.url}
+          node={child}
+          depth={depth + 1}
+          currentUrl={currentUrl}
+          baseHref={baseHref}
+        />
+      ))}
     </>
   );
 }
 
-function renderOutlineSection(section: OutlineSection, showLabel: boolean) {
+function OutlineSectionView({
+  section,
+  showLabel,
+}: {
+  section: OutlineSection;
+  showLabel: boolean;
+}) {
   if (section.items.length === 0) return null;
   return (
     <div class="ar-outline-section">
       {showLabel ? <div class="ar-outline-section-label">{section.label}</div> : null}
-      {section.items.map((item) => renderOutlineItem(item))}
+      {section.items.map((item) => (
+        <OutlineItemView key={item.anchor} item={item} />
+      ))}
     </div>
   );
 }
 
-function renderOutlineItem(item: OutlineItem) {
+function OutlineItemView({ item }: { item: OutlineItem }) {
   const iconClass = getKindIcon(item.kind);
   return (
     <a
