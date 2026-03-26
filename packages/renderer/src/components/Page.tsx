@@ -1,4 +1,10 @@
-import type { PageViewModel, SiteViewModel, Section, SignatureViewModel } from "../viewmodel.ts";
+import type {
+  PageViewModel,
+  SiteViewModel,
+  Section,
+  SignatureViewModel,
+  MemberViewModel,
+} from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { TypeView, SignatureLine } from "./TypeView.tsx";
 import { MemberList } from "./MemberList.tsx";
@@ -14,6 +20,46 @@ interface PageProps {
   options: PageRenderOptions;
 }
 
+interface OutlineItem {
+  label: string;
+  anchor: string;
+  kind: string;
+  flags: { deprecated?: boolean };
+}
+
+interface OutlineSection {
+  label: string;
+  items: OutlineItem[];
+}
+
+function memberOutlineKind(member: MemberViewModel): string {
+  if (member.signatures.length > 0) return "method";
+  return "property";
+}
+
+function buildOutline(sections: Section[]): OutlineSection[] {
+  const result: OutlineSection[] = [];
+  for (const section of sections) {
+    if (section.kind === "constructor") {
+      result.push({
+        label: "Constructor",
+        items: [{ label: "constructor", anchor: "constructor", kind: "constructor", flags: {} }],
+      });
+    } else if (section.kind === "members") {
+      result.push({
+        label: section.label,
+        items: section.members.map((m) => ({
+          label: m.name,
+          anchor: m.anchor,
+          kind: memberOutlineKind(m),
+          flags: { deprecated: m.flags.deprecated },
+        })),
+      });
+    }
+  }
+  return result;
+}
+
 export function Page({ site, page, options }: PageProps) {
   const meta = {
     package: site.package.name,
@@ -22,6 +68,7 @@ export function Page({ site, page, options }: PageProps) {
     kind: page.kind,
     breadcrumbs: page.breadcrumbs,
     navTree: site.navTree,
+    outline: buildOutline(page.sections),
   };
 
   return (

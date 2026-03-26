@@ -3,6 +3,7 @@ import { customElement, state } from "lit/decorators.js";
 import { ref } from "lit/directives/ref.js";
 import "./ar-header.ts";
 import "./ar-nav.ts";
+import "./ar-outline.ts";
 
 export interface ArMeta {
   package: string;
@@ -11,6 +12,7 @@ export interface ArMeta {
   kind: string;
   breadcrumbs: Array<{ label: string; url: string }>;
   navTree: NavNode[];
+  outline: OutlineSection[];
 }
 
 export interface NavNode {
@@ -19,6 +21,18 @@ export interface NavNode {
   kind: string;
   flags: { deprecated?: boolean; beta?: boolean };
   children: NavNode[];
+}
+
+export interface OutlineSection {
+  label: string;
+  items: OutlineItem[];
+}
+
+export interface OutlineItem {
+  label: string;
+  anchor: string;
+  kind: string;
+  flags: { deprecated?: boolean };
 }
 
 @customElement("ar-shell")
@@ -66,6 +80,8 @@ export class ArShell extends LitElement {
   override render() {
     const { meta } = this;
     const currentUrl = location.pathname.replace(/^\//, "") || "index.html";
+    const outline = meta?.outline ?? [];
+    const hasOutline = outline.length > 0;
 
     return html`
       <ar-header
@@ -83,7 +99,13 @@ export class ArShell extends LitElement {
         ${meta ? html`<ar-nav .nodes=${meta.navTree} .currentUrl=${currentUrl}></ar-nav>` : nothing}
       </nav>
 
-      <div class="ar-main">
+      ${hasOutline
+        ? html`<aside class="ar-outline-sidebar" aria-label="Page outline">
+            <ar-outline .sections=${outline}></ar-outline>
+          </aside>`
+        : nothing}
+
+      <div class=${`ar-main ${hasOutline ? "ar-main--with-outline" : ""}`}>
         <div class="ar-content-wrap" ${ref(this.onContentRef)}></div>
       </div>
     `;

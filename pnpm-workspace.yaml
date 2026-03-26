@@ -4,9 +4,14 @@ packages:
   - tools/*
 
 catalog:
+  "@tailwindcss/typography": ^0.5.19
+  "@tailwindcss/vite": ^4.2.2
   "@types/node": ^24
+  lit: ^3.3.2
+  marked: ^17.0.5
   preact: ^10.29.0
   preact-render-to-string: ^6.6.6
+  tailwindcss: ^4.2.2
   typescript: ^5
   vite: npm:@voidzero-dev/vite-plus-core@latest
   vite-plus: latest

@@ -92,7 +92,8 @@ ar-shell {
 }
 
 .ar-nav-item--active {
-  @apply text-white bg-white/10;
+  @apply text-white bg-white/10 border-l-2 border-ar-accent-cyan;
+  padding-left: 14px; /* compensate for 2px border */
 }
 
 .ar-nav-item-icon {
@@ -362,4 +363,39 @@ ar-shell {
 }
 .ar-kind-icon--package-index {
   color: #cccccc;
+}
+
+/* ── Outline sidebar ────────────────────────────────────────────────────── */
+.ar-outline-sidebar {
+  @apply hidden xl:block xl:fixed xl:top-[58px] xl:right-0 xl:w-[14rem] xl:bottom-0
+         xl:overflow-y-auto bg-ar-bg border-l border-ar-border z-10;
+}
+
+.ar-main--with-outline {
+  @apply xl:mr-[14rem];
+}
+
+.ar-outline {
+  @apply py-3 px-3;
+}
+
+.ar-outline-title {
+  @apply px-1 py-1 text-xs font-semibold uppercase tracking-wider text-ar-muted mb-1;
+}
+
+.ar-outline-section {
+  @apply mb-2;
+}
+
+.ar-outline-section-label {
+  @apply px-1 py-0.5 text-xs font-semibold uppercase tracking-wider text-ar-muted/60 mt-2 mb-0.5;
+}
+
+.ar-outline-item {
+  @apply flex items-center gap-1.5 px-1 py-0.5 text-xs text-gray-400 hover:text-white
+         hover:bg-white/5 rounded transition-colors cursor-pointer w-full truncate;
+}
+
+.ar-outline-item .codicon {
+  @apply flex-none text-[0.8em];
 }
