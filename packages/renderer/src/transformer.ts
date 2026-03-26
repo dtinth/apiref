@@ -62,7 +62,10 @@ export interface TransformOptions {
  * const site = transform(json, { version: "2.0.0" });
  * ```
  */
-export function transform(input: unknown, options: TransformOptions = {}): SiteViewModel {
+export function transform(
+  input: unknown,
+  options: TransformOptions = {},
+): SiteViewModel {
   const project = input as TDProject;
   if (project.schemaVersion !== "2.0") {
     throw new Error(
@@ -105,30 +108,82 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
 
   if (isSingleEntry) {
     const navChildren: NavNode[] = [];
+    // Group children by name to detect duplicates
+    const nameGroups = new Map<string, TDDeclaration[]>();
     for (const child of children) {
-      const page = buildDeclarationPage(child, [], ctx);
-      if (page) {
-        pages.push(page);
-        navChildren.push(declarationNavNode(child, idToUrl));
+      if (!nameGroups.has(child.name)) {
+        nameGroups.set(child.name, []);
+      }
+      nameGroups.get(child.name)!.push(child);
+    }
+
+    for (const [_name, decls] of nameGroups) {
+      if (decls.length > 1 && decls.every((d) => PAGE_KINDS.has(d.kind))) {
+        // Multiple declarations with same name - combine on one page
+        const page = buildMultiDeclarationPage(decls, [], ctx);
+        if (page) {
+          pages.push(page);
+          // Create one nav node that points to the shared page
+          for (const decl of decls) {
+            navChildren.push(declarationNavNode(decl, idToUrl));
+          }
+        }
+      } else {
+        // Single declaration or mixed kinds - process normally
+        for (const child of decls) {
+          const page = buildDeclarationPage(child, [], ctx);
+          if (page) {
+            pages.push(page);
+            navChildren.push(declarationNavNode(child, idToUrl));
+          }
+        }
       }
     }
     navTree.push(...navChildren.sort(byLabel));
   } else {
     for (const mod of children) {
       const modUrl = idToUrl.get(mod.id) ?? "index.html";
-      const modBreadcrumbs: Breadcrumb[] = [{ label: pkgName, url: "index.html" }];
+      const modBreadcrumbs: Breadcrumb[] = [
+        { label: pkgName, url: "index.html" },
+      ];
       pages.push(buildModulePage(mod, modBreadcrumbs, ctx));
 
       const modNavChildren: NavNode[] = [];
+      const modChildGroups = new Map<string, TDDeclaration[]>();
       for (const child of mod.children ?? []) {
-        collectDeclarationPages(
-          child,
-          modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
-          ctx,
-          pages,
-          modNavChildren,
-          idToUrl,
-        );
+        if (!modChildGroups.has(child.name)) {
+          modChildGroups.set(child.name, []);
+        }
+        modChildGroups.get(child.name)!.push(child);
+      }
+
+      for (const [_name, decls] of modChildGroups) {
+        if (decls.length > 1 && decls.every((d) => PAGE_KINDS.has(d.kind))) {
+          // Multiple declarations with same name - combine on one page
+          const page = buildMultiDeclarationPage(
+            decls,
+            modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
+            ctx,
+          );
+          if (page) {
+            pages.push(page);
+            for (const decl of decls) {
+              modNavChildren.push(declarationNavNode(decl, idToUrl));
+            }
+          }
+        } else {
+          // Normal path for single declarations or mixed kinds
+          for (const child of decls) {
+            collectDeclarationPages(
+              child,
+              modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
+              ctx,
+              pages,
+              modNavChildren,
+              idToUrl,
+            );
+          }
+        }
       }
       navTree.push({
         label: mod.name,
@@ -209,26 +264,58 @@ function registerReflection(
   const url = declarationUrl(decl, pathPrefix, isSingleEntry);
   idToUrl.set(decl.id, url);
 
+  // Detect duplicate names among PAGE_KINDS
+  const pageKindChildren = (decl.children ?? []).filter((c) =>
+    PAGE_KINDS.has(c.kind),
+  );
+  const nameGroups = new Map<string, TDDeclaration[]>();
+  for (const child of pageKindChildren) {
+    if (!nameGroups.has(child.name)) {
+      nameGroups.set(child.name, []);
+    }
+    nameGroups.get(child.name)!.push(child);
+  }
+
   for (const child of decl.children ?? []) {
     if (ANCHOR_KINDS.has(child.kind)) {
-      const anchor = child.kind === Kind.Constructor ? "constructor" : child.name;
+      const anchor =
+        child.kind === Kind.Constructor ? "constructor" : child.name;
       idToUrl.set(child.id, `${url}#${anchor}`);
       // Register constructor/method signature IDs too
       for (const sig of child.signatures ?? []) {
         idToUrl.set(sig.id, `${url}#${anchor}`);
       }
     } else if (PAGE_KINDS.has(child.kind)) {
-      // Namespace — recurse with updated path
-      const childPrefix = pathPrefix ? `${pathPrefix}/${child.name}` : child.name;
-      registerReflection(child, childPrefix, false, idToUrl);
+      // All duplicate declarations share the same URL
+      const childPrefix = pathPrefix
+        ? `${pathPrefix}/${child.name}`
+        : child.name;
+      const childUrl = declarationUrl(child, childPrefix, false);
+      idToUrl.set(child.id, childUrl);
+
+      // Recurse for nested PAGE_KINDS within this child
+      const childPathPrefix = pathPrefix
+        ? `${pathPrefix}/${child.name}`
+        : child.name;
+      for (const nestedChild of child.children ?? []) {
+        if (PAGE_KINDS.has(nestedChild.kind)) {
+          registerReflection(nestedChild, childPathPrefix, false, idToUrl);
+        }
+      }
     }
   }
   // Accessor signatures
-  if (decl.getSignature) idToUrl.set(decl.getSignature.id, `${url}#${decl.name}`);
-  if (decl.setSignature) idToUrl.set(decl.setSignature.id, `${url}#${decl.name}`);
+  if (decl.getSignature)
+    idToUrl.set(decl.getSignature.id, `${url}#${decl.name}`);
+  if (decl.setSignature)
+    idToUrl.set(decl.setSignature.id, `${url}#${decl.name}`);
 }
 
-function declarationUrl(decl: TDDeclaration, pathPrefix: string, isSingleEntry: boolean): string {
+function declarationUrl(
+  decl: TDDeclaration,
+  pathPrefix: string,
+  isSingleEntry: boolean,
+): string {
   const prefix = isSingleEntry ? "" : pathPrefix ? pathPrefix + "/" : "";
   const { kind, name } = decl;
   switch (kind) {
@@ -270,7 +357,13 @@ function buildPackageIndexPage(
   const sections: Section[] = [];
 
   sections.push({
-    body: [{ kind: "declaration-title", name: ctx.pkgName, declarationKind: "package-index" }],
+    body: [
+      {
+        kind: "declaration-title",
+        name: ctx.pkgName,
+        declarationKind: "package-index",
+      },
+    ],
   });
 
   if (project.readme && project.readme.length > 0) {
@@ -321,7 +414,9 @@ function buildModulePage(
   const sections: Section[] = [];
 
   sections.push({
-    body: [{ kind: "declaration-title", name: mod.name, declarationKind: "module" }],
+    body: [
+      { kind: "declaration-title", name: mod.name, declarationKind: "module" },
+    ],
   });
 
   if (mod.comment) {
@@ -352,6 +447,79 @@ function buildModulePage(
   };
 }
 
+function buildMultiDeclarationPage(
+  decls: TDDeclaration[],
+  parentBreadcrumbs: Breadcrumb[],
+  ctx: TransformContext,
+): PageViewModel | null {
+  if (decls.length === 0) return null;
+
+  // Use the URL from the first declaration (all share the same URL)
+  const url = ctx.idToUrl.get(decls[0].id);
+  if (!url) return null;
+
+  const sections: Section[] = [];
+
+  // Build sections for each declaration
+  for (const decl of decls) {
+    // Add a heading for this declaration's kind
+    const kind = reflectionKindToDeclarationKind(decl.kind);
+
+    // Add the declaration-title for this specific declaration
+    if (kind) {
+      sections.push({
+        body: [
+          { kind: "declaration-title", name: decl.name, declarationKind: kind },
+        ],
+      });
+    }
+
+    // Summary from comment
+    const commentSource =
+      decl.kind === Kind.Function || decl.kind === Kind.Variable
+        ? (decl.signatures?.[0]?.comment ?? decl.comment)
+        : decl.comment;
+
+    if (commentSource) {
+      const doc = transformComment(commentSource, ctx);
+      if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
+    }
+
+    // Build kind-specific sections
+    switch (decl.kind) {
+      case Kind.Class:
+        sections.push(...buildClassSections(decl, ctx));
+        break;
+      case Kind.Interface:
+        sections.push(...buildMemberSections(decl, ctx));
+        break;
+      case Kind.Function:
+        sections.push(...buildFunctionSections(decl, ctx));
+        break;
+      case Kind.TypeAlias:
+        sections.push(...buildTypeAliasSections(decl, ctx));
+        break;
+      case Kind.Enum:
+        sections.push(...buildEnumSections(decl, ctx));
+        break;
+      case Kind.Variable:
+        sections.push(...buildVariableSections(decl, ctx));
+        break;
+      case Kind.Namespace:
+        sections.push(...buildMemberSections(decl, ctx));
+        break;
+    }
+  }
+
+  return {
+    url,
+    title: decls[0].name,
+    kind: "multiple",
+    breadcrumbs: parentBreadcrumbs,
+    sections,
+  };
+}
+
 function buildDeclarationPage(
   decl: TDDeclaration,
   parentBreadcrumbs: Breadcrumb[],
@@ -367,7 +535,9 @@ function buildDeclarationPage(
 
   // Prepend declaration-title section
   sections.push({
-    body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }],
+    body: [
+      { kind: "declaration-title", name: decl.name, declarationKind: kind },
+    ],
   });
 
   // Summary from comment (prefer signature comment for functions)
@@ -418,7 +588,10 @@ function buildDeclarationPage(
 // Section builders
 // ---------------------------------------------------------------------------
 
-function buildClassSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildClassSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   const sections: Section[] = [];
   const children = decl.children ?? [];
   const groups = decl.groups ?? inferGroups(children);
@@ -437,7 +610,10 @@ function buildClassSections(decl: TDDeclaration, ctx: TransformContext): Section
   return sections;
 }
 
-function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildMemberSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   const sections: Section[] = [];
   const children = decl.children ?? [];
   const groups = decl.groups ?? inferGroups(children);
@@ -455,7 +631,10 @@ function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Sectio
   return sections;
 }
 
-function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildFunctionSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   const sigs = decl.signatures ?? [];
   if (sigs.length === 0) return [];
 
@@ -471,7 +650,10 @@ function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Sect
       .filter((p) => p.doc.length > 0)
       .map((p) => ({ name: p.name, doc: p.doc }));
     if (params.length > 0) {
-      sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters: params }] });
+      sections.push({
+        title: "Parameters",
+        body: [{ kind: "parameters", parameters: params }],
+      });
     }
     return sections;
   }
@@ -487,12 +669,22 @@ function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Sect
   return [{ title: "Signatures", body: cards }];
 }
 
-function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildTypeAliasSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   if (!decl.type) return [];
-  return [{ body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }] }];
+  return [
+    {
+      body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }],
+    },
+  ];
 }
 
-function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildEnumSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   const children = decl.children ?? [];
   if (children.length === 0) return [];
   return [
@@ -503,9 +695,16 @@ function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[
   ];
 }
 
-function buildVariableSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+function buildVariableSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): Section[] {
   if (!decl.type) return [];
-  return [{ body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }] }];
+  return [
+    {
+      body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }],
+    },
+  ];
 }
 
 // ---------------------------------------------------------------------------
@@ -521,7 +720,9 @@ function buildSignatureCard(
   kind: DeclarationKind,
 ): SectionBlock & { kind: "card" } {
   const sections: Section[] = [
-    { body: [{ kind: "declaration-title", name: label, declarationKind: kind }] },
+    {
+      body: [{ kind: "declaration-title", name: label, declarationKind: kind }],
+    },
   ];
 
   if (hasRenderableMemberFlags(flags)) {
@@ -541,7 +742,10 @@ function buildSignatureCard(
     .filter((p) => p.doc.length > 0)
     .map((p) => ({ name: p.name, doc: p.doc }));
   if (params.length > 0) {
-    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters: params }] });
+    sections.push({
+      title: "Parameters",
+      body: [{ kind: "parameters", parameters: params }],
+    });
   }
 
   return { kind: "card", anchor, url: undefined, flags, sections };
@@ -561,7 +765,9 @@ function declarationAsCards(
   ];
   if (allTags.includes("@deprecated")) flags.deprecated = true;
 
-  const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
+  const signatures = (decl.signatures ?? []).map((s) =>
+    transformSignature(s, ctx),
+  );
   const type = decl.type ? transformType(decl.type, ctx) : null;
   const commentSource = decl.signatures?.[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
@@ -570,7 +776,8 @@ function declarationAsCards(
 
   // If the member has its own page, use the old single-card-with-link approach
   if (url) {
-    const docSections: Section[] = doc.length > 0 ? [{ body: [{ kind: "doc", doc }] }] : [];
+    const docSections: Section[] =
+      doc.length > 0 ? [{ body: [{ kind: "doc", doc }] }] : [];
     return [
       {
         kind: "card",
@@ -578,7 +785,15 @@ function declarationAsCards(
         url,
         flags,
         sections: [
-          { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
+          {
+            body: [
+              {
+                kind: "declaration-title",
+                name: decl.name,
+                declarationKind: kind,
+              },
+            ],
+          },
           ...docSections,
         ],
       },
@@ -602,7 +817,15 @@ function declarationAsCards(
         url: undefined,
         flags,
         sections: [
-          { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
+          {
+            body: [
+              {
+                kind: "declaration-title",
+                name: decl.name,
+                declarationKind: kind,
+              },
+            ],
+          },
           ...cardSections,
         ],
       },
@@ -615,7 +838,14 @@ function declarationAsCards(
     const label = `${decl.name} (${i + 1}/${n})`;
     const anchor = `${baseName}-${i + 1}`;
     // Only include flags on the first card to avoid repetition
-    return buildSignatureCard(decl.name, label, anchor, sig, i === 0 ? flags : {}, kind);
+    return buildSignatureCard(
+      decl.name,
+      label,
+      anchor,
+      sig,
+      i === 0 ? flags : {},
+      kind,
+    );
   });
 }
 
@@ -631,7 +861,10 @@ function declarationKindForMember(
 function inferMemberKind(
   decl: TDDeclaration,
   signatures: SignatureViewModel[],
-): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
+): Extract<
+  DeclarationKind,
+  "constructor" | "accessor" | "method" | "property"
+> {
   // Constructor
   if (decl.kind === Kind.Constructor) return "constructor";
   // Accessor (getter/setter)
@@ -651,7 +884,9 @@ function buildCardSections(input: {
   url?: string;
 }): Section[] {
   if (input.url) {
-    return input.doc.length > 0 ? [{ body: [{ kind: "doc", doc: input.doc }] }] : [];
+    return input.doc.length > 0
+      ? [{ body: [{ kind: "doc", doc: input.doc }] }]
+      : [];
   }
 
   const sections: Section[] = [];
@@ -688,17 +923,24 @@ function buildCardSections(input: {
 
   // Parameters
   for (const parameters of parameterDocsForSignatures(input.signatures)) {
-    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters }] });
+    sections.push({
+      title: "Parameters",
+      body: [{ kind: "parameters", parameters }],
+    });
   }
 
   return sections;
 }
 
 function hasRenderableMemberFlags(flags: MemberFlags): boolean {
-  return Boolean(flags.deprecated || flags.static || flags.abstract || flags.readonly);
+  return Boolean(
+    flags.deprecated || flags.static || flags.abstract || flags.readonly,
+  );
 }
 
-function parameterDocsForSignatures(signatures: SignatureViewModel[]): ParameterDocViewModel[][] {
+function parameterDocsForSignatures(
+  signatures: SignatureViewModel[],
+): ParameterDocViewModel[][] {
   return signatures
     .map((signature) =>
       signature.parameters
@@ -718,10 +960,13 @@ function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
   return result;
 }
 
-function transformSignature(sig: TDSignature, ctx: TransformContext): SignatureViewModel {
-  const typeParameters: TypeParameterViewModel[] = (sig.typeParameters ?? []).map((tp) =>
-    transformTypeParameter(tp, ctx),
-  );
+function transformSignature(
+  sig: TDSignature,
+  ctx: TransformContext,
+): SignatureViewModel {
+  const typeParameters: TypeParameterViewModel[] = (
+    sig.typeParameters ?? []
+  ).map((tp) => transformTypeParameter(tp, ctx));
   const parameters: ParameterViewModel[] = (sig.parameters ?? []).map((p) =>
     transformParameter(p, ctx),
   );
@@ -732,7 +977,10 @@ function transformSignature(sig: TDSignature, ctx: TransformContext): SignatureV
   return { typeParameters, parameters, returnType, doc };
 }
 
-function transformParameter(param: TDParameter, ctx: TransformContext): ParameterViewModel {
+function transformParameter(
+  param: TDParameter,
+  ctx: TransformContext,
+): ParameterViewModel {
   const type = param.type
     ? transformType(param.type, ctx)
     : { kind: "intrinsic" as const, name: "unknown" };
@@ -749,9 +997,14 @@ function transformParameter(param: TDParameter, ctx: TransformContext): Paramete
 // Reflection type member blocks
 // ---------------------------------------------------------------------------
 
-function buildReflectionMemberBlocks(decl: TDDeclaration, ctx: TransformContext): SectionBlock[] {
+function buildReflectionMemberBlocks(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): SectionBlock[] {
   const flags = transformFlags(decl.flags);
-  const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
+  const signatures = (decl.signatures ?? []).map((s) =>
+    transformSignature(s, ctx),
+  );
   const type = decl.type ? transformType(decl.type, ctx) : null;
 
   // For reflection type members, create minimal blocks for inline rendering
@@ -813,15 +1066,20 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
     case "literal": {
       const val = tdType.value;
       if (val === null) return { kind: "literal", value: "null" };
-      if (typeof val === "string") return { kind: "literal", value: JSON.stringify(val) };
+      if (typeof val === "string")
+        return { kind: "literal", value: JSON.stringify(val) };
       // val is number | boolean at this point
       return { kind: "literal", value: (val as number | boolean).toString() };
     }
 
     case "reference": {
       const url =
-        typeof tdType.target === "number" ? (ctx.idToUrl.get(tdType.target) ?? null) : null;
-      const typeArguments = (tdType.typeArguments ?? []).map((t) => transformType(t, ctx));
+        typeof tdType.target === "number"
+          ? (ctx.idToUrl.get(tdType.target) ?? null)
+          : null;
+      const typeArguments = (tdType.typeArguments ?? []).map((t) =>
+        transformType(t, ctx),
+      );
       return { kind: "reference", name: tdType.name, url, typeArguments };
     }
 
@@ -874,9 +1132,13 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
 
     case "reflection": {
       const decl = tdType.declaration;
-      const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
+      const sigs = (decl.signatures ?? []).map((s) =>
+        transformSignature(s, ctx),
+      );
       // For reflection members, extract just the essential type info (not full cards)
-      const members = (decl.children ?? []).flatMap((c) => buildReflectionMemberBlocks(c, ctx));
+      const members = (decl.children ?? []).flatMap((c) =>
+        buildReflectionMemberBlocks(c, ctx),
+      );
       return { kind: "reflection", signatures: sigs, members };
     }
 
@@ -890,14 +1152,23 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
 // Comment / doc transformers
 // ---------------------------------------------------------------------------
 
-function transformComment(comment: TDComment, ctx: TransformContext): DocNode[] {
+function transformComment(
+  comment: TDComment,
+  ctx: TransformContext,
+): DocNode[] {
   return transformCommentParts(comment.summary, ctx);
 }
 
-function transformCommentParts(parts: TDCommentPart[], ctx: TransformContext): DocNode[] {
+function transformCommentParts(
+  parts: TDCommentPart[],
+  ctx: TransformContext,
+): DocNode[] {
   return parts.map((part): DocNode => {
     if (part.kind === "inline-tag") {
-      const url = typeof part.target === "number" ? (ctx.idToUrl.get(part.target) ?? null) : null;
+      const url =
+        typeof part.target === "number"
+          ? (ctx.idToUrl.get(part.target) ?? null)
+          : null;
       return { kind: "link", text: part.text, url };
     }
     // "text" | "code" — both have a `text` field and map 1:1
@@ -909,11 +1180,16 @@ function transformCommentParts(parts: TDCommentPart[], ctx: TransformContext): D
 // Nav helpers
 // ---------------------------------------------------------------------------
 
-function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
+function declarationNavNode(
+  decl: TDDeclaration,
+  idToUrl: Map<number, string>,
+): NavNode {
   const url = idToUrl.get(decl.id) ?? "index.html";
   const kindName = reflectionKindToDeclarationKind(decl.kind) ?? "unknown";
   const deprecated =
-    decl.flags.isDeprecated ?? decl.comment?.modifierTags?.includes("@deprecated") ?? false;
+    decl.flags.isDeprecated ??
+    decl.comment?.modifierTags?.includes("@deprecated") ??
+    false;
   return {
     label: decl.name,
     url,
@@ -954,7 +1230,9 @@ function byLabel(a: NavNode, b: NavNode): number {
   return a.label.localeCompare(b.label);
 }
 
-function inferGroups(decls: TDDeclaration[]): Array<{ title: string; children: number[] }> {
+function inferGroups(
+  decls: TDDeclaration[],
+): Array<{ title: string; children: number[] }> {
   const groupMap = new Map<string, number[]>();
   for (const decl of decls) {
     const title = kindGroupTitle(decl.kind);

@@ -33,6 +33,7 @@ export interface SiteViewModel {
  * - `enum`: Enumeration
  * - `namespace`: TypeScript namespace
  * - `constructor`, `method`, `property`, `accessor`: Member declarations
+ * - `multiple`: Multiple declarations with the same name (e.g., variable + type alias)
  */
 export type DeclarationKind =
   | "package-index"
@@ -47,7 +48,8 @@ export type DeclarationKind =
   | "constructor"
   | "method"
   | "property"
-  | "accessor";
+  | "accessor"
+  | "multiple";
 
 /**
  * A single documentation page representing a declaration (class, function, etc.)

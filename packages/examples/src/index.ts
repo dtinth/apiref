@@ -14,10 +14,7 @@
 
 // Re-export modules as namespaces
 export * as UI from "./namespaces";
-export * as API from "./namespaces";
 export * as Auth from "./plugins";
-export * as Logging from "./plugins";
-export * as Caching from "./plugins";
 
 /**
  * Generic result type that can hold either a success value or an error.
@@ -426,3 +423,6 @@ export const defaultConfig = {
 
 /** Type derived from the default config */
 export type AppConfig = typeof defaultConfig;
+
+export const Something = 123;
+export type Something = number;
