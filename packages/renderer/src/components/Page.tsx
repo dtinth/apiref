@@ -28,6 +28,22 @@ function getKindIcon(kind: string): string {
   return KIND_ICONS[kind] ?? "codicon-symbol-misc";
 }
 
+interface DeclarationTitleProps {
+  kind: string;
+  title: string;
+}
+
+function DeclarationTitle({ kind, title }: DeclarationTitleProps) {
+  const iconClass = getKindIcon(kind);
+  return (
+    <h1 class="ar-declaration-title">
+      <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${kind}`} />
+      <span>{title}</span>
+      <span class="ar-declaration-kind">{kind}</span>
+    </h1>
+  );
+}
+
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
   shellBaseUrl: string;
@@ -129,14 +145,9 @@ export function Page({ site, page, options }: PageProps) {
 }
 
 function PageContent({ page }: { page: PageViewModel }) {
-  const iconClass = getKindIcon(page.kind);
   return (
     <article class={`ar-declaration ar-declaration--${page.kind}`}>
-      <h1 class="ar-declaration-title">
-        <i class={`codicon ${iconClass} ar-kind-icon`} />
-        <span>{page.title}</span>
-        <span class="ar-declaration-kind">{page.kind}</span>
-      </h1>
+      <DeclarationTitle kind={page.kind} title={page.title} />
       {page.sections.map((section, i) => (
         <SectionView key={i} section={section} />
       ))}
