@@ -268,7 +268,7 @@ function OutlineItemView({ item }: { item: OutlineItem }) {
     <a
       href={`#${item.anchor}`}
       class={joinClasses("ar-outline-item", item.flags.deprecated && "ar-outline-item--deprecated")}
-      aria-label={`Jump to ${item.label}`}
+      aria-label={`Jump to ${item.kind} ${item.label}`}
     >
       <i class={getKindIconClassName(item.kind)} />
       <span>{item.label}</span>
