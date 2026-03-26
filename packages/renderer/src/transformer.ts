@@ -27,13 +27,39 @@ import type {
   Breadcrumb,
 } from "./viewmodel.ts";
 
+/**
+ * Options for transforming TypeDoc JSON to a SiteViewModel.
+ */
 export interface TransformOptions {
-  /** Package version; falls back to `packageVersion` in the JSON, then "0.0.0". */
+  /**
+   * Override the package version.
+   *
+   * If not specified, falls back to `packageVersion` in the TypeDoc JSON,
+   * then defaults to "0.0.0".
+   */
   version?: string;
 }
 
 /**
- * Transform a TypeDoc JSON project into a SiteViewModel ready for rendering.
+ * Transform a TypeDoc v2.0 JSON project into a SiteViewModel ready for rendering.
+ *
+ * This is the first step in the rendering pipeline:
+ * 1. Parse TypeDoc JSON (v2.0 schema)
+ * 2. Build URL map, navigate tree structure
+ * 3. Create pages, sections, and member view models
+ * 4. Return a complete SiteViewModel
+ *
+ * @param input - The TypeDoc JSON project object (or raw JSON to parse)
+ * @param options - Transformation options (e.g., override version)
+ * @returns A SiteViewModel representing the entire documentation site
+ *
+ * @throws Error if the TypeDoc schema version is not "2.0"
+ *
+ * @example
+ * ```typescript
+ * const json = JSON.parse(typedocJsonString);
+ * const site = transform(json, { version: "2.0.0" });
+ * ```
  */
 export function transform(input: unknown, options: TransformOptions = {}): SiteViewModel {
   const project = input as TDProject;
