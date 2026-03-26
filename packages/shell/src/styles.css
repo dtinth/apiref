@@ -165,7 +165,7 @@ h3.ar-member-card-header .ar-member-card-kind {
 }
 
 .ar-member-card--link {
-  @apply display-block cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
+  @apply block cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
 }
 
 .ar-member-card--link h3 {
