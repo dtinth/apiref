@@ -240,14 +240,14 @@ function buildPackageIndexPage(
         .filter((d): d is TDDeclaration => d !== undefined);
       sections.push({
         title: group.title,
-        body: members.map((d) => declarationAsCard(d, ctx)),
+        body: members.flatMap((d) => declarationAsCards(d, ctx)),
       });
     }
   } else {
     // List modules
     sections.push({
       title: "Modules",
-      body: topLevel.map((d) => declarationAsCard(d, ctx)),
+      body: topLevel.flatMap((d) => declarationAsCards(d, ctx)),
     });
   }
 
@@ -287,7 +287,7 @@ function buildModulePage(
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
       title: group.title,
-      body: members.map((d) => declarationAsCard(d, ctx)),
+      body: members.flatMap((d) => declarationAsCards(d, ctx)),
     });
   }
 
@@ -379,7 +379,7 @@ function buildClassSections(decl: TDDeclaration, ctx: TransformContext): Section
 
     sections.push({
       title: group.title === "Constructors" ? "Constructor" : group.title,
-      body: members.map((d) => declarationAsCard(d, ctx)),
+      body: members.flatMap((d) => declarationAsCards(d, ctx)),
     });
   }
   return sections;
@@ -397,7 +397,7 @@ function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Sectio
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
       title: group.title,
-      body: members.map((d) => declarationAsCard(d, ctx)),
+      body: members.flatMap((d) => declarationAsCards(d, ctx)),
     });
   }
   return sections;
@@ -408,18 +408,31 @@ function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Sect
   if (sigs.length === 0) return [];
 
   const transformedSigs = sigs.map((s) => transformSignature(s, ctx));
-  const sections: Section[] = [
-    {
-      title: "Signatures",
-      body: [{ kind: "signatures", signatures: transformedSigs }],
-    },
-  ];
 
-  for (const parameters of parameterDocsForSignatures(transformedSigs)) {
-    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters }] });
+  // Single signature: inline display (no card)
+  if (transformedSigs.length === 1) {
+    const sig = transformedSigs[0];
+    const sections: Section[] = [
+      { title: "Signature", body: [{ kind: "signatures", signatures: [sig] }] },
+    ];
+    const params = sig.parameters
+      .filter((p) => p.doc.length > 0)
+      .map((p) => ({ name: p.name, doc: p.doc }));
+    if (params.length > 0) {
+      sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters: params }] });
+    }
+    return sections;
   }
 
-  return sections;
+  // Multiple signatures: one card per overload
+  const n = transformedSigs.length;
+  const cards = transformedSigs.map((sig, i) => {
+    const label = `${decl.name} (${i + 1}/${n})`;
+    const anchor = `${decl.name}-${i + 1}`;
+    return buildSignatureCard(decl.name, label, anchor, sig, {}, "function");
+  });
+
+  return [{ title: "Signatures", body: cards }];
 }
 
 function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
@@ -433,7 +446,7 @@ function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[
   return [
     {
       title: "Members",
-      body: children.map((d) => declarationAsCard(d, ctx)),
+      body: children.flatMap((d) => declarationAsCards(d, ctx)),
     },
   ];
 }
@@ -447,11 +460,46 @@ function buildVariableSections(decl: TDDeclaration, ctx: TransformContext): Sect
 // Member / signature helpers
 // ---------------------------------------------------------------------------
 
-function declarationAsCard(
+function buildSignatureCard(
+  name: string,
+  label: string,
+  anchor: string,
+  sig: SignatureViewModel,
+  flags: MemberFlags,
+  kind: DeclarationKind,
+): SectionBlock & { kind: "card" } {
+  const sections: Section[] = [
+    { body: [{ kind: "declaration-title", name: label, declarationKind: kind }] },
+  ];
+
+  if (hasRenderableMemberFlags(flags)) {
+    sections.push({ body: [{ kind: "flags", flags }] });
+  }
+
+  sections.push({
+    title: "Signature",
+    body: [{ kind: "signatures", signatures: [sig] }],
+  });
+
+  if (sig.doc.length > 0) {
+    sections.push({ body: [{ kind: "doc", doc: sig.doc }] });
+  }
+
+  const params = sig.parameters
+    .filter((p) => p.doc.length > 0)
+    .map((p) => ({ name: p.name, doc: p.doc }));
+  if (params.length > 0) {
+    sections.push({ title: "Parameters", body: [{ kind: "parameters", parameters: params }] });
+  }
+
+  return { kind: "card", anchor, url: undefined, flags, sections };
+}
+
+function declarationAsCards(
   decl: TDDeclaration,
   ctx: TransformContext,
-): SectionBlock & { kind: "card" } {
-  const anchor = decl.kind === Kind.Constructor ? "constructor" : decl.name;
+): Array<SectionBlock & { kind: "card" }> {
+  const baseName = decl.kind === Kind.Constructor ? "constructor" : decl.name;
   const flags = transformFlags(decl.flags);
 
   // Check @deprecated modifier tag
@@ -468,25 +516,55 @@ function declarationAsCard(
   const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
   const kind = declarationKindForMember(decl, signatures);
 
-  const cardSections = buildCardSections({
-    name: decl.name,
-    flags,
-    signatures,
-    type,
-    doc,
-    url,
-  });
+  // If the member has its own page, use the old single-card-with-link approach
+  if (url) {
+    const docSections: Section[] = doc.length > 0 ? [{ body: [{ kind: "doc", doc }] }] : [];
+    return [
+      {
+        kind: "card",
+        anchor: baseName,
+        url,
+        flags,
+        sections: [
+          { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
+          ...docSections,
+        ],
+      },
+    ];
+  }
 
-  return {
-    kind: "card",
-    anchor,
-    url,
-    flags,
-    sections: [
-      { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
-      ...cardSections,
-    ],
-  };
+  // Single signature or no signatures: use the old buildCardSections approach
+  if (signatures.length <= 1) {
+    const cardSections = buildCardSections({
+      name: decl.name,
+      flags,
+      signatures,
+      type,
+      doc,
+      url: undefined,
+    });
+    return [
+      {
+        kind: "card",
+        anchor: baseName,
+        url: undefined,
+        flags,
+        sections: [
+          { body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }] },
+          ...cardSections,
+        ],
+      },
+    ];
+  }
+
+  // Multiple signatures: one card per signature
+  const n = signatures.length;
+  return signatures.map((sig, i) => {
+    const label = `${decl.name} (${i + 1}/${n})`;
+    const anchor = `${baseName}-${i + 1}`;
+    // Only include flags on the first card to avoid repetition
+    return buildSignatureCard(decl.name, label, anchor, sig, i === 0 ? flags : {}, kind);
+  });
 }
 
 function declarationKindForMember(
@@ -700,7 +778,7 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
     case "reflection": {
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-      const members = (decl.children ?? []).map((c) => declarationAsCard(c, ctx));
+      const members = (decl.children ?? []).flatMap((c) => declarationAsCards(c, ctx));
       return { kind: "reflection", signatures: sigs, members };
     }
 
