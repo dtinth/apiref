@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import { name } from "../src/index.ts";
+import { ArShell } from "../src/index.ts";
 
-test("package name", () => {
-  expect(name).toBe("@apiref/shell");
+test("ArShell is a custom element", () => {
+  expect(typeof ArShell).toBe("function");
 });

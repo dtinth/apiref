@@ -1,11 +1,20 @@
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  pack: {
-    dts: {
-      tsgo: true,
+  plugins: [tailwindcss()],
+  build: {
+    lib: {
+      entry: "./src/index.ts",
+      name: "ArShell",
+      fileName: "shell",
+      formats: ["es"],
     },
-    exports: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: (info) => (info.name?.endsWith(".css") ? "styles.css" : "[name][extname]"),
+      },
+    },
   },
   lint: {
     options: {

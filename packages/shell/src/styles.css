@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+@theme {
+  --color-ar-bg: #353433;
+  --color-ar-sidebar: #252423;
+  --color-ar-header: #090807;
+  --color-ar-border: #454443;
+  --color-ar-muted: #8b8685;
+  --color-ar-text: #e9e8e7;
+  --color-ar-accent-cyan: #bbeeff;
+  --color-ar-accent-green: #d7fc70;
+  --color-ar-accent-yellow: #ffffbb;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+body {
+  @apply bg-ar-bg text-ar-text;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Layout: shell ──────────────────────────────────────────────────────── */
+ar-shell {
+  display: block;
+}
+
+.ar-header {
+  @apply fixed top-0 inset-x-0 h-[58px] bg-ar-header border-b border-ar-border z-20 flex items-center;
+}
+
+.ar-header-logo {
+  @apply px-[18px] text-ar-muted text-lg font-medium flex items-center gap-2 flex-none;
+}
+
+.ar-header-pkg {
+  @apply text-ar-text font-semibold;
+}
+
+.ar-header-version {
+  @apply text-ar-muted text-sm font-normal;
+}
+
+.ar-header-menu-btn {
+  @apply flex items-center pl-[18px] flex-none md:hidden;
+}
+
+.ar-sidebar {
+  @apply md:fixed md:top-[58px] md:w-[20rem] md:bottom-0 md:left-0 md:overflow-y-auto
+         overflow-x-hidden bg-ar-sidebar leading-loose md:leading-relaxed
+         md:border-r border-ar-border text-gray-300 z-10
+         fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto border-r
+         transition-transform;
+}
+
+.ar-sidebar--hidden {
+  @apply -translate-x-full md:translate-x-0;
+}
+
+.ar-sidebar--visible {
+  @apply translate-x-0;
+}
+
+.ar-main {
+  @apply pt-[58px] md:ml-[20rem] bg-ar-bg min-h-screen;
+}
+
+.ar-content-wrap {
+  @apply max-w-4xl mx-auto p-6 py-12;
+}
+
+/* ── Nav tree ───────────────────────────────────────────────────────────── */
+.ar-nav {
+  @apply py-2;
+}
+
+.ar-nav-section {
+  @apply mb-1;
+}
+
+.ar-nav-section-title {
+  @apply px-4 py-1 text-xs font-semibold uppercase tracking-wider text-ar-muted;
+}
+
+.ar-nav-item {
+  @apply flex items-center gap-1.5 px-4 py-0.5 text-sm text-gray-300 hover:text-white hover:bg-white/5
+         transition-colors cursor-pointer w-full text-left;
+}
+
+.ar-nav-item--active {
+  @apply text-white bg-white/10;
+}
+
+.ar-nav-item-icon {
+  @apply flex-none text-[0.85em] w-4 text-center;
+}
+
+.ar-nav-children {
+  @apply pl-3 border-l border-ar-border ml-5;
+}
+
+/* ── Content: declaration ───────────────────────────────────────────────── */
+.ar-declaration {
+  @apply space-y-8;
+}
+
+.ar-declaration-title {
+  @apply text-2xl md:text-3xl font-bold text-ar-text flex items-center gap-2;
+}
+
+.ar-section-title {
+  @apply text-base font-semibold text-ar-muted uppercase tracking-wide mb-3;
+}
+
+/* ── Member list ────────────────────────────────────────────────────────── */
+.ar-member-list {
+  @apply divide-y divide-ar-border list-none p-0 m-0;
+}
+
+.ar-member {
+  @apply py-4 first:pt-0;
+}
+
+.ar-member-body {
+  @apply space-y-2;
+}
+
+.ar-signature {
+  @apply font-mono text-sm bg-black/20 rounded px-3 py-2 overflow-x-auto;
+}
+
+.ar-signature-line {
+  @apply leading-relaxed;
+}
+
+.ar-sig-name {
+  @apply font-semibold text-ar-text;
+}
+
+/* ── Types ──────────────────────────────────────────────────────────────── */
+.ar-type {
+  @apply font-mono text-sm;
+}
+
+.ar-type-intrinsic {
+  @apply text-ar-accent-cyan;
+}
+
+.ar-type-literal {
+  @apply text-ar-accent-green;
+}
+
+.ar-type-ref {
+  @apply text-ar-accent-yellow hover:underline;
+}
+
+.ar-type-ref--external {
+  @apply text-ar-text/70 no-underline;
+}
+
+.ar-type-op {
+  @apply text-ar-muted;
+}
+
+.ar-type-keyword {
+  @apply text-purple-400;
+}
+
+.ar-type-param {
+  @apply text-sky-300;
+}
+
+/* ── Param docs ─────────────────────────────────────────────────────────── */
+.ar-param-list {
+  @apply grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm pl-4 border-l-2 border-ar-border;
+}
+
+.ar-param-name {
+  @apply font-mono text-ar-text font-semibold;
+}
+
+.ar-param-doc {
+  @apply text-gray-400;
+}
+
+/* ── Description / doc ──────────────────────────────────────────────────── */
+.ar-description {
+  @apply text-gray-300 leading-relaxed whitespace-pre-wrap;
+}
+
+.ar-inline-code {
+  @apply font-mono text-sm bg-black/30 rounded px-1 py-0.5 text-ar-accent-cyan;
+}
+
+.ar-link {
+  @apply text-ar-accent-yellow hover:underline;
+}
+
+.ar-link-unresolved {
+  @apply text-ar-muted;
+}
+
+/* ── Badges ─────────────────────────────────────────────────────────────── */
+.ar-badge {
+  @apply text-xs font-semibold px-1.5 py-0.5 rounded uppercase tracking-wide;
+}
+
+.ar-badge--deprecated {
+  @apply bg-red-900/50 text-red-300;
+}
+
+.ar-badge--static {
+  @apply bg-blue-900/50 text-blue-300;
+}
+
+.ar-badge--abstract {
+  @apply bg-purple-900/50 text-purple-300;
+}
+
+.ar-badge--readonly {
+  @apply bg-gray-800 text-gray-400;
+}
+
+/* ── Kind icons (text-based) ────────────────────────────────────────────── */
+.ar-kind-icon {
+  @apply inline-block font-mono text-xs font-bold w-5 h-5 flex items-center justify-center rounded;
+}
+
+.ar-kind-icon--class {
+  @apply bg-orange-500/20 text-orange-400;
+}
+.ar-kind-icon--interface {
+  @apply bg-sky-500/20 text-sky-400;
+}
+.ar-kind-icon--function {
+  @apply bg-purple-500/20 text-purple-400;
+}
+.ar-kind-icon--type-alias {
+  @apply bg-orange-500/20 text-orange-400;
+}
+.ar-kind-icon--variable {
+  @apply bg-sky-500/20 text-sky-400;
+}
+.ar-kind-icon--enum {
+  @apply bg-orange-500/20 text-orange-400;
+}
+.ar-kind-icon--module {
+  @apply bg-gray-500/20 text-gray-400;
+}
+.ar-kind-icon--namespace {
+  @apply bg-gray-500/20 text-gray-400;
+}
+.ar-kind-icon--package-index {
+  @apply bg-gray-500/20 text-gray-400;
+}

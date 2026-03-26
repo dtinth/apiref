@@ -28,6 +28,11 @@
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
+  "dependencies": {
+    "@tailwindcss/vite": "catalog:",
+    "lit": "catalog:",
+    "tailwindcss": "catalog:"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "bumpp": "^11.0.1",

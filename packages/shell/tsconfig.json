@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["es2023"],
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "lib": ["es2023", "dom"],
     "moduleDetection": "force",
     "module": "nodenext",
     "moduleResolution": "nodenext",
