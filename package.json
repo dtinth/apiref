@@ -9,6 +9,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
+    "typedoc": "catalog:",
     "vite-plus": "catalog:"
   },
   "engines": {

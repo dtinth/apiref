@@ -1,4 +1,4 @@
-name: Deploy shell assets to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -22,14 +22,34 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
+
       - name: Build shell assets
         working-directory: packages/shell
         run: vp build
-      - name: Arrange Pages artifact
+
+      - name: Build renderer CLI
+        working-directory: packages/renderer
+        run: vp pack
+
+      - name: Generate TypeDoc JSON
+        run: |
+          vp exec typedoc \
+            --entryPoints packages/renderer/src/index.ts \
+            --tsconfig packages/renderer/tsconfig.json \
+            --json typedoc.json
+
+      - name: Generate API reference HTML
+        run: |
+          node packages/renderer/dist/cli.mjs typedoc.json \
+            --out _site \
+            --assets-base https://dtinth.github.io/apiref/assets
+
+      - name: Copy shell assets
         run: |
           mkdir -p _site/assets
           cp packages/shell/dist/shell.js _site/assets/
           cp packages/shell/dist/styles.css _site/assets/
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
