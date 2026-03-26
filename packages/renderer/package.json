@@ -34,6 +34,7 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
+    "marked": "catalog:",
     "preact": "catalog:",
     "preact-render-to-string": "catalog:"
   },

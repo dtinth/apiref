@@ -1,34 +1,28 @@
+import { marked } from "marked";
 import type { DocNode } from "../viewmodel.ts";
 
 interface DocViewProps {
   doc: DocNode[];
 }
 
-export function DocView({ doc }: DocViewProps) {
-  if (doc.length === 0) return null;
-  return (
-    <div class="ar-description">
-      {doc.map((node, i) => (
-        <DocNodeView key={i} node={node} />
-      ))}
-    </div>
-  );
+/** Reassemble DocNode[] back into a markdown string, converting link nodes to markdown links. */
+function docToMarkdown(doc: DocNode[]): string {
+  return doc
+    .map((node) => {
+      switch (node.kind) {
+        case "text":
+          return node.text;
+        case "code":
+          return node.text;
+        case "link":
+          return node.url ? `[${node.text}](${node.url})` : node.text;
+      }
+    })
+    .join("");
 }
 
-function DocNodeView({ node }: { node: DocNode }) {
-  switch (node.kind) {
-    case "text":
-      return <>{node.text}</>;
-    case "code":
-      return <code class="ar-inline-code">{node.text}</code>;
-    case "link":
-      if (node.url) {
-        return (
-          <a href={node.url} class="ar-link">
-            {node.text}
-          </a>
-        );
-      }
-      return <span class="ar-link-unresolved">{node.text}</span>;
-  }
+export function DocView({ doc }: DocViewProps) {
+  if (doc.length === 0) return null;
+  const html = marked.parse(docToMarkdown(doc)) as string;
+  return <div class="ar-description" dangerouslySetInnerHTML={{ __html: html }}></div>;
 }
