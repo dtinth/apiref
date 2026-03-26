@@ -201,24 +201,23 @@ describe("visual-storyboard (multi-module)", () => {
 describe("member cards", () => {
   const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
   const indexPage = site.pages.find((p) => p.url === "index.html");
-  const interfacesSection = indexPage?.sections.find((s) => s.kind === "members");
-  const locatorLikePage = site.pages.find((p) => p.url === "LocatorLike.html");
-  const methodsSection = locatorLikePage?.sections.find(
-    (s) => s.kind === "members" && s.label === "Methods",
+  const functionsSection = indexPage?.sections.find(
+    (s) => s.kind === "members" && s.label === "Functions",
   );
+  const visualStoryboard = transform(loadFixture("visual-storyboard"), { version: "1.0.0" });
 
-  test("members with own page render through subsections", () => {
-    if (interfacesSection?.kind === "members") {
-      const locatorLike = interfacesSection.members.find((m) => m.name === "LocatorLike");
-      expect(locatorLike?.url).toBe("LocatorLike.html");
-      expect(locatorLike?.kind).toBe("interface");
-      expect(locatorLike?.subsections.map((section) => section.kind)).toEqual(["summary"]);
+  test("members with own page render through subsections when preview content exists", () => {
+    if (functionsSection?.kind === "members") {
+      const stabilize = functionsSection.members.find((member) => member.name === "stabilize");
+      expect(stabilize?.url).toBe("stabilize.html");
+      expect(stabilize?.kind).toBe("function");
+      expect(stabilize?.subsections.map((section) => section.kind)).toEqual(["summary"]);
     }
   });
 
   test("linked member summary subsections strip links", () => {
-    if (interfacesSection?.kind === "members") {
-      const member = interfacesSection.members.find((m) => m.url);
+    if (functionsSection?.kind === "members") {
+      const member = functionsSection.members.find((m) => m.url);
       const summary = member?.subsections.find((section) => section.kind === "summary");
       if (summary?.kind === "summary") {
         const hasLinks = summary.doc.some((node) => node.kind === "link");
@@ -228,18 +227,28 @@ describe("member cards", () => {
   });
 
   test("inline method members expose render-oriented subsections", () => {
-    if (methodsSection?.kind === "members") {
-      const evaluate = methodsSection.members.find((member) => member.name === "evaluate");
-      expect(evaluate?.kind).toBe("method");
-      expect(evaluate?.title).toBe("evaluate()");
-      expect(evaluate?.subsections.some((section) => section.kind === "signatures")).toBe(true);
-      expect(evaluate?.subsections.some((section) => section.kind === "summary")).toBe(true);
+    const writerPage = visualStoryboard.pages.find(
+      (page) => page.url === "index/StoryboardWriter.html",
+    );
+    const writerMethods = writerPage?.sections.find(
+      (section) => section.kind === "members" && section.label === "Methods",
+    );
+    if (writerMethods?.kind === "members") {
+      const createFrame = writerMethods.members.find((member) => member.name === "createFrame");
+      expect(createFrame?.kind).toBe("method");
+      expect(createFrame?.title).toBe("createFrame()");
+      expect(createFrame?.subsections.map((section) => section.kind)).toEqual([
+        "signatures",
+        "summary",
+        "parameters",
+      ]);
     }
   });
 
   test("inline property members use a type subsection", () => {
-    const visualStoryboard = transform(loadFixture("visual-storyboard"), { version: "1.0.0" });
-    const optionsPage = visualStoryboard.pages.find((p) => p.url === "index/CreateStoryboardFrameOptions.html");
+    const optionsPage = visualStoryboard.pages.find(
+      (p) => p.url === "index/CreateStoryboardFrameOptions.html",
+    );
     const propertiesSection = optionsPage?.sections.find(
       (section) => section.kind === "members" && section.label === "Properties",
     );

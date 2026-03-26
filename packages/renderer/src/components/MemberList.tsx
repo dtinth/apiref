@@ -36,7 +36,9 @@ function MemberView({ member }: { member: MemberViewModel }) {
       </h3>
 
       {subsections.length > 0 && (
-        <div class="ar-member-card-body">{subsections.map((section, index) => renderSubsection(section, index, name))}</div>
+        <div class="ar-member-card-body">
+          {subsections.map((section, index) => renderSubsection(section, index, name))}
+        </div>
       )}
     </>
   );
@@ -47,7 +49,9 @@ function renderSubsection(subsection: MemberSubsection, index: number, memberNam
     case "flags":
       return (
         <div key={index}>
-          {subsection.flags.deprecated && <span class="ar-badge ar-badge--deprecated">deprecated</span>}
+          {subsection.flags.deprecated && (
+            <span class="ar-badge ar-badge--deprecated">deprecated</span>
+          )}
           {subsection.flags.static && <span class="ar-badge ar-badge--static">static</span>}
           {subsection.flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
           {subsection.flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
