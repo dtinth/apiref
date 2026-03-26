@@ -82,6 +82,14 @@ function getKindIcon(kind: string): string {
   return KIND_ICONS[kind as DeclarationKind] ?? "codicon-symbol-misc";
 }
 
+function joinClasses(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function getKindIconClassName(kind: string) {
+  return joinClasses("codicon", getKindIcon(kind), "ar-kind-icon", `ar-kind-icon--${kind}`);
+}
+
 export function Page({ site, page, options }: PageProps) {
   const depth = page.url.split("/").length - 1;
   const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
@@ -210,14 +218,18 @@ function NavNodeView({
   baseHref: string;
 }) {
   const isActive = node.url === currentUrl;
-  const iconClass = getKindIcon(node.kind);
   return (
     <>
       <a
         href={baseHref + node.url}
-        class={`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "ar-nav-item--deprecated" : ""}`}
+        class={joinClasses(
+          "ar-nav-item",
+          `ar-nav-item--depth-${depth}`,
+          isActive && "ar-nav-item--active",
+          node.flags.deprecated && "ar-nav-item--deprecated",
+        )}
       >
-        <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`} />
+        <i class={getKindIconClassName(node.kind)} />
         <span>{node.label}</span>
       </a>
       {node.children.map((child) => (
@@ -252,13 +264,13 @@ function OutlineSectionView({
 }
 
 function OutlineItemView({ item }: { item: OutlineItem }) {
-  const iconClass = getKindIcon(item.kind);
   return (
     <a
       href={`#${item.anchor}`}
-      class={`ar-outline-item ${item.flags.deprecated ? "ar-outline-item--deprecated" : ""}`}
+      class={joinClasses("ar-outline-item", item.flags.deprecated && "ar-outline-item--deprecated")}
+      aria-label={`Jump to ${item.label}`}
     >
-      <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${item.kind}`} />
+      <i class={getKindIconClassName(item.kind)} />
       <span>{item.label}</span>
     </a>
   );
