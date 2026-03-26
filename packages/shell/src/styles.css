@@ -117,12 +117,22 @@ ar-shell {
   @apply flex-none text-2xl md:text-3xl;
 }
 
+.ar-declaration--package-index .ar-kind-icon {
+  color: #cccccc;
+}
+
 .ar-declaration-kind {
   @apply text-[#8b8685] font-normal text-2xl md:text-3xl;
 }
 
 .ar-section-title {
-  /* Inherit prose h2 styling - no custom styling */
+  color: #d7fc70;
+  text-shadow: 2px 2px #d7fc7026;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.33333;
 }
 
 h3.ar-member-card-header {
@@ -155,7 +165,7 @@ h3.ar-member-card-header .ar-member-card-kind {
 }
 
 .ar-member-card--link {
-  @apply cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
+  @apply display-block cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
 }
 
 .ar-member-card--link h3 {
