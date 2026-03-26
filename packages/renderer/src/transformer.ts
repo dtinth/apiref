@@ -217,6 +217,10 @@ function buildPackageIndexPage(
 ): PageViewModel {
   const sections: Section[] = [];
 
+  sections.push({
+    body: [{ kind: "declaration-title", name: ctx.pkgName, declarationKind: "package-index" }],
+  });
+
   if (project.readme && project.readme.length > 0) {
     sections.push({
       body: [{ kind: "doc", doc: transformCommentParts(project.readme, ctx) }],
@@ -263,6 +267,10 @@ function buildModulePage(
 ): PageViewModel {
   const url = ctx.idToUrl.get(mod.id) ?? "index.html";
   const sections: Section[] = [];
+
+  sections.push({
+    body: [{ kind: "declaration-title", name: mod.name, declarationKind: "module" }],
+  });
 
   if (mod.comment) {
     const doc = transformComment(mod.comment, ctx);
@@ -513,8 +521,7 @@ function buildCardSections(input: {
   url?: string;
 }): Section[] {
   if (input.url) {
-    const summary = stripLinksFromDoc(input.doc);
-    return summary.length > 0 ? [{ body: [{ kind: "doc", doc: summary }] }] : [];
+    return input.doc.length > 0 ? [{ body: [{ kind: "doc", doc: input.doc }] }] : [];
   }
 
   const sections: Section[] = [];
@@ -719,19 +726,6 @@ function transformCommentParts(parts: TDCommentPart[], ctx: TransformContext): D
     }
     // "text" | "code" — both have a `text` field and map 1:1
     return { kind: part.kind, text: part.text };
-  });
-}
-
-/**
- * Strip links from documentation nodes to create an abbreviated view.
- * Links are converted to plain text to avoid nested links in member cards.
- */
-function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
-  return doc.map((node) => {
-    if (node.kind === "link") {
-      return { kind: "text", text: node.text };
-    }
-    return node;
   });
 }
 

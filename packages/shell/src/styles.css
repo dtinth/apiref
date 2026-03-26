@@ -159,8 +159,9 @@ ar-shell {
   line-height: 1.33333;
 }
 
-h3.ar-card-header {
-  @apply text-xl font-semibold text-ar-accent-cyan flex items-center gap-2 mb-2;
+.ar-card .ar-section-title {
+  @apply px-1 py-1 text-xs font-semibold uppercase tracking-wider text-ar-muted mb-1 mt-2;
+  text-shadow: none;
 }
 
 h3.ar-card-header .ar-kind-icon {
@@ -178,7 +179,7 @@ h3.ar-card-header .ar-card-kind {
 }
 
 .ar-card-header {
-  @apply flex items-center gap-2 text-sm;
+  @apply text-xl font-semibold text-ar-accent-cyan flex items-center gap-2 mb-2 text-sm;
 }
 
 .ar-card-header .ar-kind-icon {
@@ -186,14 +187,14 @@ h3.ar-card-header .ar-card-kind {
 }
 
 .ar-card--link {
-  @apply block cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
+  @apply transition-all hover:border-ar-accent-cyan hover:bg-black/20;
 }
 
-.ar-card--link h3 {
-  @apply hover:text-ar-accent-yellow;
+.ar-card--link .ar-card-header {
+  @apply hover:text-ar-accent-yellow cursor-pointer;
 }
 
-.ar-card--link:hover {
+a.ar-card-header {
   text-decoration: none;
 }
 

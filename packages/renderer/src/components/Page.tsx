@@ -261,17 +261,31 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
   const titleBlock = card.sections[0]?.body[0];
   const titleFromCard = titleBlock?.kind === "declaration-title" ? titleBlock : null;
 
-  const cardContent = (
-    <>
-      {titleFromCard && (
-        <h3 class="ar-card-header">
-          <DeclarationTitle
-            kind={titleFromCard.declarationKind}
-            title={titleFromCard.name}
-            kindLabelClass="ar-card-kind"
-          />
-        </h3>
-      )}
+  const header = titleFromCard ? (
+    card.url ? (
+      <a href={card.url} class="ar-card-header">
+        <DeclarationTitle
+          kind={titleFromCard.declarationKind}
+          title={titleFromCard.name}
+          kindLabelClass="ar-card-kind"
+        />
+      </a>
+    ) : (
+      <h3 class="ar-card-header">
+        <DeclarationTitle
+          kind={titleFromCard.declarationKind}
+          title={titleFromCard.name}
+          kindLabelClass="ar-card-kind"
+        />
+      </h3>
+    )
+  ) : null;
+
+  const cardClasses = card.url ? "ar-card ar-card--link" : "ar-card";
+
+  return (
+    <div id={card.anchor} class={cardClasses}>
+      {header}
       {card.sections.length > 0 && (
         <div class="ar-card-body">
           {card.sections.slice(1).map((section, i) => (
@@ -279,16 +293,6 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
           ))}
         </div>
       )}
-    </>
-  );
-
-  return card.url ? (
-    <a href={card.url} id={card.anchor} class="ar-card ar-card--link">
-      {cardContent}
-    </a>
-  ) : (
-    <div id={card.anchor} class="ar-card">
-      {cardContent}
     </div>
   );
 }
