@@ -460,16 +460,20 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
   // Determine kind: either from declaration (if it has its own page) or inferred from shape
   let kind: string;
   let url: string | undefined;
+  let abbreviatedDoc: DocNode[] | undefined;
+
   if (PAGE_KINDS.has(decl.kind)) {
     url = ctx.idToUrl.get(decl.id);
     const pageKind = reflectionKindToPageKind(decl.kind);
     kind = pageKind ?? "unknown";
+    // Pre-compute abbreviated doc (links stripped) for members with their own pages
+    abbreviatedDoc = stripLinksFromDoc(doc);
   } else {
     // Infer member kind from declaration type or signatures
     kind = inferMemberKind(decl, signatures);
   }
 
-  return { anchor, name: decl.name, kind, flags, signatures, type, doc, url };
+  return { anchor, name: decl.name, kind, flags, signatures, type, doc, url, abbreviatedDoc };
 }
 
 function inferMemberKind(decl: TDDeclaration, signatures: SignatureViewModel[]): string {
@@ -619,6 +623,19 @@ function transformCommentParts(parts: TDCommentPart[], ctx: TransformContext): D
     }
     // "text" | "code" — both have a `text` field and map 1:1
     return { kind: part.kind, text: part.text };
+  });
+}
+
+/**
+ * Strip links from documentation nodes to create an abbreviated view.
+ * Links are converted to plain text to avoid nested links in member cards.
+ */
+function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
+  return doc.map((node) => {
+    if (node.kind === "link") {
+      return { kind: "text", text: node.text };
+    }
+    return node;
   });
 }
 

@@ -193,3 +193,42 @@ describe("visual-storyboard (multi-module)", () => {
     expect(page?.breadcrumbs.some((b) => b.label === "index")).toBe(true);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Member card logic
+// ---------------------------------------------------------------------------
+
+describe("member cards", () => {
+  const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
+  const indexPage = site.pages.find((p) => p.url === "index.html");
+  const interfacesSection = indexPage?.sections.find((s) => s.kind === "members");
+
+  test("members with own page have abbreviatedDoc", () => {
+    if (interfacesSection?.kind === "members") {
+      const locatorLike = interfacesSection.members.find((m) => m.name === "LocatorLike");
+      expect(locatorLike?.url).toBe("LocatorLike.html");
+      expect(locatorLike?.abbreviatedDoc).toBeDefined();
+    }
+  });
+
+  test("abbreviatedDoc strips links", () => {
+    if (interfacesSection?.kind === "members") {
+      const member = interfacesSection.members.find((m) => m.url);
+      if (member?.abbreviatedDoc) {
+        const hasLinks = member.abbreviatedDoc.some((node) => node.kind === "link");
+        expect(hasLinks).toBe(false);
+      }
+    }
+  });
+
+  test("members with own page have kind set", () => {
+    if (interfacesSection?.kind === "members") {
+      const members = interfacesSection.members.filter((m) => m.url);
+      for (const member of members) {
+        expect(member.kind).toBeDefined();
+        expect(typeof member.kind).toBe("string");
+        expect(member.kind.length).toBeGreaterThan(0);
+      }
+    }
+  });
+});

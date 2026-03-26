@@ -110,6 +110,8 @@ export interface MemberViewModel {
   doc: DocNode[];
   /** URL to this member's page, if it has its own page. */
   url?: string;
+  /** Pre-stripped doc for abbreviated view (when url exists). Links removed to avoid nested links. */
+  abbreviatedDoc?: DocNode[];
 }
 
 /**

@@ -1,19 +1,10 @@
-import type { MemberViewModel, SignatureViewModel, DocNode } from "../viewmodel.ts";
+import type { MemberViewModel, SignatureViewModel } from "../viewmodel.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 
 interface MemberListProps {
   members: MemberViewModel[];
-}
-
-function stripLinksFromDoc(doc: DocNode[]): DocNode[] {
-  return doc.map((node) => {
-    if (node.kind === "link") {
-      return { kind: "text", text: node.text };
-    }
-    return node;
-  });
 }
 
 export function MemberList({ members }: MemberListProps) {
@@ -37,12 +28,11 @@ export function MemberList({ members }: MemberListProps) {
 }
 
 function MemberView({ member }: { member: MemberViewModel }) {
-  const { name, kind, flags, signatures, type, doc, url } = member;
+  const { name, kind, flags, signatures, type, doc, url, abbreviatedDoc } = member;
   const displayName = signatures.length > 0 ? `${name}()` : name;
 
   // Abbreviated view for members with their own pages
-  if (url) {
-    const abbreviatedDoc = stripLinksFromDoc(doc);
+  if (url && abbreviatedDoc) {
     return (
       <>
         <h3 class="ar-member-card-header">
