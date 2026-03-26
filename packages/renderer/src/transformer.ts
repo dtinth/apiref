@@ -85,7 +85,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         navChildren.push(declarationNavNode(child, idToUrl));
       }
     }
-    navTree.push(...navChildren);
+    navTree.push(...navChildren.sort(byLabel));
   } else {
     for (const mod of children) {
       const modUrl = idToUrl.get(mod.id) ?? "index.html";
@@ -109,7 +109,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         url: modUrl,
         kind: "module",
         flags: {},
-        children: modNavChildren,
+        children: modNavChildren.sort(byLabel),
       });
     }
   }
@@ -616,6 +616,10 @@ function reflectionKindToPageKind(kind: number): PageKind | null {
     default:
       return null;
   }
+}
+
+function byLabel(a: NavNode, b: NavNode): number {
+  return a.label.localeCompare(b.label);
 }
 
 function inferGroups(decls: TDDeclaration[]): Array<{ title: string; children: number[] }> {

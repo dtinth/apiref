@@ -2,16 +2,16 @@ import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { NavNode } from "./ar-shell.ts";
 
-const KIND_LABELS: Record<string, string> = {
-  class: "C",
-  interface: "I",
-  function: "F",
-  "type-alias": "T",
-  variable: "V",
-  enum: "E",
-  module: "M",
-  namespace: "N",
-  "package-index": "P",
+const KIND_ICONS: Record<string, string> = {
+  class: "codicon-symbol-class",
+  interface: "codicon-symbol-interface",
+  function: "codicon-symbol-function",
+  "type-alias": "codicon-symbol-type-parameter",
+  variable: "codicon-symbol-variable",
+  enum: "codicon-symbol-enum",
+  module: "codicon-symbol-module",
+  namespace: "codicon-symbol-namespace",
+  "package-index": "codicon-symbol-package",
 };
 
 @customElement("ar-nav")
@@ -55,14 +55,14 @@ export class ArNav extends LitElement {
 
   private renderNode(node: NavNode, depth: number): TemplateResult {
     const isActive = node.url === this.currentUrl;
-    const label = KIND_LABELS[node.kind] ?? "·";
+    const iconClass = KIND_ICONS[node.kind] ?? "codicon-symbol-misc";
 
     return html`
       <a
         href=${node.url}
         class=${`ar-nav-item ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
-        <span class=${`ar-kind-icon ar-kind-icon--${node.kind}`}>${label}</span>
+        <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
         <span>${node.label}</span>
       </a>
       ${node.children.length > 0

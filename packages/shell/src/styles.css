@@ -109,7 +109,7 @@ ar-shell {
 }
 
 .ar-declaration-title {
-  @apply text-2xl md:text-3xl font-bold text-ar-text flex items-center gap-2;
+  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2;
 }
 
 .ar-section-title {
@@ -333,33 +333,33 @@ ar-shell {
 
 /* ── Kind icons (text-based) ────────────────────────────────────────────── */
 .ar-kind-icon {
-  @apply inline-block font-mono text-xs font-bold w-5 h-5 flex items-center justify-center rounded;
+  @apply flex-none text-base leading-none;
 }
 
 .ar-kind-icon--class {
-  @apply bg-orange-500/20 text-orange-400;
+  color: #ee9d28;
 }
 .ar-kind-icon--interface {
-  @apply bg-sky-500/20 text-sky-400;
+  color: #75beff;
 }
 .ar-kind-icon--function {
-  @apply bg-purple-500/20 text-purple-400;
+  color: #b180d7;
 }
 .ar-kind-icon--type-alias {
-  @apply bg-orange-500/20 text-orange-400;
+  color: #1db2ff;
 }
 .ar-kind-icon--variable {
-  @apply bg-sky-500/20 text-sky-400;
+  color: #75beff;
 }
 .ar-kind-icon--enum {
-  @apply bg-orange-500/20 text-orange-400;
+  color: #ee9d28;
 }
 .ar-kind-icon--module {
-  @apply bg-gray-500/20 text-gray-400;
+  color: #cccccc;
 }
 .ar-kind-icon--namespace {
-  @apply bg-gray-500/20 text-gray-400;
+  color: #cccccc;
 }
 .ar-kind-icon--package-index {
-  @apply bg-gray-500/20 text-gray-400;
+  color: #cccccc;
 }

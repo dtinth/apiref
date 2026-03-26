@@ -39,6 +39,10 @@ export function Page({ site, page, options }: PageProps) {
           href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
         />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@vscode/codicons@0.0.36/dist/codicon.css"
+        />
         <link rel="stylesheet" href={`${options.shellBaseUrl}/styles.css`} />
         <script
           type="application/json"
