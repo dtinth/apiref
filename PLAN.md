@@ -49,22 +49,35 @@ Default assets base: `https://dtinth.github.io/apiref/assets/`
 
 ### Page hierarchy
 
-| Kind        | Number  | URL                                 |
-| ----------- | ------- | ----------------------------------- |
-| Project     | 1       | `index.html`                        |
-| Module      | 2       | `{module}/index.html`               |
-| Class       | 128     | `{module}/{Name}.html`              |
-| Interface   | 256     | `{module}/{Name}.html`              |
-| Function    | 64      | `{module}/{name}.html`              |
-| TypeAlias   | 2097152 | `{module}/{Name}.html`              |
-| Variable    | 32      | `{module}/{name}.html`              |
-| Enum        | 8       | `{module}/{Name}.html`              |
-| Namespace   | 4       | `{module}/{name}/index.html`        |
-| Constructor | 512     | Anchor `#constructor` on class page |
-| Property    | 1024    | Anchor `#{name}` on parent page     |
-| Method      | 2048    | Anchor `#{name}` on parent page     |
-| Accessor    | 262144  | Anchor `#{name}` on parent page     |
-| EnumMember  | 16      | Anchor `#{name}` on enum page       |
+**Gets its own page:**
+
+| Kind      | URL                                    | Nav shows |
+| --------- | -------------------------------------- | --------- |
+| Project   | `index.html`                           | Yes       |
+| Module    | `{module}/index.html`                  | Yes       |
+| Namespace | `{module}/{ns}/index.html` (nested ok) | Yes       |
+| Class     | `{module}/{Name}.html`                 | Yes       |
+| Interface | `{module}/{Name}.html`                 | Yes       |
+| Function  | `{module}/{name}.html`                 | Yes       |
+| TypeAlias | `{module}/{Name}.html`                 | Yes       |
+| Variable  | `{module}/{name}.html`                 | Yes       |
+| Enum      | `{module}/{Name}.html`                 | Yes       |
+
+**Doesn't get its own page (subsections only):**
+
+| Kind        | Location                            | Display                  |
+| ----------- | ----------------------------------- | ------------------------ |
+| Constructor | Anchor `#constructor` on class page | h2 heading + boxed items |
+| Property    | Anchor `#{name}` on parent page     | h2 heading + boxed items |
+| Method      | Anchor `#{name}` on parent page     | h2 heading + boxed items |
+| Accessor    | Anchor `#{name}` on parent page     | h2 heading + boxed items |
+| EnumMember  | Anchor `#{name}` on enum page       | h2 heading + boxed items |
+
+**Dual-nature items (e.g., function + namespace, variable + interface):**
+
+- Create separate pages for each nature
+- Both appear in nav tree
+- Can optionally combine on one page with multiple h1s (future enhancement)
 
 ### ViewModel types (internal, `src/viewmodel.ts`)
 
@@ -172,12 +185,60 @@ interface OutlineItem {
 | enum          | `codicon-symbol-enum`                     | `#ee9d28` |
 | module/ns/pkg | `codicon-symbol-module/namespace/package` | `#cccccc` |
 
+### Content layout & styling
+
+**Page title (`h1.ar-declaration-title`):**
+
+- Layout: `[icon] Name [type]`
+  - Left: VS Code codicon (same as nav)
+  - Center: Declaration name
+  - Right: Muted gray label (e.g., "class", "function", "interface")
+- Example: `[icon] MyClass [class]`
+
+**Subsections (`h2.ar-declaration-title`):**
+
+- Layout: `[icon] Section name [type]` (in each box)
+- Used for Constructor, Properties, Methods sections within a class
+- Each item gets its own box with h2 heading
+
+**Class page structure:**
+
+```
+h1: [icon] MyClass [class]
+Summary paragraph...
+
+h2: Constructor
+  [box] [icon] constructor() [constructor]
+    Signature, params, return, description
+  [box] [icon] constructor(options) [constructor]
+    ...
+
+h2: Properties
+  [box] [icon] name [property]
+    Type, description
+  [box] [icon] count [property]
+    ...
+
+h2: Methods
+  [box] [icon] render() [method]
+    Signature, params, return, description, example
+  [box] [icon] reset() [method]
+    ...
+```
+
+**Function/Module page structure:**
+
+- No boxes for subsections
+- Direct layout: description → parameters → return type → examples
+- Subsections (e.g., namespace members) appear after
+
 ### CSS architecture
 
 - Shell markup: Tailwind utility classes directly.
 - Content classes (`ar-*`): defined in `styles.css` via `@apply`. Renderer emits only `ar-*`, never raw Tailwind utilities.
 - Fonts: `--font-sans: "Arimo"`, `--font-mono: "Comic Mono"` in `@theme`.
 - Declaration title color: `#bbeeff` (`text-ar-accent-cyan`).
+- Kind icons: VS Code codicons in title headings (h1, h2).
 
 ## Packages
 
@@ -192,14 +253,25 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 ## Immediate next steps
 
-1. **Active nav highlight** — left accent border + stronger bg on current-page nav item.
-2. **Outline panel** (`ar-outline`) — right sidebar; `#ar-meta.outline` built from page sections in transformer.
-3. **Syntax highlighting** — Shiki for fenced code blocks in `ar-description`.
-4. **Pagefind search** — post-process + `<ar-search>` component.
-5. **Worker + Intake** — generation pipeline.
+1. ✅ **Active nav highlight** — left accent border + stronger bg on current-page nav item.
+2. ✅ **Outline panel** (`ar-outline`) — right sidebar; `#ar-meta.outline` built from page sections.
+3. **Page hierarchy refactor** — restructure transformer to:
+   - Make Module/Namespace/Class/Function distinct pages
+   - Keep Methods/Properties/Constructors as subsections (anchors only, no separate pages)
+   - Update nav tree to show only up to Class level
+   - Handle dual-nature declarations (function + namespace → separate pages)
+4. **Content layout** — update renderer to:
+   - Add kind icons + type labels to `h1.ar-declaration-title` and `h2.ar-declaration-title`
+   - Create boxed subsection cards for Constructor/Properties/Methods
+   - Add parameter/return/example sections within boxes
+5. **Index page links** — make module/class items clickable links to their pages
+6. **Syntax highlighting** — Shiki for fenced code blocks in `ar-description`.
+7. **Pagefind search** — post-process + `<ar-search>` component.
+8. **Worker + Intake** — generation pipeline.
 
 ## Open questions
 
+- **Dual-nature combined pages:** Should we combine multiple natures (e.g., function + namespace, variable + interface) on one page with multiple h1s? Currently plan is separate pages; this is a future enhancement.
 - **Re-rendering strategy:** Batch re-render vs. lazy re-render on request?
 - **Version selection UI:** Needs `/{pkg}/versions.json`.
 - **Failed packages:** How are TypeDoc failures surfaced and retried?
