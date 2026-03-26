@@ -25,11 +25,19 @@ function getMemberKindIcon(kind: string): string {
 export function MemberList({ members }: MemberListProps) {
   return (
     <div class="ar-member-list">
-      {members.map((m) => (
-        <div id={m.anchor} key={m.anchor} class="ar-member-card">
-          <MemberView member={m} />
-        </div>
-      ))}
+      {members.map((m) => {
+        const cardClass = `ar-member-card${m.url ? " ar-member-card--link" : ""}`;
+        const cardContent = <MemberView member={m} />;
+        return m.url ? (
+          <a href={m.url} id={m.anchor} key={m.anchor} class={cardClass}>
+            {cardContent}
+          </a>
+        ) : (
+          <div id={m.anchor} key={m.anchor} class={cardClass}>
+            {cardContent}
+          </div>
+        );
+      })}
     </div>
   );
 }

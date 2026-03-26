@@ -106,6 +106,8 @@ export interface MemberViewModel {
   type: TypeViewModel | null;
   /** JSDoc/TSDoc comments. */
   doc: DocNode[];
+  /** URL to this member's page, if it has its own page. */
+  url?: string;
 }
 
 /**

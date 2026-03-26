@@ -110,20 +110,19 @@ ar-shell {
 }
 
 .ar-declaration-title {
-  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2 mb-6
-         bg-ar-sidebar rounded px-4 py-3;
+  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2 mb-6;
 }
 
 .ar-declaration-title .ar-kind-icon {
-  @apply flex-none text-base;
+  @apply flex-none text-2xl md:text-3xl;
 }
 
 .ar-declaration-kind {
-  @apply text-ar-accent-cyan font-normal text-sm;
+  @apply text-[#8b8685] font-normal text-2xl md:text-3xl;
 }
 
 .ar-section-title {
-  @apply text-lg font-semibold text-ar-text mb-4;
+  /* Inherit prose h2 styling - no custom styling */
 }
 
 h3.ar-member-card-header {
@@ -156,11 +155,15 @@ h3.ar-member-card-header .ar-member-card-kind {
 }
 
 .ar-member-card--link {
-  @apply cursor-pointer transition-colors hover:border-ar-accent-cyan;
+  @apply cursor-pointer transition-all hover:border-ar-accent-cyan hover:bg-black/20;
 }
 
 .ar-member-card--link h3 {
   @apply hover:text-ar-accent-yellow;
+}
+
+.ar-member-card--link:hover {
+  text-decoration: none;
 }
 
 .ar-member-card-body {

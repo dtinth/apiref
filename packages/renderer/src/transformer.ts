@@ -457,7 +457,10 @@ function declarationAsMember(decl: TDDeclaration, ctx: TransformContext): Member
   const commentSource = decl.signatures?.[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
 
-  return { anchor, name: decl.name, flags, signatures, type, doc };
+  // Add URL if this declaration has its own page
+  const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
+
+  return { anchor, name: decl.name, flags, signatures, type, doc, url };
 }
 
 function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
