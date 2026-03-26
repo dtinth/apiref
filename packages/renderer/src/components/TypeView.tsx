@@ -115,7 +115,7 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
             {type.members.map((member, i) => (
               <Fragment key={i}>
                 {i > 0 && "; "}
-                {renderReflectionMember(member)}
+                {renderReflectionTypeMember(member)}
               </Fragment>
             ))}
             {" }"}
@@ -161,9 +161,24 @@ function renderType(type: TypeViewModel): preact.ComponentChild {
   }
 }
 
-function renderReflectionMember(member: MemberViewModel) {
-  const typeSubsection = member.subsections.find((section) => section.kind === "type-declaration");
-  const signatureSubsection = member.subsections.find((section) => section.kind === "signatures");
+function renderReflectionTypeMember(member: MemberViewModel) {
+  let typeSubsection: Extract<
+    MemberViewModel["subsections"][number],
+    { kind: "type-declaration" }
+  > | null = null;
+  let signatureSubsection: Extract<
+    MemberViewModel["subsections"][number],
+    { kind: "signatures" }
+  > | null = null;
+
+  for (const subsection of member.subsections) {
+    if (subsection.kind === "type-declaration") {
+      typeSubsection = subsection;
+    } else if (subsection.kind === "signatures") {
+      signatureSubsection = subsection;
+    }
+    if (typeSubsection && signatureSubsection) break;
+  }
 
   return (
     <>
