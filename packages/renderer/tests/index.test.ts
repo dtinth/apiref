@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import { name } from "../src/index.ts";
+import { transform } from "../src/index.ts";
 
-test("package name", () => {
-  expect(name).toBe("@apiref/renderer");
+test("transform is exported", () => {
+  expect(typeof transform).toBe("function");
 });
