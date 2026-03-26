@@ -42,7 +42,7 @@ jobs:
         run: |
           node packages/renderer/dist/cli.mjs typedoc.json \
             --out _site \
-            --assets-base https://dtinth.github.io/apiref/assets
+            --assets-base https://cdn.apiref.page/assets
 
       - name: Copy shell assets
         run: |

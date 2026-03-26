@@ -5,7 +5,7 @@ import { parseArgs } from "node:util";
 import { transform } from "./transformer.ts";
 import { renderSite } from "./render.tsx";
 
-const DEFAULT_ASSETS_BASE = "https://dtinth.github.io/apiref/assets/";
+const DEFAULT_ASSETS_BASE = "https://cdn.apiref.page/assets";
 
 export interface CliOptions {
   /** Path to typedoc.json, or "-" to read from stdin. */
