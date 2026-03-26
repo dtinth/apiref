@@ -4,6 +4,21 @@ import { TypeView, SignatureLine } from "./TypeView.tsx";
 import { MemberList } from "./MemberList.tsx";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 
+/**
+ * Compute the base href for a page based on its URL depth.
+ * This allows all relative links to work correctly regardless of page location.
+ *
+ * @example
+ * computeBaseHref("index.html") // => "./"
+ * computeBaseHref("index/Button.html") // => "../"
+ * computeBaseHref("integrations/playwright/index.html") // => "../../"
+ */
+function computeBaseHref(pageUrl: string): string {
+  const depth = pageUrl.split("/").length - 1;
+  if (depth === 0) return "./";
+  return Array(depth).fill("..").join("/") + "/";
+}
+
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
   shellBaseUrl: string;
@@ -51,6 +66,7 @@ function buildOutline(sections: Section[]): OutlineSection[] {
 }
 
 export function Page({ site, page, options }: PageProps) {
+  const baseHref = computeBaseHref(page.url);
   const meta = {
     package: site.package.name,
     version: site.package.version,
@@ -64,6 +80,7 @@ export function Page({ site, page, options }: PageProps) {
   return (
     <html lang="en">
       <head>
+        <base href={baseHref} />
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>
@@ -106,13 +123,13 @@ function PageContent({ page }: { page: PageViewModel }) {
         <DeclarationTitle kind={page.kind} title={page.title} />
       </h1>
       {page.sections.map((section, i) => (
-        <SectionView key={i} section={section} />
+        <SectionView key={i} section={section} pageName={page.title} />
       ))}
     </article>
   );
 }
 
-function SectionView({ section }: { section: Section }) {
+function SectionView({ section, pageName }: { section: Section; pageName?: string }) {
   switch (section.kind) {
     case "summary":
       return <DocView doc={section.doc} />;
@@ -131,7 +148,7 @@ function SectionView({ section }: { section: Section }) {
       return (
         <section class="ar-section ar-section--signatures">
           {section.signatures.map((sig, i) => (
-            <SignatureBlock key={i} sig={sig} />
+            <SignatureBlock key={i} sig={sig} label={pageName} />
           ))}
         </section>
       );
@@ -158,7 +175,9 @@ function SectionView({ section }: { section: Section }) {
 function SignatureBlock({ sig, label }: { sig: SignatureViewModel; label?: string }) {
   return (
     <div class="ar-signature-block">
-      <SignatureLine sig={sig} name={label ?? ""} />
+      <div class="ar-signature">
+        <SignatureLine sig={sig} name={label || ""} />
+      </div>
       <DocView doc={sig.doc} />
     </div>
   );

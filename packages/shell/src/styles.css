@@ -78,30 +78,58 @@ ar-shell {
   @apply py-2;
 }
 
-.ar-nav-section {
-  @apply mb-1;
-}
-
-.ar-nav-section-title {
-  @apply px-4 py-1 text-xs font-semibold uppercase tracking-wider text-ar-muted;
-}
-
 .ar-nav-item {
   @apply flex items-center gap-1.5 px-4 py-0.5 text-sm text-gray-300 hover:text-white hover:bg-white/5
-         transition-colors cursor-pointer w-full text-left;
+         transition-colors cursor-pointer block text-left;
+}
+
+.ar-nav-item--depth-0 {
+  @apply px-4;
+}
+
+.ar-nav-item--depth-1 {
+  @apply pl-8;
+}
+
+.ar-nav-item--depth-2 {
+  @apply pl-12;
+}
+
+.ar-nav-item--depth-3 {
+  @apply pl-16;
+}
+
+.ar-nav-item--depth-4 {
+  @apply pl-20;
 }
 
 .ar-nav-item--active {
   @apply text-white bg-white/10 border-l-2 border-ar-accent-cyan;
-  padding-left: 14px; /* compensate for 2px border */
+  padding-left: calc(1rem - 2px); /* compensate for 2px border */
+}
+
+.ar-nav-item--active.ar-nav-item--depth-0 {
+  padding-left: calc(1rem - 2px);
+}
+
+.ar-nav-item--active.ar-nav-item--depth-1 {
+  padding-left: calc(2rem - 2px);
+}
+
+.ar-nav-item--active.ar-nav-item--depth-2 {
+  padding-left: calc(3rem - 2px);
+}
+
+.ar-nav-item--active.ar-nav-item--depth-3 {
+  padding-left: calc(4rem - 2px);
+}
+
+.ar-nav-item--active.ar-nav-item--depth-4 {
+  padding-left: calc(5rem - 2px);
 }
 
 .ar-nav-item-icon {
   @apply flex-none text-[0.85em] w-4 text-center;
-}
-
-.ar-nav-children {
-  @apply pl-3 border-l border-ar-border ml-5;
 }
 
 /* ── Content: declaration ───────────────────────────────────────────────── */
@@ -196,6 +224,10 @@ h3.ar-member-card-header .ar-member-card-kind {
 
 .ar-signature {
   @apply font-mono text-sm bg-black/20 rounded px-3 py-2 overflow-x-auto;
+}
+
+.ar-signature-block {
+  @apply space-y-2;
 }
 
 .ar-signature-line {

@@ -1,18 +1,7 @@
 import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { NavNode } from "./ar-shell.ts";
-
-const KIND_ICONS: Record<string, string> = {
-  class: "codicon-symbol-class",
-  interface: "codicon-symbol-interface",
-  function: "codicon-symbol-function",
-  "type-alias": "codicon-symbol-type-parameter",
-  variable: "codicon-symbol-variable",
-  enum: "codicon-symbol-enum",
-  module: "codicon-symbol-module",
-  namespace: "codicon-symbol-namespace",
-  "package-index": "codicon-symbol-package",
-};
+import { KIND_ICONS } from "./icon-map.ts";
 
 @customElement("ar-nav")
 export class ArNav extends LitElement {
@@ -29,27 +18,6 @@ export class ArNav extends LitElement {
 
   private renderNodes(nodes: NavNode[], depth: number): TemplateResult | typeof nothing {
     if (nodes.length === 0) return nothing;
-
-    // Group top-level nodes by kind at depth 0
-    if (depth === 0) {
-      const modules = nodes.filter((n) => n.kind === "module");
-      const others = nodes.filter((n) => n.kind !== "module");
-
-      return html`
-        ${others.length > 0
-          ? html`<div class="ar-nav-section">${others.map((n) => this.renderNode(n, depth))}</div>`
-          : nothing}
-        ${modules.map(
-          (mod) => html`
-            <div class="ar-nav-section">
-              <div class="ar-nav-section-title">${mod.label}</div>
-              ${this.renderNodes(mod.children, depth + 1)}
-            </div>
-          `,
-        )}
-      `;
-    }
-
     return html`${nodes.map((n) => this.renderNode(n, depth))}`;
   }
 
@@ -60,14 +28,12 @@ export class ArNav extends LitElement {
     return html`
       <a
         href=${node.url}
-        class=${`ar-nav-item ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
+        class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
         <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
         <span>${node.label}</span>
       </a>
-      ${node.children.length > 0
-        ? html`<div class="ar-nav-children">${this.renderNodes(node.children, depth + 1)}</div>`
-        : nothing}
+      ${node.children.length > 0 ? this.renderNodes(node.children, depth + 1) : nothing}
     `;
   }
 }
