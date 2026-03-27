@@ -19,6 +19,12 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
       return "namespace";
     case Kind.Module:
       return "module";
+    case Kind.Constructor:
+      return "constructor";
+    case Kind.Method:
+      return "method";
+    case Kind.Accessor:
+      return "accessor";
     default:
       return null;
   }
