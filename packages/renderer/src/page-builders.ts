@@ -1,4 +1,5 @@
-import { Kind, type TDComment, type TDProject, type TDDeclaration } from "./typedoc.ts";
+import type { JSONOutput } from "typedoc";
+import { Kind } from "./typedoc-kinds.ts";
 import type { PageViewModel, Breadcrumb, Section } from "./viewmodel.ts";
 import type { TransformContext } from "./transform-context.ts";
 import {
@@ -7,7 +8,12 @@ import {
   extractBlockTagSections,
 } from "./comment-transformer.ts";
 import { declarationAsCards } from "./card-builder.ts";
-import { getSourceUrl, inferGroups, reflectionKindToDeclarationKind } from "./utils.ts";
+import {
+  getDeclarationChildren,
+  getSourceUrl,
+  inferGroups,
+  reflectionKindToDeclarationKind,
+} from "./utils.ts";
 import {
   buildClassSections,
   buildMemberSections,
@@ -16,6 +22,10 @@ import {
   buildEnumSections,
   buildVariableSections,
 } from "./section-builders.ts";
+
+type TDComment = JSONOutput.Comment;
+type TDProject = JSONOutput.ProjectReflection;
+type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {
@@ -142,7 +152,7 @@ export function buildModulePage(
     if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
   }
 
-  const children = mod.children ?? [];
+  const children = getDeclarationChildren(mod);
   const groups = mod.groups ?? inferGroups(children);
   const idToDecl = new Map(children.map((c) => [c.id, c]));
 

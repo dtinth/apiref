@@ -1,10 +1,4 @@
-import type {
-  TDType,
-  TDTypeParameter,
-  TDSignature,
-  TDParameter,
-  TDDeclaration,
-} from "./typedoc.ts";
+import type { JSONOutput } from "typedoc";
 import type { TransformContext } from "./transform-context.ts";
 import type {
   TypeViewModel,
@@ -14,7 +8,13 @@ import type {
   MemberFlags,
   MemberViewModel,
 } from "./viewmodel.ts";
-import { inferDeclarationKind } from "./utils.ts";
+import { getDeclarationChildren, inferDeclarationKind } from "./utils.ts";
+
+type TDType = JSONOutput.SomeType;
+type TDTypeParameter = JSONOutput.TypeParameterReflection;
+type TDSignature = JSONOutput.SignatureReflection;
+type TDParameter = JSONOutput.ParameterReflection;
+type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 
 export function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
   switch (tdType.type) {
@@ -118,7 +118,7 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
       // For reflection members, extract just the essential type info (not document structure)
-      const members = (decl.children ?? []).map((c) => transformReflectionMember(c, ctx));
+      const members = getDeclarationChildren(decl).map((c) => transformReflectionMember(c, ctx));
       return { kind: "reflection", signatures: sigs, members };
     }
 

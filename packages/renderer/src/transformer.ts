@@ -1,7 +1,8 @@
-import { ANCHOR_KINDS, Kind, PAGE_KINDS, type TDDeclaration, type TDProject } from "./typedoc.ts";
+import type { JSONOutput } from "typedoc";
+import { ANCHOR_KINDS, Kind, PAGE_KINDS } from "./typedoc-kinds.ts";
 import type { Breadcrumb, NavNode, PageViewModel, SiteViewModel } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
-import { byLabel } from "./utils.ts";
+import { byLabel, getDeclarationChildren } from "./utils.ts";
 import { buildModuleImportPath, declarationNavNode } from "./nav.ts";
 import {
   buildPackageIndexPage,
@@ -10,6 +11,9 @@ import {
   buildDeclarationPage,
 } from "./page-builders.ts";
 import type { TransformContext } from "./transform-context.ts";
+
+type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
+type TDProject = JSONOutput.ProjectReflection;
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -56,7 +60,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   const pkgName = project.packageName ?? project.name;
   const pkgVersion = options.version ?? project.packageVersion ?? "0.0.0";
 
-  const children = project.children ?? [];
+  const children = getDeclarationChildren(project);
   const isSingleEntry = children.every((c) => c.kind !== Kind.Module);
 
   const idToUrl = new Map<number, string>();
@@ -77,7 +81,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
 
       // Group children by name to detect multi-declaration groups
       const nameGroups = new Map<string, TDDeclaration[]>();
-      for (const child of mod.children ?? []) {
+      for (const child of getDeclarationChildren(mod)) {
         if (PAGE_KINDS.has(child.kind)) {
           if (!nameGroups.has(child.name)) {
             nameGroups.set(child.name, []);
@@ -87,7 +91,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
       }
 
       // Register each child, using namespace URL if multiple declarations share a name
-      for (const child of mod.children ?? []) {
+      for (const child of getDeclarationChildren(mod)) {
         if (PAGE_KINDS.has(child.kind)) {
           const group = nameGroups.get(child.name)!;
           let urlDecl = child;
@@ -140,7 +144,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
 
       const modNavChildren: NavNode[] = [];
       const modChildGroups = new Map<string, TDDeclaration[]>();
-      for (const child of mod.children ?? []) {
+      for (const child of getDeclarationChildren(mod)) {
         if (!modChildGroups.has(child.name)) {
           modChildGroups.set(child.name, []);
         }
@@ -202,7 +206,7 @@ function buildBreadcrumbLookup(
       ];
       idToBreadcrumbs.set(mod.id, modBreadcrumbs);
 
-      for (const child of mod.children ?? []) {
+      for (const child of getDeclarationChildren(mod)) {
         collectDeclarationBreadcrumbs(child, modBreadcrumbs, idToUrl, idToBreadcrumbs);
       }
     }
@@ -232,7 +236,7 @@ function collectNameGroupPages(
           const declUrl = idToUrl.get(decl.id);
           if (declUrl) {
             const nestedNavChildren: NavNode[] = [];
-            for (const child of decl.children ?? []) {
+        for (const child of getDeclarationChildren(decl)) {
               if (PAGE_KINDS.has(child.kind)) {
                 collectDeclarationPages(
                   child,
@@ -275,7 +279,7 @@ function collectDeclarationPages(
     const declUrl = idToUrl.get(decl.id);
     if (declUrl && PAGE_KINDS.has(decl.kind)) {
       const nestedNavChildren: NavNode[] = [];
-      for (const child of decl.children ?? []) {
+      for (const child of getDeclarationChildren(decl)) {
         if (PAGE_KINDS.has(child.kind)) {
           // Nested namespace/class/interface - recurse
           collectDeclarationPages(
@@ -321,7 +325,7 @@ function collectDeclarationBreadcrumbs(
 
   if (!PAGE_KINDS.has(decl.kind)) return;
 
-  for (const child of decl.children ?? []) {
+  for (const child of getDeclarationChildren(decl)) {
     if (PAGE_KINDS.has(child.kind)) {
       collectDeclarationBreadcrumbs(child, breadcrumbs, idToUrl, idToBreadcrumbs);
       continue;
@@ -346,7 +350,7 @@ function registerReflection(
   const url = declarationUrl(urlDecl ?? decl, pathPrefix, isSingleEntry);
   idToUrl.set(decl.id, url);
 
-  for (const child of decl.children ?? []) {
+  for (const child of getDeclarationChildren(decl)) {
     if (ANCHOR_KINDS.has(child.kind)) {
       const anchor = child.kind === Kind.Constructor ? "constructor" : child.name;
       idToUrl.set(child.id, `${url}#${anchor}`);
@@ -361,7 +365,7 @@ function registerReflection(
 
       // Recurse for nested PAGE_KINDS within this child
       const childPathPrefix = childPrefix ? `${childPrefix}/${child.name}` : child.name;
-      for (const nestedChild of child.children ?? []) {
+      for (const nestedChild of getDeclarationChildren(child)) {
         if (PAGE_KINDS.has(nestedChild.kind)) {
           registerReflection(nestedChild, childPathPrefix, false, idToUrl);
         }

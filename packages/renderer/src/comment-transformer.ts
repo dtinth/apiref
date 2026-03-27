@@ -1,6 +1,9 @@
 import type { TransformContext } from "./transform-context.ts";
-import type { TDComment, TDCommentPart } from "./typedoc.ts";
+import type { JSONOutput } from "typedoc";
 import type { DocNode, Section } from "./viewmodel.ts";
+
+type TDComment = JSONOutput.Comment;
+type TDCommentPart = JSONOutput.CommentDisplayPart;
 
 export function transformComment(comment: TDComment, ctx: TransformContext): DocNode[] {
   return transformCommentParts(comment.summary, ctx);
@@ -12,7 +15,9 @@ export function transformCommentParts(parts: TDCommentPart[], ctx: TransformCont
       const url = typeof part.target === "number" ? (ctx.idToUrl.get(part.target) ?? null) : null;
       return { kind: "link", text: part.text, url };
     }
-    // "text" | "code" — both have a `text` field and map 1:1
+    if (part.kind === "relative-link") {
+      return { kind: "text", text: part.text };
+    }
     return { kind: part.kind, text: part.text };
   });
 }
