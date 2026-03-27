@@ -17,7 +17,7 @@ const KIND_ICONS: Partial<Record<DeclarationKind, string>> = {
   "package-index": "codicon-symbol-package",
   constructor: "codicon-symbol-method",
   method: "codicon-symbol-method",
-  property: "codicon-symbol-field",
+  property: "codicon-symbol-property",
   accessor: "codicon-symbol-property",
 };
 

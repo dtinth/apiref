@@ -18,8 +18,8 @@ export const KIND_ICONS: Record<string, string> = {
   // Member kinds
   constructor: "codicon-symbol-method",
   method: "codicon-symbol-method",
-  property: "codicon-symbol-field",
-  accessor: "codicon-symbol-field",
+  property: "codicon-symbol-property",
+  accessor: "codicon-symbol-property",
   "enum-member": "codicon-symbol-enum-member",
   member: "codicon-symbol-misc",
 };
