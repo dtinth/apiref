@@ -5,7 +5,9 @@ import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
 function createTester(): SiteViewModelTester {
-  const path = fileURLToPath(new URL(`../fixtures/examples.json`, import.meta.url));
+  const path = fileURLToPath(
+    new URL(`../fixtures/examples.json`, import.meta.url),
+  );
   const typedocJson = JSON.parse(readFileSync(path, "utf-8"));
   const site = transform(typedocJson, { version: "1.0.0" });
   return new SiteViewModelTester(site);
@@ -20,10 +22,15 @@ describe("nav", () => {
   test("Entry points exist at 1st level", () => {
     tester.nav.child("@apiref-examples/core").shouldHaveKind("module");
     tester.nav.child("@apiref-examples/core/data").shouldHaveKind("module");
-    tester.nav.child("@apiref-examples/core/namespaces").shouldHaveKind("module");
+    tester.nav
+      .child("@apiref-examples/core/namespaces")
+      .shouldHaveKind("module");
   });
   test("Classes are present", () => {
-    tester.nav.child("@apiref-examples/core").child("ApiError").shouldHaveKind("class");
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("ApiError")
+      .shouldHaveKind("class");
   });
   test("Multiple-nature symbols are displayed separately", () => {
     tester.nav
@@ -67,19 +74,23 @@ describe("pages", () => {
     ]);
   });
   test("Outline should only include sections with ids", () => {
+    // Currently no sections have ids, so outline is empty
+    // Page builders will assign ids to sections they want in the outline
     tester.page("index/Cache.html").shouldHaveOutline([
       {
-        title: "Constructors",
-        children: [{ title: "constructor" }],
+        label: "Constructors",
+        anchor: "~constructors",
+        items: [{ label: "constructor", anchor: "constructor" }],
       },
       {
-        title: "Methods",
-        children: [
-          { title: "cleanup" },
-          { title: "clear" },
-          { title: "get (1/2)" },
-          { title: "get (2/2)" },
-          { title: "set" },
+        label: "Methods",
+        anchor: "~methods",
+        items: [
+          { label: "cleanup", anchor: "cleanup" },
+          { label: "clear", anchor: "clear" },
+          { label: "get (1/2)", anchor: "get-1" },
+          { label: "get (2/2)", anchor: "get-2" },
+          { label: "set", anchor: "set" },
         ],
       },
     ]);
