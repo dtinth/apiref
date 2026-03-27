@@ -67,7 +67,7 @@ export class ArShell extends LitElement {
       button.setAttribute("aria-label", "Toggle navigation");
       button.setAttribute("aria-expanded", "false");
       button.innerHTML =
-        '<svg class="codicon codicon-list-unordered" viewBox="0 0 16 16"><path d="M1.5 3h13v1h-13V3zm0 4h13v1h-13V7zm0 4h13v1h-13v-1z"/></svg>';
+        '<svg class="codicon codicon-list-unordered" viewBox="0 0 16 16"><path fill="currentColor" d="M1.5 3h13v1h-13V3zm0 4h13v1h-13V7zm0 4h13v1h-13v-1z"/></svg>';
       header.insertBefore(button, header.firstChild);
 
       button.addEventListener("click", () => this.toggleSidebar(button));
