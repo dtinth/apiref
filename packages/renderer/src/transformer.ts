@@ -59,7 +59,6 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   const children = project.children ?? [];
   const isSingleEntry = children.every((c) => c.kind !== Kind.Module);
 
-  // --- Pass 1: build id → url map ---
   const idToUrl = new Map<number, string>();
   idToUrl.set(project.id, "index.html");
 
@@ -105,7 +104,6 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     }
   }
 
-  // --- Pass 2: build pages ---
   const ctx: TransformContext = { idToUrl, pkgName, pkgVersion };
 
   const pages: PageViewModel[] = [];
@@ -176,10 +174,6 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };
 }
 
-// ---------------------------------------------------------------------------
-// Name group processing (handles multi-decl and single-decl cases)
-// ---------------------------------------------------------------------------
-
 function collectNameGroupPages(
   decls: TDDeclaration[],
   breadcrumbs: Breadcrumb[],
@@ -225,10 +219,6 @@ function collectNameGroupPages(
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// Page collection helper (recursively handles nested PAGE_KINDS)
-// ---------------------------------------------------------------------------
 
 function collectDeclarationPages(
   decl: TDDeclaration,
@@ -278,10 +268,6 @@ function collectDeclarationPages(
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// URL registration (pass 1)
-// ---------------------------------------------------------------------------
 
 function registerReflection(
   decl: TDDeclaration,
@@ -342,27 +328,3 @@ function encodeModulePath(moduleName: string): string {
   // Module names may contain "/" (e.g. "integrations/playwright") — keep as-is
   return moduleName;
 }
-
-// ---------------------------------------------------------------------------
-// Page builders (pass 2)
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Member / signature helpers
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Type transformer
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Comment / doc transformers
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Nav helpers
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Utility
-// ---------------------------------------------------------------------------
