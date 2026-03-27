@@ -115,7 +115,9 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
           <a href={resolve(breadcrumb.url)} class="ar-breadcrumb-link">
             {breadcrumb.label}
           </a>
-          <span class="ar-breadcrumb-separator" aria-hidden="true">»</span>
+          <span class="ar-breadcrumb-separator" aria-hidden="true">
+            »
+          </span>
         </span>
       ))}
     </nav>
@@ -315,7 +317,9 @@ function InlineBreadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
         <span key={index}>
           <a href={resolve(breadcrumb.url)}>{breadcrumb.label}</a>
           {index + 1 < breadcrumbs.length ? (
-            <span aria-hidden="true" class="ar-breadcrumb-separator">»</span>
+            <span aria-hidden="true" class="ar-breadcrumb-separator">
+              »
+            </span>
           ) : null}
         </span>
       ))}
