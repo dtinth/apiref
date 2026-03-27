@@ -1,4 +1,5 @@
 import type {
+  Breadcrumb,
   MemberFlags,
   PageViewModel,
   Section,
@@ -97,10 +98,29 @@ export function Page({ site, page, options }: PageProps) {
 function PageContent({ page }: { page: PageViewModel }) {
   return (
     <article class={`ar-declaration ar-declaration--${page.kind}`}>
+      {page.breadcrumbs.length > 0 ? <Breadcrumbs breadcrumbs={page.breadcrumbs} /> : null}
       {page.sections.map((section, i) => (
         <SectionView key={i} section={section} pageName={page.title} context="page" />
       ))}
     </article>
+  );
+}
+
+function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
+  const resolve = useResolveLink();
+  return (
+    <nav class="ar-breadcrumbs" aria-label="Breadcrumb">
+      {breadcrumbs.map((breadcrumb) => (
+        <span key={`${breadcrumb.label}:${breadcrumb.url}`} class="ar-breadcrumb-item">
+          <a href={resolve(breadcrumb.url)} class="ar-breadcrumb-link">
+            {breadcrumb.label}
+          </a>
+          <span class="ar-breadcrumb-separator" aria-hidden="true">
+            »
+          </span>
+        </span>
+      ))}
+    </nav>
   );
 }
 

@@ -135,6 +135,24 @@ ar-shell {
   @apply space-y-8;
 }
 
+.ar-breadcrumbs {
+  @apply mb-2 text-sm;
+  color: #8b8685;
+}
+
+.ar-breadcrumb-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ar-breadcrumb-link:hover {
+  @apply text-ar-accent-yellow;
+}
+
+.ar-breadcrumb-separator {
+  @apply mx-1;
+}
+
 .ar-declaration-title {
   @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan mb-6;
 }
