@@ -120,5 +120,14 @@ describe("nav", () => {
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "namespace" })
       .shouldLinkTo("index/createEmitter/index.html");
+
+    // Normally functions would have its own HTML page like "index/createEmitter.html",
+    // but since it is combined with the namespace, and since namespace pages can have child pages,
+    // the function would "lose" its own page and be rendered in the namespace page.
+    // So the link should point to the namespace page.
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("createEmitter", { kind: "function" })
+      .shouldLinkTo("index/createEmitter/index.html");
   });
 });

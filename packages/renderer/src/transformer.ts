@@ -71,8 +71,36 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     for (const mod of children) {
       const modUrl = encodeModulePath(mod.name) + "/index.html";
       idToUrl.set(mod.id, modUrl);
+
+      // Group children by name to detect multi-declaration groups
+      const nameGroups = new Map<string, TDDeclaration[]>();
       for (const child of mod.children ?? []) {
-        registerReflection(child, encodeModulePath(mod.name), false, idToUrl);
+        if (PAGE_KINDS.has(child.kind)) {
+          if (!nameGroups.has(child.name)) {
+            nameGroups.set(child.name, []);
+          }
+          nameGroups.get(child.name)!.push(child);
+        }
+      }
+
+      // Register each child, using namespace URL if multiple declarations share a name
+      for (const child of mod.children ?? []) {
+        if (PAGE_KINDS.has(child.kind)) {
+          const group = nameGroups.get(child.name)!;
+          let urlDecl = child;
+
+          // If this is part of a multi-declaration group, use the namespace declaration for URL generation
+          if (group.length > 1) {
+            const namespace = group.find((d) => d.kind === Kind.Namespace);
+            if (namespace) {
+              urlDecl = namespace;
+            }
+          }
+
+          registerReflection(child, encodeModulePath(mod.name), false, idToUrl, urlDecl);
+        } else {
+          registerReflection(child, encodeModulePath(mod.name), false, idToUrl);
+        }
       }
     }
   }
@@ -247,19 +275,10 @@ function registerReflection(
   pathPrefix: string,
   isSingleEntry: boolean,
   idToUrl: Map<number, string>,
+  urlDecl?: TDDeclaration,
 ): void {
-  const url = declarationUrl(decl, pathPrefix, isSingleEntry);
+  const url = declarationUrl(urlDecl ?? decl, pathPrefix, isSingleEntry);
   idToUrl.set(decl.id, url);
-
-  // Detect duplicate names among PAGE_KINDS
-  const pageKindChildren = (decl.children ?? []).filter((c) => PAGE_KINDS.has(c.kind));
-  const nameGroups = new Map<string, TDDeclaration[]>();
-  for (const child of pageKindChildren) {
-    if (!nameGroups.has(child.name)) {
-      nameGroups.set(child.name, []);
-    }
-    nameGroups.get(child.name)!.push(child);
-  }
 
   for (const child of decl.children ?? []) {
     if (ANCHOR_KINDS.has(child.kind)) {
@@ -270,7 +289,6 @@ function registerReflection(
         idToUrl.set(sig.id, `${url}#${anchor}`);
       }
     } else if (PAGE_KINDS.has(child.kind)) {
-      // All duplicate declarations share the same URL
       const childPrefix = pathPrefix ? `${pathPrefix}/${child.name}` : child.name;
       const childUrl = declarationUrl(child, childPrefix, false);
       idToUrl.set(child.id, childUrl);
