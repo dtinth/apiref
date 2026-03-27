@@ -1,7 +1,12 @@
-import type { TDType, TDTypeParameter } from "./typedoc.ts";
+import type { TDType, TDTypeParameter, TDSignature, TDParameter } from "./typedoc.ts";
 import type { TransformContext } from "./transform-context.ts";
-import type { TypeViewModel, TypeParameterViewModel } from "./viewmodel.ts";
-import { transformSignature, buildReflectionMemberBlocks } from "./transformer.ts";
+import type {
+  TypeViewModel,
+  TypeParameterViewModel,
+  SignatureViewModel,
+  ParameterViewModel,
+} from "./viewmodel.ts";
+import { buildReflectionMemberBlocks } from "./transformer.ts";
 
 export function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
   switch (tdType.type) {
@@ -92,5 +97,29 @@ export function transformTypeParameter(
     name: tp.name,
     constraint: tp.type ? transformType(tp.type, ctx) : null,
     default: tp.default ? transformType(tp.default, ctx) : null,
+  };
+}
+
+export function transformSignature(sig: TDSignature, ctx: TransformContext): SignatureViewModel {
+  const typeParameters: TypeParameterViewModel[] = (sig.typeParameters ?? []).map((tp) =>
+    transformTypeParameter(tp, ctx),
+  );
+  const parameters: ParameterViewModel[] = (sig.parameters ?? []).map((p) =>
+    transformParameter(p, ctx),
+  );
+  const returnType: TypeViewModel = sig.type
+    ? transformType(sig.type, ctx)
+    : { kind: "intrinsic", name: "void" };
+  return { typeParameters, parameters, returnType };
+}
+
+export function transformParameter(param: TDParameter, ctx: TransformContext): ParameterViewModel {
+  const type = param.type
+    ? transformType(param.type, ctx)
+    : { kind: "intrinsic" as const, name: "unknown" };
+  return {
+    name: param.name,
+    type,
+    optional: param.flags.isOptional ?? false,
   };
 }

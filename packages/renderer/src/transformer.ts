@@ -3,7 +3,6 @@ import {
   Kind,
   PAGE_KINDS,
   type TDDeclaration,
-  type TDParameter,
   type TDProject,
   type TDSignature,
 } from "./typedoc.ts";
@@ -15,12 +14,10 @@ import type {
   NavNode,
   PageViewModel,
   ParameterDocViewModel,
-  ParameterViewModel,
   Section,
   SectionBlock,
   SignatureViewModel,
   SiteViewModel,
-  TypeParameterViewModel,
   TypeViewModel,
 } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
@@ -44,7 +41,7 @@ import {
   buildEnumSections,
   buildVariableSections,
 } from "./section-builders.ts";
-import { transformType, transformTypeParameter } from "./type-transformer.ts";
+import { transformType, transformSignature } from "./type-transformer.ts";
 import type { TransformContext } from "./transform-context.ts";
 
 /**
@@ -865,30 +862,6 @@ function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
   if (flags.isAbstract) result.abstract = true;
   if (flags.isDeprecated) result.deprecated = true;
   return result;
-}
-
-export function transformSignature(sig: TDSignature, ctx: TransformContext): SignatureViewModel {
-  const typeParameters: TypeParameterViewModel[] = (sig.typeParameters ?? []).map((tp) =>
-    transformTypeParameter(tp, ctx),
-  );
-  const parameters: ParameterViewModel[] = (sig.parameters ?? []).map((p) =>
-    transformParameter(p, ctx),
-  );
-  const returnType: TypeViewModel = sig.type
-    ? transformType(sig.type, ctx)
-    : { kind: "intrinsic", name: "void" };
-  return { typeParameters, parameters, returnType };
-}
-
-function transformParameter(param: TDParameter, ctx: TransformContext): ParameterViewModel {
-  const type = param.type
-    ? transformType(param.type, ctx)
-    : { kind: "intrinsic" as const, name: "unknown" };
-  return {
-    name: param.name,
-    type,
-    optional: param.flags.isOptional ?? false,
-  };
 }
 
 // ---------------------------------------------------------------------------
