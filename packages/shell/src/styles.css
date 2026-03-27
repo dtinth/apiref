@@ -47,10 +47,11 @@ ar-shell {
 }
 
 .ar-header-menu-btn {
-  @apply flex items-center px-4 py-2 flex-none md:hidden cursor-pointer text-ar-text;
+  @apply flex items-center flex-none md:hidden cursor-pointer text-ar-text;
   background: none;
   border: none;
   padding: 0.5em;
+  margin-right: -0.5em;
 }
 
 .ar-header-menu-btn svg {
