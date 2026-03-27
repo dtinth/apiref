@@ -52,15 +52,15 @@ const shikiLanguageAliases: Record<string, ShikiLanguage> = {
   zsh: "bash",
 };
 
-let shikiHighlighter: ReturnType<typeof createHighlighterCoreSync> | undefined;
+let highlighter: ReturnType<typeof createHighlighterCoreSync> | undefined;
 
 function getShiki() {
-  shikiHighlighter ??= createHighlighterCoreSync({
+  highlighter ??= createHighlighterCoreSync({
     themes: [SHIKI_THEME],
     langs: [bash, css, diff, html, javascript, json, jsx, markdown, tsx, typescript, yaml],
     engine: createJavaScriptRegexEngine(),
   });
-  return shikiHighlighter;
+  return highlighter;
 }
 
 const markdownRenderer = new Renderer();
@@ -88,7 +88,7 @@ const markdownParser = new Marked({
 function resolveShikiLanguage(language: string | undefined): ShikiLanguage | undefined {
   const infoString = language?.trim();
   if (!infoString) return undefined;
-  return shikiLanguageAliases[infoString.split(/\s+/, 1)[0].toLowerCase()];
+  return shikiLanguageAliases[infoString.split(/\s+/, 1)[0].toLowerCase()] ?? undefined;
 }
 
 interface DocViewProps {
