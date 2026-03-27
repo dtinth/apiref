@@ -11,7 +11,7 @@ export interface OutlineItem {
 
 export interface OutlineSection {
   label: string;
-  anchor?: string;
+  anchor: string;
   items: OutlineItem[];
 }
 

@@ -25,7 +25,11 @@ export class ArOutline extends LitElement {
     if (section.items.length === 0) return nothing;
     return html`
       <div class="ar-outline-section">
-        ${showLabel ? html`<div class="ar-outline-section-label">${section.label}</div>` : nothing}
+        ${showLabel
+          ? html`<a href=${"#" + section.anchor} class="ar-outline-section-label"
+              >${section.label}</a
+            >`
+          : nothing}
         ${section.items.map((item) => this.renderItem(item))}
       </div>
     `;

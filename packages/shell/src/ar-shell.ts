@@ -25,6 +25,7 @@ export interface NavNode {
 
 export interface OutlineSection {
   label: string;
+  anchor: string;
   items: OutlineItem[];
 }
 

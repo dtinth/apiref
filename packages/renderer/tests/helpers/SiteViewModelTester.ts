@@ -1,10 +1,6 @@
 import { expect } from "vite-plus/test";
 import { buildOutline } from "../../src/outline-builder.ts";
-import type {
-  NavNode,
-  PageViewModel,
-  SiteViewModel,
-} from "../../src/viewmodel.ts";
+import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
 
 interface ChildFilter {
   label: string;
@@ -18,10 +14,7 @@ class NavItemTester {
   ) {}
 
   child(label: string, filter?: { kind: string }): NavItemTester {
-    return new NavItemTester(this.navRoot, [
-      ...this.path,
-      { label, kind: filter?.kind },
-    ]);
+    return new NavItemTester(this.navRoot, [...this.path, { label, kind: filter?.kind }]);
   }
 
   private resolve(): NavNode[] {
@@ -31,20 +24,14 @@ class NavItemTester {
     let current = this.navRoot;
     for (const filter of this.path.slice(0, -1)) {
       current = current
-        .filter(
-          (n) =>
-            n.label === filter.label &&
-            (!filter.kind || n.kind === filter.kind),
-        )
+        .filter((n) => n.label === filter.label && (!filter.kind || n.kind === filter.kind))
         .flatMap((n) => n.children);
     }
 
     // Filter final level
     const finalFilter = this.path[this.path.length - 1]!;
     let nodes = current.filter(
-      (n) =>
-        n.label === finalFilter.label &&
-        (!finalFilter.kind || n.kind === finalFilter.kind),
+      (n) => n.label === finalFilter.label && (!finalFilter.kind || n.kind === finalFilter.kind),
     );
 
     return nodes;
@@ -56,26 +43,17 @@ class NavItemTester {
 
   shouldExist(): void {
     const nodes = this.resolve();
-    expect(
-      nodes.length,
-      `Expected nav item at path ${this.pathStr()} to exist`,
-    ).toBeGreaterThan(0);
+    expect(nodes.length, `Expected nav item at path ${this.pathStr()} to exist`).toBeGreaterThan(0);
   }
 
   shouldNotExist(): void {
     const nodes = this.resolve();
-    expect(
-      nodes,
-      `Expected nav item at path ${this.pathStr()} to not exist`,
-    ).toHaveLength(0);
+    expect(nodes, `Expected nav item at path ${this.pathStr()} to not exist`).toHaveLength(0);
   }
 
   shouldHaveKind(kind: string): void {
     const nodes = this.resolve();
-    expect(
-      nodes,
-      `Expected nav item at path ${this.pathStr()} to exist`,
-    ).toHaveLength(1);
+    expect(nodes, `Expected nav item at path ${this.pathStr()} to exist`).toHaveLength(1);
     expect(nodes[0]!.kind).toBe(kind);
   }
 
@@ -88,10 +66,7 @@ class NavItemTester {
 
   shouldLinkTo(url: string): void {
     const nodes = this.resolve();
-    expect(
-      nodes,
-      `Expected nav item at path ${this.pathStr()} to exist`,
-    ).toHaveLength(1);
+    expect(nodes, `Expected nav item at path ${this.pathStr()} to exist`).toHaveLength(1);
     expect(nodes[0]!.url).toBe(url);
   }
 }
