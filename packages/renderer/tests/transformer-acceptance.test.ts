@@ -8,10 +8,11 @@ class NavItemTester {
   constructor(
     private navRoot: NavNode[],
     private path: string[],
+    private kindFilter?: string,
   ) {}
 
-  child(label: string): NavItemTester {
-    return new NavItemTester(this.navRoot, [...this.path, label]);
+  child(label: string, filter?: { kind: string }): NavItemTester {
+    return new NavItemTester(this.navRoot, [...this.path, label], filter?.kind);
   }
 
   private resolve(): NavNode[] {
@@ -27,7 +28,13 @@ class NavItemTester {
     if (this.path.length === 0) return [];
 
     const lastLabel = this.path[this.path.length - 1]!;
-    return current.filter((n) => n.label === lastLabel);
+    let nodes = current.filter((n) => n.label === lastLabel);
+
+    if (this.kindFilter) {
+      nodes = nodes.filter((n) => n.kind === this.kindFilter);
+    }
+
+    return nodes;
   }
 
   shouldExist(): void {
@@ -57,13 +64,19 @@ class NavItemTester {
     const expectedKinds = [...kinds].sort();
     expect(nodeKinds).toEqual(expectedKinds);
   }
+
+  shouldLinkTo(url: string): void {
+    const nodes = this.resolve();
+    expect(nodes, `Expected nav item at path ${this.path.join(" > ")} to exist`).toHaveLength(1);
+    expect(nodes[0]!.url).toBe(url);
+  }
 }
 
 class NavTester {
   constructor(private navRoot: NavNode[]) {}
 
-  child(label: string): NavItemTester {
-    return new NavItemTester(this.navRoot, [label]);
+  child(label: string, filter?: { kind: string }): NavItemTester {
+    return new NavItemTester(this.navRoot, [label], filter?.kind);
   }
 }
 
@@ -88,18 +101,24 @@ beforeAll(() => {
 });
 
 describe("nav", () => {
-  test("should have entry points at 1st level", () => {
+  test("Entry points exist at 1st level", () => {
     tester.nav.child("@apiref-examples/core").shouldHaveKind("module");
     tester.nav.child("@apiref-examples/core/data").shouldHaveKind("module");
     tester.nav.child("@apiref-examples/core/namespaces").shouldHaveKind("module");
   });
-  test("should have classes", () => {
+  test("Classes are present", () => {
     tester.nav.child("@apiref-examples/core").child("ApiError").shouldHaveKind("class");
   });
-  test("should support multiple-nature symbols", () => {
+  test("Multiple-nature symbols are displayed separately", () => {
     tester.nav
       .child("@apiref-examples/core")
       .child("Something")
       .shouldHaveKinds(["type-alias", "variable"]);
+  });
+  test("Namespace + function with same name are handled correctly", () => {
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("createEmitter", { kind: "namespace" })
+      .shouldLinkTo("index/createEmitter/index.html");
   });
 });
