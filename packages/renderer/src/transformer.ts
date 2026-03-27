@@ -68,7 +68,9 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     }
   } else {
     for (const mod of children) {
-      const modUrl = encodeModulePath(mod.name) + "/index.html";
+      // Normalize empty module names (from "." export) to "index"
+      const modName = mod.name === "" ? "index" : mod.name;
+      const modUrl = encodeModulePath(modName) + "/index.html";
       idToUrl.set(mod.id, modUrl);
 
       // Group children by name to detect multi-declaration groups
@@ -96,9 +98,9 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
             }
           }
 
-          registerReflection(child, encodeModulePath(mod.name), false, idToUrl, urlDecl);
+          registerReflection(child, encodeModulePath(modName), false, idToUrl, urlDecl);
         } else {
-          registerReflection(child, encodeModulePath(mod.name), false, idToUrl);
+          registerReflection(child, encodeModulePath(modName), false, idToUrl);
         }
       }
     }
