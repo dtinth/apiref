@@ -1,10 +1,17 @@
-import type { TDType, TDTypeParameter, TDSignature, TDParameter } from "./typedoc.ts";
+import type {
+  TDType,
+  TDTypeParameter,
+  TDSignature,
+  TDParameter,
+  TDDeclaration,
+} from "./typedoc.ts";
 import type { TransformContext } from "./transform-context.ts";
 import type {
   TypeViewModel,
   TypeParameterViewModel,
   SignatureViewModel,
   ParameterViewModel,
+  MemberFlags,
 } from "./viewmodel.ts";
 import { buildReflectionMemberBlocks } from "./transformer.ts";
 
@@ -122,4 +129,14 @@ export function transformParameter(param: TDParameter, ctx: TransformContext): P
     type,
     optional: param.flags.isOptional ?? false,
   };
+}
+
+export function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
+  const result: MemberFlags = {};
+  if (flags.isOptional) result.optional = true;
+  if (flags.isReadonly) result.readonly = true;
+  if (flags.isStatic) result.static = true;
+  if (flags.isAbstract) result.abstract = true;
+  if (flags.isDeprecated) result.deprecated = true;
+  return result;
 }

@@ -41,7 +41,7 @@ import {
   buildEnumSections,
   buildVariableSections,
 } from "./section-builders.ts";
-import { transformType, transformSignature } from "./type-transformer.ts";
+import { transformType, transformSignature, transformFlags } from "./type-transformer.ts";
 import type { TransformContext } from "./transform-context.ts";
 
 /**
@@ -852,16 +852,6 @@ function parameterDocsForSignatures(
         .map((p) => ({ name: p.name, doc: transformCommentParts(p.comment!.summary, ctx) })),
     )
     .filter((parameters) => parameters.length > 0);
-}
-
-function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
-  const result: MemberFlags = {};
-  if (flags.isOptional) result.optional = true;
-  if (flags.isReadonly) result.readonly = true;
-  if (flags.isStatic) result.static = true;
-  if (flags.isAbstract) result.abstract = true;
-  if (flags.isDeprecated) result.deprecated = true;
-  return result;
 }
 
 // ---------------------------------------------------------------------------
