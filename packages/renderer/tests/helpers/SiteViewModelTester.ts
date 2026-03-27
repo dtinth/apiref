@@ -1,5 +1,9 @@
 import { expect } from "vite-plus/test";
+import { h } from "preact";
+import { render as renderToString } from "preact-render-to-string";
 import { buildOutline } from "../../src/outline-builder.ts";
+import { PageContext } from "../../src/components/PageContext.tsx";
+import { TypeView } from "../../src/components/TypeView.tsx";
 import type {
   NavNode,
   PageViewModel,
@@ -155,6 +159,21 @@ class SectionTester {
 
   card(title: string) {
     return new CardTester(this.resolver, title);
+  }
+
+  shouldHaveSignature(expected: string) {
+    const sections = this.resolver.resolve();
+    expect(sections).toHaveLength(1);
+    const section = sections[0]!;
+    const body = section.body[0];
+    expect(body).toMatchObject({ kind: "type-declaration" });
+    const type = (body as Extract<SectionBlock, { kind: "type-declaration" }>).type;
+
+    const html = renderToString(
+      h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })),
+    );
+    const text = html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&");
+    expect(text).toBe(expected);
   }
 }
 

@@ -131,3 +131,10 @@ describe("pages", () => {
       ]);
   });
 });
+
+describe("type rendering", () => {
+  test("Type aliases with 'typeof' render correctly", () => {
+    const page = tester.page("index/AppConfig.html");
+    page.section("Type").shouldHaveSignature("typeof defaultConfig");
+  });
+});
