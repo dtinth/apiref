@@ -97,4 +97,12 @@ describe("pages", () => {
       },
     ]);
   });
+  test("Index signature should be documented", () => {
+    tester.page("index/EventMap/EventMap.html").shouldHaveOutline([
+      {
+        label: "Index Signatures",
+        anchor: "~index-signatures",
+      },
+    ]);
+  });
 });

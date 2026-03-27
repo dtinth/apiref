@@ -45,6 +45,21 @@ export function buildMemberSections(
   idPrefix: string = "",
 ): Section[] {
   const sections: Section[] = [];
+
+  // Index signatures first
+  const indexSigs = decl.indexSignatures ?? [];
+  if (indexSigs.length > 0) {
+    sections.push({
+      title: "Index Signatures",
+      id: buildSectionId(idPrefix, "Index Signatures"),
+      body: indexSigs.map((rawSig) => ({
+        kind: "index-signature" as const,
+        signature: transformSignature(rawSig, ctx),
+      })),
+    });
+  }
+
+  // Then regular members
   const children = decl.children ?? [];
   const groups = decl.groups ?? inferGroups(children);
   const idToDecl = new Map(children.map((c) => [c.id, c]));

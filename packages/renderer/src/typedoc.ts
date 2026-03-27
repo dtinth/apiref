@@ -27,6 +27,7 @@ export interface TDDeclaration {
   comment?: TDComment;
   children?: TDDeclaration[];
   signatures?: TDSignature[];
+  indexSignatures?: TDSignature[];
   sources?: TDSource[];
   type?: TDType;
   typeParameters?: TDTypeParameter[];
@@ -173,6 +174,7 @@ export const Kind = {
   Property: 1024,
   Method: 2048,
   CallSignature: 4096,
+  IndexSignature: 8192,
   ConstructorSignature: 16384,
   Parameter: 32768,
   TypeLiteral: 65536,

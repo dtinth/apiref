@@ -8,7 +8,7 @@ import type {
 } from "../viewmodel.ts";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
-import { SignatureLine, TypeView } from "./TypeView.tsx";
+import { SignatureLine, IndexSignatureLine, TypeView } from "./TypeView.tsx";
 import { PageContext, useResolveLink } from "./PageContext.tsx";
 import { buildOutline } from "../outline-builder.ts";
 
@@ -180,6 +180,13 @@ function BlockView({
           </div>
         );
       }
+
+    case "index-signature":
+      return (
+        <div class="ar-signature">
+          <IndexSignatureLine sig={block.signature} />
+        </div>
+      );
 
     case "card":
       return <CardView card={block} />;

@@ -94,6 +94,7 @@ export type SectionBlock =
   | { kind: "declaration-title"; name: string; declarationKind: DeclarationKind }
   | { kind: "doc"; doc: DocNode[] }
   | { kind: "signatures"; signatures: SignatureViewModel[] }
+  | { kind: "index-signature"; signature: SignatureViewModel }
   | { kind: "card"; anchor: string; url?: string; flags: MemberFlags; sections: Section[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
   | { kind: "flags"; flags: MemberFlags }

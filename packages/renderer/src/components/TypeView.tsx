@@ -294,3 +294,21 @@ export function SignatureLine({ sig, name }: { sig: SignatureViewModel; name: st
     </div>
   );
 }
+
+/** Render an index signature, e.g. `[key: string]: any` */
+export function IndexSignatureLine({ sig }: { sig: SignatureViewModel }) {
+  const resolve = useResolveLink();
+  return (
+    <div class="ar-signature-line">
+      {"["}
+      {sig.parameters.map((p, i) => (
+        <Fragment key={i}>
+          {i > 0 && ", "}
+          {renderParam(p, resolve)}
+        </Fragment>
+      ))}
+      {"]: "}
+      {renderType(sig.returnType, resolve)}
+    </div>
+  );
+}
