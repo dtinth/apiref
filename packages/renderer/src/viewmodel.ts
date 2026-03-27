@@ -262,6 +262,14 @@ export type TypeViewModel =
   | { kind: "type-operator"; operator: string; target: TypeViewModel }
   | { kind: "indexed-access"; objectType: TypeViewModel; indexType: TypeViewModel }
   | {
+      kind: "mapped";
+      parameter: string;
+      parameterType: TypeViewModel;
+      templateType: TypeViewModel;
+      optionalModifier: "+" | "-" | null;
+      readonlyModifier: "+" | "-" | null;
+    }
+  | {
       kind: "conditional";
       checkType: TypeViewModel;
       extendsType: TypeViewModel;

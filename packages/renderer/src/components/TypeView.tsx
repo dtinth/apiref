@@ -153,6 +153,23 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
         </>
       );
 
+    case "mapped":
+      return (
+        <>
+          {"{ "}
+          <span class="ar-type-keyword">{renderMappedReadonlyModifier(type.readonlyModifier)}</span>
+          {"["}
+          {type.parameter}
+          <span class="ar-type-keyword"> in </span>
+          {renderType(type.parameterType, resolve)}
+          {"]"}
+          <span class="ar-type-keyword">{renderMappedOptionalModifier(type.optionalModifier)}</span>
+          {": "}
+          {renderType(type.templateType, resolve)}
+          {" }"}
+        </>
+      );
+
     case "conditional":
       return (
         <>
@@ -269,6 +286,18 @@ function renderParam(
       {renderType(p.type, resolve)}
     </>
   );
+}
+
+function renderMappedReadonlyModifier(modifier: "+" | "-" | null): string {
+  if (modifier === "+") return "+readonly ";
+  if (modifier === "-") return "-readonly ";
+  return "";
+}
+
+function renderMappedOptionalModifier(modifier: "+" | "-" | null): string {
+  if (modifier === "+") return "+?";
+  if (modifier === "-") return "-?";
+  return "";
 }
 
 /** Render a full signature line, e.g. `<T>(param: Type): ReturnType` */
