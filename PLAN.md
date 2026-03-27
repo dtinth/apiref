@@ -278,11 +278,37 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 ## Recent changes
 
+- **2026-03-27:** Fixed TypeViewModel architectural issue (see below)
 - **2026-03-27:** Merged shiki code highlighting branch; customized theme background color to #252423
 - **2026-03-27:** Removed all transition animations for instant hover states
 - **2026-03-27:** Module nav labels now show full import paths, sorted with index first
 - **2026-03-27:** Added sidebar scroll position memory and auto-scroll for active nav item
 - **2026-03-27:** Moved shell layout to server-side rendering to eliminate pre-JS layout shift
+
+## TypeViewModel Architecture Fix
+
+### Problem
+
+The `TypeViewModel.reflection` type previously contained `members: SectionBlock[]`, which violated separation of concerns by mixing:
+- **Type information** (what is the type?) — responsibility of TypeViewModel
+- **Document structure** (how do we render it?) — responsibility of Section/SectionBlock
+
+This caused `transformType()` in `type-transformer.ts` to call `buildReflectionMemberBlocks()` in `transformer.ts`, creating an unnecessary circular dependency.
+
+### Solution
+
+1. Created `MemberViewModel` type to represent reflection members (type info only, no rendering structure)
+2. Updated `TypeViewModel.reflection` to use `MemberViewModel[]` instead of `SectionBlock[]`
+3. Moved reflection member transformation to new `transformReflectionMember()` function in `type-transformer.ts`
+4. Removed circular dependency between modules
+5. Updated `TypeView.tsx` to render `MemberViewModel` directly
+
+### Result
+
+- `MemberViewModel` contains: name, kind, signatures?, type?, flags? (all type information)
+- Rendering logic moved to the view layer (`TypeView.tsx`)
+- Clear separation of concerns: transformers output type/view models, renderers handle presentation
+- Circular dependency eliminated
 
 ## Open questions
 
