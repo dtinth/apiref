@@ -21,7 +21,7 @@ export interface TDProject {
 export interface TDDeclaration {
   id: number;
   name: string;
-  variant: "declaration";
+  variant: "declaration" | "reference";
   kind: number;
   flags: TDFlags;
   comment?: TDComment;
@@ -34,6 +34,7 @@ export interface TDDeclaration {
   getSignature?: TDSignature;
   setSignature?: TDSignature;
   groups?: TDGroup[];
+  target?: number;
 }
 
 export interface TDGroup {
@@ -183,6 +184,7 @@ export const Kind = {
   GetSignature: 524288,
   SetSignature: 1048576,
   TypeAlias: 2097152,
+  Reference: 4194304,
 } as const;
 
 /** Kinds that become their own HTML pages. */

@@ -166,4 +166,18 @@ describe("render examples", () => {
     expect(html).toContain(">File<");
     expect(html).toContain(">»<");
   });
+
+  test("reference cards link to the referenced target page with breadcrumb text", () => {
+    const html = pages.get("index/index.html")!;
+    expect(html).toContain('href="../plugins/index.html"');
+    expect(html).toContain("References");
+    expect(html).toContain(">plugins<");
+  });
+
+  test("nested reference cards link to the referenced namespace page", () => {
+    const html = pages.get("data/RecA/RecB/index.html")!;
+    expect(html).toContain('href="../index.html"');
+    expect(html).toContain(">References <");
+    expect(html).toContain(">RecA<");
+  });
 });
