@@ -754,16 +754,15 @@ export function declarationAsCards(
 
 function declarationKindForMember(
   decl: TDDeclaration,
-  signatures: SignatureViewModel[],
+  _signatures: SignatureViewModel[],
 ): DeclarationKind {
   const pageKind = reflectionKindToDeclarationKind(decl.kind);
   if (pageKind) return pageKind;
-  return inferMemberKind(decl, signatures);
+  return inferMemberKind(decl);
 }
 
 function inferMemberKind(
   decl: TDDeclaration,
-  _signatures: SignatureViewModel[],
 ): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
   // Constructor
   if (decl.kind === Kind.Constructor) return "constructor";
@@ -923,7 +922,7 @@ function buildReflectionMemberBlocks(decl: TDDeclaration, ctx: TransformContext)
       {
         kind: "declaration-title",
         name: decl.name,
-        declarationKind: inferMemberKind(decl, signatures),
+        declarationKind: inferMemberKind(decl),
       },
       { kind: "signatures", signatures },
     ];
