@@ -1,5 +1,5 @@
 import type { TDType, TDTypeParameter } from "./typedoc.ts";
-import type { TransformContext } from "./transformer.ts";
+import type { TransformContext } from "./transform-context.ts";
 import type { TypeViewModel, TypeParameterViewModel } from "./viewmodel.ts";
 import { transformSignature, buildReflectionMemberBlocks } from "./transformer.ts";
 

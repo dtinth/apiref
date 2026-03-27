@@ -1,6 +1,6 @@
 import type { TDDeclaration } from "./typedoc.ts";
 import type { Section } from "./viewmodel.ts";
-import type { TransformContext } from "./transformer.ts";
+import type { TransformContext } from "./transform-context.ts";
 import { transformSignature, declarationAsCards, buildSignatureCard } from "./transformer.ts";
 import { transformType } from "./type-transformer.ts";
 import { transformCommentParts, extractBlockTagSections } from "./comment-transformer.ts";

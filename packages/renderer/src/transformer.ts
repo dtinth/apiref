@@ -45,6 +45,7 @@ import {
   buildVariableSections,
 } from "./section-builders.ts";
 import { transformType, transformTypeParameter } from "./type-transformer.ts";
+import type { TransformContext } from "./transform-context.ts";
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -350,12 +351,6 @@ function encodeModulePath(moduleName: string): string {
 // ---------------------------------------------------------------------------
 // Page builders (pass 2)
 // ---------------------------------------------------------------------------
-
-export interface TransformContext {
-  idToUrl: Map<number, string>;
-  pkgName: string;
-  pkgVersion: string;
-}
 
 function buildPackageIndexPage(
   project: TDProject,
