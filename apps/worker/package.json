@@ -1,0 +1,43 @@
+{
+  "name": "apiref-worker",
+  "version": "0.0.0",
+  "description": "TypeDoc generation worker — generates typedoc.json from npm packages",
+  "homepage": "https://github.com/dtinth/apiref#readme",
+  "bugs": {
+    "url": "https://github.com/dtinth/apiref/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dtinth/apiref.git"
+  },
+  "bin": {
+    "apiref-generate": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./cli": "./dist/cli.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check"
+  },
+  "dependencies": {
+    "execa": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
