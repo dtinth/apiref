@@ -16,7 +16,13 @@ import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import type { DocNode } from "../viewmodel.ts";
 import { useResolveLink } from "./PageContext.tsx";
 
-const SHIKI_THEME = catppuccinMocha;
+const SHIKI_THEME = {
+  ...catppuccinMocha,
+  colors: {
+    ...catppuccinMocha.colors,
+    "editor.background": "#252423",
+  },
+};
 
 type ShikiLanguage =
   | "bash"
