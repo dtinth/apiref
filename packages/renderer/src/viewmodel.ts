@@ -246,6 +246,7 @@ export type TypeViewModel =
   | { kind: "tuple"; elements: TypeViewModel[] }
   | { kind: "intrinsic"; name: string }
   | { kind: "reflection"; signatures: SignatureViewModel[]; members: MemberViewModel[] }
+  | { kind: "query"; queryType: TypeViewModel }
   | { kind: "type-operator"; operator: string; target: TypeViewModel }
   | { kind: "indexed-access"; objectType: TypeViewModel; indexType: TypeViewModel }
   | {
