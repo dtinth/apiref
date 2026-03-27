@@ -1,11 +1,37 @@
 import { execa } from "execa";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 export interface GenerateOptions {
   packageSpec: string;
   outFile?: string;
+}
+
+async function resolveTypeDefinition(filePath: string): Promise<string> {
+  // If it's already a .d.ts or .d.mts file, use it
+  if (filePath.endsWith(".d.ts") || filePath.endsWith(".d.mts")) {
+    return filePath;
+  }
+
+  // For .mjs or .js files, look for corresponding .d.mts or .d.ts
+  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
+  const basename = filePath.substring(filePath.lastIndexOf("/") + 1);
+  const nameWithoutExt = basename.replace(/\.(mjs|js)$/, "");
+
+  // Try .d.mts first, then .d.ts
+  for (const ext of [".d.mts", ".d.ts"]) {
+    const dtsPath = join(dir, nameWithoutExt + ext);
+    try {
+      await stat(dtsPath);
+      return dtsPath;
+    } catch {
+      // File doesn't exist, try next option
+    }
+  }
+
+  // Fallback to original path if no .d.ts found
+  return filePath;
 }
 
 async function findEntryPoints(packageDir: string, packageName: string): Promise<string[]> {
@@ -32,16 +58,18 @@ async function findEntryPoints(packageDir: string, packageName: string): Promise
       }
 
       if (types) {
-        const entryPoint = join(packageDir, "node_modules", packageName, types);
-        entryPoints.push(entryPoint);
+        const filePath = join(packageDir, "node_modules", packageName, types);
+        const resolvedPath = await resolveTypeDefinition(filePath);
+        entryPoints.push(resolvedPath);
       }
     }
 
     // Fallback to main if no exports or no types
     if (entryPoints.length === 0 && (packageJson.main || packageJson.types)) {
       const main = packageJson.types || packageJson.main;
-      const entryPoint = join(packageDir, "node_modules", packageName, main);
-      entryPoints.push(entryPoint);
+      const filePath = join(packageDir, "node_modules", packageName, main);
+      const resolvedPath = await resolveTypeDefinition(filePath);
+      entryPoints.push(resolvedPath);
     }
 
     return entryPoints;
