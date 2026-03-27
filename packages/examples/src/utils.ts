@@ -343,3 +343,38 @@ export function isPromise(value: any): value is Promise<any> {
 export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
+
+/**
+ * Converts bytes to a human-readable string with appropriate units (KB, MB, GB, etc.).
+ * @param bytes - The number of bytes
+ * @return A human-readable string representing the size in appropriate units
+ * @example
+ * ```
+ * bytes(1024) // "1 KB"
+ * bytes(1048576) // "1 MB"
+ * bytes(123456789) // "117.74 MB"
+ * ```
+ */
+export function bytes(bytes: number): string;
+
+/**
+ * Converts string representing bytes (e.g., "2KB", "5MB") to a number of bytes.
+ * @param str - The string to convert
+ * @return The number of bytes represented by the string
+ * @example
+ * ```
+ * bytes("1 KB") // 1024
+ * bytes("1 MB") // 1048576
+ * bytes("117.74 MB") // 123456789
+ * ```
+ */
+export function bytes(str: string): number;
+
+/**
+ * Convert between string and number representations of bytes.
+ * If the input is a number, it returns a human-readable string with appropriate units.
+ * If the input is a string, it parses the string and returns the number of bytes.
+ */
+export function bytes(_input: number | string): string | number {
+  throw new Error("Not implemented");
+}

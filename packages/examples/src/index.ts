@@ -339,7 +339,7 @@ export function createTuple<T extends readonly any[]>(items: T): T {
  * @param value - Value to validate
  * @returns true if valid
  */
-function createValidator(pattern: RegExp): (value: string) => boolean {
+function createValidator(pattern: RegExp): (/** Value to test */ value: string) => boolean {
   return (value) => pattern.test(value);
 }
 
