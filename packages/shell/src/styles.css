@@ -148,10 +148,6 @@ ar-shell {
   @apply text-ar-accent-yellow;
 }
 
-.ar-breadcrumb-separator {
-  @apply mx-1;
-}
-
 .ar-declaration-title {
   @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan mb-6;
 }
@@ -190,6 +186,14 @@ ar-shell {
 .ar-card .ar-section-title {
   @apply px-1 py-1 text-xs font-semibold uppercase tracking-wider text-ar-muted mb-1 mt-2;
   text-shadow: none;
+}
+
+.ar-card-reference {
+  @apply mt-1 text-sm text-ar-muted;
+}
+
+.ar-reference-breadcrumbs {
+  @apply [&_a]:hover:text-ar-accent-yellow;
 }
 
 /* ── Sections and cards (scroll margin for outline) ────────────────────── */

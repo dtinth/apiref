@@ -1,3 +1,4 @@
+import { buildOutline } from "../outline-builder.ts";
 import type {
   Breadcrumb,
   MemberFlags,
@@ -9,9 +10,8 @@ import type {
 } from "../viewmodel.ts";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
-import { SignatureLine, IndexSignatureLine, TypeView } from "./TypeView.tsx";
 import { PageContext, useResolveLink } from "./PageContext.tsx";
-import { buildOutline } from "../outline-builder.ts";
+import { IndexSignatureLine, SignatureLine, TypeView } from "./TypeView.tsx";
 
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
@@ -50,12 +50,19 @@ export function Page({ site, page, options }: PageProps) {
           {page.title} — {site.package.name}
         </title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
         />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css"
+        />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/@vscode/codicons@0.0.36/dist/codicon.css"
@@ -78,7 +85,10 @@ export function Page({ site, page, options }: PageProps) {
               <span class="ar-header-version">{site.package.version}</span>
             </a>
           </header>
-          <nav class="ar-sidebar ar-sidebar--hidden" aria-label="Package navigation"></nav>
+          <nav
+            class="ar-sidebar ar-sidebar--hidden"
+            aria-label="Package navigation"
+          ></nav>
           <aside class="ar-outline-sidebar" aria-label="Page outline"></aside>
           <div class="ar-main ar-main--with-outline">
             <div class="ar-content-wrap">
@@ -98,9 +108,16 @@ export function Page({ site, page, options }: PageProps) {
 function PageContent({ page }: { page: PageViewModel }) {
   return (
     <article class={`ar-declaration ar-declaration--${page.kind}`}>
-      {page.breadcrumbs.length > 0 && <Breadcrumbs breadcrumbs={page.breadcrumbs} />}
+      {page.breadcrumbs.length > 0 && (
+        <Breadcrumbs breadcrumbs={page.breadcrumbs} />
+      )}
       {page.sections.map((section, i) => (
-        <SectionView key={i} section={section} pageName={page.title} context="page" />
+        <SectionView
+          key={i}
+          section={section}
+          pageName={page.title}
+          context="page"
+        />
       ))}
     </article>
   );
@@ -116,7 +133,8 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
             {breadcrumb.label}
           </a>
           <span class="ar-breadcrumb-separator" aria-hidden="true">
-            »
+            {" "}
+            »{" "}
           </span>
         </span>
       ))}
@@ -134,7 +152,11 @@ function SectionView({
   context: "page" | "card";
 }) {
   // Special case: bare doc block (page summary)
-  if (!section.title && section.body.length === 1 && section.body[0].kind === "doc") {
+  if (
+    !section.title &&
+    section.body.length === 1 &&
+    section.body[0].kind === "doc"
+  ) {
     return <DocView doc={section.body[0].doc} />;
   }
 
@@ -142,7 +164,12 @@ function SectionView({
     <>
       {section.title && <h2 class="ar-section-title">{section.title}</h2>}
       {section.body.map((block, i) => (
-        <BlockView key={i} block={block} pageName={pageName} context={context} />
+        <BlockView
+          key={i}
+          block={block}
+          pageName={pageName}
+          context={context}
+        />
       ))}
     </>
   );
@@ -257,12 +284,18 @@ function FlagsView({ flags }: { flags: MemberFlags }) {
       {flags.deprecated && (
         <>
           <span class="ar-badge ar-badge--deprecated">deprecated</span>
-          {flags.deprecatedMessage?.length ? <DocView doc={flags.deprecatedMessage} /> : null}
+          {flags.deprecatedMessage?.length ? (
+            <DocView doc={flags.deprecatedMessage} />
+          ) : null}
         </>
       )}
       {flags.static && <span class="ar-badge ar-badge--static">static</span>}
-      {flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
-      {flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
+      {flags.abstract && (
+        <span class="ar-badge ar-badge--abstract">abstract</span>
+      )}
+      {flags.readonly && (
+        <span class="ar-badge ar-badge--readonly">readonly</span>
+      )}
     </div>
   );
 }
@@ -271,22 +304,30 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
   const resolve = useResolveLink();
   // Extract declaration-title from first section
   const titleBlock = card.sections[0]?.body[0];
-  const titleFromCard = titleBlock?.kind === "declaration-title" ? titleBlock : null;
+  const titleFromCard =
+    titleBlock?.kind === "declaration-title" ? titleBlock : null;
 
   const header = titleFromCard ? (
     card.url ? (
       <a href={resolve(card.url)} class="ar-card-header">
-        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
+        <DeclarationTitle
+          kind={titleFromCard.declarationKind}
+          title={titleFromCard.name}
+        />
       </a>
     ) : (
       <h3 class="ar-card-header">
-        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
+        <DeclarationTitle
+          kind={titleFromCard.declarationKind}
+          title={titleFromCard.name}
+        />
       </h3>
     )
   ) : null;
 
   const cardClasses = card.url ? "ar-card ar-card--link" : "ar-card";
-  const hasBody = Boolean(card.referenceBreadcrumbs?.length) || card.sections.length > 1;
+  const hasBody =
+    Boolean(card.referenceBreadcrumbs?.length) || card.sections.length > 1;
 
   return (
     <div id={card.anchor} class={cardClasses}>
@@ -295,7 +336,8 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
         <div class="ar-card-body">
           {card.referenceBreadcrumbs?.length ? (
             <p class="ar-card-reference">
-              References <InlineBreadcrumbs breadcrumbs={card.referenceBreadcrumbs} />
+              References{" "}
+              <InlineBreadcrumbs breadcrumbs={card.referenceBreadcrumbs} />
             </p>
           ) : null}
           {card.sections.slice(1).map((section, i) => (
@@ -326,7 +368,13 @@ function InlineBreadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
   );
 }
 
-function SignatureBlock({ sig, label }: { sig: SignatureViewModel; label?: string }) {
+function SignatureBlock({
+  sig,
+  label,
+}: {
+  sig: SignatureViewModel;
+  label?: string;
+}) {
   return (
     <div class="ar-signature-block">
       <div class="ar-signature">

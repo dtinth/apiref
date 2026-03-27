@@ -303,4 +303,5 @@ export class EventEmitter<Events extends Record<string, any>> {
   }
 }
 
+/** A default export */
 export default 42;
