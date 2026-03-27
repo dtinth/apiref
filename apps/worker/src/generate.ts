@@ -79,12 +79,15 @@ export async function generate(options: GenerateOptions): Promise<string> {
     // Extract git remote and revision
     let gitRemote: string | undefined;
     let gitRevision: string | undefined;
+    let gitDirectory: string | undefined;
 
     if (typeof repository === "object" && repository?.type === "git") {
       const url = repository.url as string;
       // Remove git+ prefix and .git suffix
       gitRemote = url.replace(/^git\+/, "").replace(/\.git$/, "");
       if (version) gitRevision = `v${version}`;
+      // Support monorepo structure via repository.directory field
+      gitDirectory = (repository as Record<string, unknown>).directory as string | undefined;
     }
 
     // Generate TypeDoc JSON with vanilla TypeDoc (auto-discovers via typedoc export)
@@ -104,7 +107,8 @@ export async function generate(options: GenerateOptions): Promise<string> {
       ];
 
       if (gitRemote && gitRevision) {
-        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/{path}#L{line}`);
+        const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
+        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`);
       }
 
       await execa("pnpm", typedocArgs, {
@@ -136,7 +140,8 @@ export async function generate(options: GenerateOptions): Promise<string> {
       );
 
       if (gitRemote && gitRevision) {
-        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/{path}#L{line}`);
+        const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
+        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`);
       }
 
       await execa("pnpm", typedocArgs, {
