@@ -68,20 +68,49 @@ export async function generate(options: GenerateOptions): Promise<string> {
     // Extract package name from packageSpec (e.g., "elysia@1.4.28" -> "elysia")
     const packageName = packageSpec.split("@")[0] || packageSpec;
     const packagePath = join(tempDir, "node_modules", packageName);
+    const packageJsonPath = join(packagePath, "package.json");
+
+    // Read package.json to extract git info
+    const packageJsonContent = await readFile(packageJsonPath, "utf-8");
+    const packageJson = JSON.parse(packageJsonContent);
+    const version = packageJson.version as string | undefined;
+    const repository = packageJson.repository as { type: string; url: string } | string | undefined;
+
+    // Extract git remote and revision
+    let gitRemote: string | undefined;
+    let gitRevision: string | undefined;
+
+    if (typeof repository === "object" && repository?.type === "git") {
+      const url = repository.url as string;
+      // Remove git+ prefix and .git suffix
+      gitRemote = url.replace(/^git\+/, "").replace(/\.git$/, "");
+      if (version) gitRevision = `v${version}`;
+    }
 
     // Generate TypeDoc JSON with vanilla TypeDoc (auto-discovers via typedoc export)
     console.log(`📄 Generating TypeDoc JSON (vanilla)...`);
     const docFile = join(tempDir, "doc.json");
 
     try {
-      await execa(
-        "pnpm",
-        ["dlx", "typedoc", "--json", docFile, "--name", packageName, "--skipErrorChecking"],
-        {
-          cwd: packagePath,
-          stdio: "inherit",
-        },
-      );
+      const typedocArgs = [
+        "dlx",
+        "typedoc",
+        "--json",
+        docFile,
+        "--name",
+        packageName,
+        "--skipErrorChecking",
+        "--disableGit",
+      ];
+
+      if (gitRemote && gitRevision) {
+        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/{path}#L{line}`);
+      }
+
+      await execa("pnpm", typedocArgs, {
+        cwd: packagePath,
+        stdio: "inherit",
+      });
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
       console.log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
@@ -97,7 +126,18 @@ export async function generate(options: GenerateOptions): Promise<string> {
       for (const ep of entryPoints) {
         typedocArgs.push("--entryPoints", ep);
       }
-      typedocArgs.push("--json", docFile, "--name", packageName, "--skipErrorChecking");
+      typedocArgs.push(
+        "--json",
+        docFile,
+        "--name",
+        packageName,
+        "--skipErrorChecking",
+        "--disableGit",
+      );
+
+      if (gitRemote && gitRevision) {
+        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/{path}#L{line}`);
+      }
 
       await execa("pnpm", typedocArgs, {
         cwd: tempDir,
