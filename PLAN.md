@@ -246,14 +246,29 @@ h2: Methods
 
 ## Packages
 
-| Package            | Status      | Description                         |
-| ------------------ | ----------- | ----------------------------------- |
-| `@apiref/renderer` | Built       | TypeDoc JSON → static HTML          |
-| `@apiref/shell`    | Built       | Web components + Tailwind CSS (CDN) |
-| `worker`           | Not started | Containerized generation worker     |
-| `intake`           | Not started | Intake API + web form               |
+| Package            | Status    | Description                                     |
+| ------------------ | --------- | ----------------------------------------------- |
+| `@apiref/renderer` | Built     | TypeDoc JSON → static HTML                      |
+| `@apiref/shell`    | Built     | Web components + Tailwind CSS (CDN)             |
+| `apiref-worker`    | Scaffolded | CLI: `pnpm install` → `typedoc --json`          |
+| `intake`           | Not started | Intake API + web form                           |
 
 Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
+
+### Worker CLI (`apiref-worker`)
+
+`apps/worker/` — Standalone generation CLI.
+
+- **Entry point:** `apiref-generate <package-spec> [--out <file>]`
+- **Core logic:**
+  - Creates temporary directory
+  - Installs package using `pnpm add --ignore-scripts`
+  - Runs `typedoc --json` to generate documentation JSON
+  - Writes output to specified file (default: `typedoc.json`)
+  - Cleans up temp directory on success or error
+- **Error handling:** Gracefully rejects packages incompatible with Node 24+
+- **CLI parsing:** Built-in Node.js `util.parseArgs()` (available in Node 24+)
+- **Dependencies:** `execa` for process execution
 
 ## Immediate next steps
 
@@ -263,21 +278,23 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 4. ✅ **Scroll position memory** — Sidebar scroll position saved/restored; active item auto-scrolls into view.
 5. ✅ **Module import paths** — Nav displays full import paths, sorted with index first.
 6. ✅ **Syntax highlighting** — Shiki for fenced code blocks with custom theme.
-7. **Page hierarchy refactor** — restructure transformer to:
+7. ✅ **Worker CLI scaffold** — `apiref-generate <pkg-spec>` local generation tool.
+8. **Page hierarchy refactor** — restructure transformer to:
    - Make Module/Namespace/Class/Function distinct pages
    - Keep Methods/Properties/Constructors as subsections (anchors only, no separate pages)
    - Update nav tree to show only up to Class level
    - Handle dual-nature declarations (function + namespace → separate pages)
-8. **Content layout** — update renderer to:
+9. **Content layout** — update renderer to:
    - Add kind icons + type labels to `h1.ar-declaration-title` and `h2.ar-declaration-title`
    - Create boxed subsection cards for Constructor/Properties/Methods
    - Add parameter/return/example sections within boxes
-9. **Index page links** — make module/class items clickable links to their pages
-10. **Pagefind search** — post-process + `<ar-search>` component.
-11. **Worker + Intake** — generation pipeline.
+10. **Index page links** — make module/class items clickable links to their pages
+11. **Pagefind search** — post-process + `<ar-search>` component.
+12. **Worker containerization + Intake** — production generation pipeline.
 
 ## Recent changes
 
+- **2026-03-28:** Scaffolded `apiref-worker` CLI app — `apiref-generate <pkg>` for local generation
 - **2026-03-27:** Fixed TypeViewModel architectural issue (see below)
 - **2026-03-27:** Merged shiki code highlighting branch; customized theme background color to #252423
 - **2026-03-27:** Removed all transition animations for instant hover states
