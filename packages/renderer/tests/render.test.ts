@@ -1,8 +1,13 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { h } from "preact";
+import { render as renderToString } from "preact-render-to-string";
 import { describe, expect, test } from "vite-plus/test";
+import { PageContext } from "../src/components/PageContext.tsx";
+import { TypeView } from "../src/components/TypeView.tsx";
 import { renderSite } from "../src/render.tsx";
 import { transform } from "../src/transformer.ts";
+import type { TypeViewModel } from "../src/viewmodel.ts";
 
 const SHELL = "https://cdn.example.com/shell@1.0.0";
 
@@ -20,6 +25,10 @@ function renderRendererFixture(name: string) {
   const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
   const site = transform(JSON.parse(readFileSync(path, "utf-8")), { version: "1.0.0" });
   return renderSite(site, { shellBaseUrl: SHELL });
+}
+
+function renderType(type: TypeViewModel) {
+  return renderToString(h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })));
 }
 
 // ---------------------------------------------------------------------------
@@ -196,5 +205,33 @@ describe("render examples", () => {
     expect(html).toContain('href="../index.html"');
     expect(html).toContain(">References <");
     expect(html).toContain(">RecA<");
+  });
+});
+
+describe("TypeView", () => {
+  test("renders mapped types", () => {
+    expect(
+      renderType({
+        kind: "mapped",
+        parameter: "Key",
+        parameterType: {
+          kind: "type-operator",
+          operator: "keyof",
+          target: { kind: "reference", name: "Input", url: "index/Input.html", typeArguments: [] },
+        },
+        templateType: {
+          kind: "indexed-access",
+          objectType: {
+            kind: "reference",
+            name: "Input",
+            url: "index/Input.html",
+            typeArguments: [],
+          },
+          indexType: { kind: "reference", name: "Key", url: null, typeArguments: [] },
+        },
+        readonlyModifier: "+",
+        optionalModifier: "-",
+      }),
+    ).toContain("{ <span class=\"ar-type-keyword\">+readonly </span>[Key");
   });
 });

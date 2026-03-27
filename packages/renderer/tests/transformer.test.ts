@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, describe } from "vite-plus/test";
+import type { TransformContext } from "../src/transform-context.ts";
+import { transformType } from "../src/type-transformer.ts";
 import { transform } from "../src/transformer.ts";
 import type { PageViewModel, SectionBlock } from "../src/viewmodel.ts";
 
@@ -12,6 +14,15 @@ function loadFixture(name: string): unknown {
 function loadLocalFixture(name: string): unknown {
   const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
   return JSON.parse(readFileSync(path, "utf-8"));
+}
+
+function createTransformContext(): TransformContext {
+  return {
+    idToUrl: new Map(),
+    idToBreadcrumbs: new Map(),
+    pkgName: "@apiref-examples/core",
+    pkgVersion: "1.0.0",
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -294,6 +305,47 @@ describe("examples renderer fixture", () => {
         ]);
       }
     }
+  });
+});
+
+describe("transformType", () => {
+  test("preserves mapped types", () => {
+    expect(
+      transformType(
+        {
+          type: "mapped",
+          parameter: "Key",
+          parameterType: {
+            type: "typeOperator",
+            operator: "keyof",
+            target: { type: "reference", name: "Input" },
+          },
+          templateType: {
+            type: "indexedAccess",
+            objectType: { type: "reference", name: "Input" },
+            indexType: { type: "reference", name: "Key", refersToTypeParameter: true },
+          },
+          readonlyModifier: "+",
+          optionalModifier: "-",
+        },
+        createTransformContext(),
+      ),
+    ).toEqual({
+      kind: "mapped",
+      parameter: "Key",
+      parameterType: {
+        kind: "type-operator",
+        operator: "keyof",
+        target: { kind: "reference", name: "Input", url: null, typeArguments: [] },
+      },
+      templateType: {
+        kind: "indexed-access",
+        objectType: { kind: "reference", name: "Input", url: null, typeArguments: [] },
+        indexType: { kind: "reference", name: "Key", url: null, typeArguments: [] },
+      },
+      readonlyModifier: "+",
+      optionalModifier: "-",
+    });
   });
 });
 

@@ -80,6 +80,16 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
         indexType: transformType(tdType.indexType, ctx),
       };
 
+    case "mapped":
+      return {
+        kind: "mapped",
+        parameter: tdType.parameter,
+        parameterType: transformType(tdType.parameterType, ctx),
+        templateType: transformType(tdType.templateType, ctx),
+        optionalModifier: tdType.optionalModifier ?? null,
+        readonlyModifier: tdType.readonlyModifier ?? null,
+      };
+
     case "conditional":
       return {
         kind: "conditional",
