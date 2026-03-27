@@ -9,7 +9,7 @@ function loadFixture(name: string): unknown {
   return JSON.parse(readFileSync(path, "utf-8"));
 }
 
-function loadRendererFixture(name: string): unknown {
+function loadLocalFixture(name: string): unknown {
   const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
   return JSON.parse(readFileSync(path, "utf-8"));
 }
@@ -220,14 +220,16 @@ describe("visual-storyboard (multi-module)", () => {
 });
 
 describe("examples renderer fixture", () => {
-  const site = transform(loadRendererFixture("examples"), { version: "1.0.0" });
+  const site = transform(loadLocalFixture("examples"), { version: "1.0.0" });
 
   test("AppConfig type alias preserves typeof query types", () => {
     const page = site.pages.find((p) => p.url === "index/AppConfig.html");
-    const section = page?.sections.find((s) => s.body.some((b) => b.kind === "type-declaration"));
-    expect(section).toBeDefined();
-    if (section?.body[0]?.kind === "type-declaration") {
-      expect(section.body[0].type).toEqual({
+    const typeDeclarationBlock = page?.sections
+      .flatMap((section) => section.body)
+      .find((block) => block.kind === "type-declaration");
+    expect(typeDeclarationBlock).toBeDefined();
+    if (typeDeclarationBlock?.kind === "type-declaration") {
+      expect(typeDeclarationBlock.type).toEqual({
         kind: "query",
         queryType: {
           kind: "reference",
