@@ -61,6 +61,13 @@ export function getSummary(page: Page) {
   return ''
 }
 
+export function serializeExcerptTokenText(text: string): string {
+  if (!text.includes('\n')) {
+    return text
+  }
+  return text.replace(/\s*\n\s*/g, ' ').trim()
+}
+
 export async function renderDocPage(
   page: Page,
   context: DocRenderContext,
@@ -140,10 +147,11 @@ export async function renderDocPage(
       nodes: excerpt.spannedTokens.map((token) => {
         const canonicalReference = token.canonicalReference?.toString()
         const link = context.linkGenerator.linkToReference(canonicalReference)
+        const text = serializeExcerptTokenText(token.text)
         if (link) {
-          return { kind: 'RouteLink', to: link, text: token.text }
+          return { kind: 'RouteLink', to: link, text }
         } else {
-          return { kind: 'PlainText', text: token.text }
+          return { kind: 'PlainText', text }
         }
       }),
     }
