@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -8,33 +8,7 @@ export interface GenerateOptions {
   outFile?: string;
 }
 
-async function resolveTypeDefinition(filePath: string): Promise<string> {
-  // If it's already a .d.ts or .d.mts file, use it
-  if (filePath.endsWith(".d.ts") || filePath.endsWith(".d.mts")) {
-    return filePath;
-  }
-
-  // For .mjs or .js files, look for corresponding .d.mts or .d.ts
-  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
-  const basename = filePath.substring(filePath.lastIndexOf("/") + 1);
-  const nameWithoutExt = basename.replace(/\.(mjs|js)$/, "");
-
-  // Try .d.mts first, then .d.ts
-  for (const ext of [".d.mts", ".d.ts"]) {
-    const dtsPath = join(dir, nameWithoutExt + ext);
-    try {
-      await stat(dtsPath);
-      return dtsPath;
-    } catch {
-      // File doesn't exist, try next option
-    }
-  }
-
-  // Fallback to original path if no .d.ts found
-  return filePath;
-}
-
-async function findEntryPoints(packageDir: string, packageName: string): Promise<string[]> {
+async function findEntryPointsFallback(packageDir: string, packageName: string): Promise<string[]> {
   try {
     const packageJsonPath = join(packageDir, "node_modules", packageName, "package.json");
     const packageJsonContent = await readFile(packageJsonPath, "utf-8");
@@ -49,27 +23,19 @@ async function findEntryPoints(packageDir: string, packageName: string): Promise
         continue;
       }
 
-      // value can be string or object with types/import/require
+      // Check for typedoc conditional export first (vanilla TypeDoc way)
       let types: string | undefined;
-      if (typeof value === "string") {
-        types = value;
-      } else if (typeof value === "object" && value !== null) {
-        types = (value as Record<string, unknown>).types as string | undefined;
+      if (typeof value === "object" && value !== null) {
+        types = (value as Record<string, unknown>).typedoc as string | undefined;
+        if (!types) {
+          types = (value as Record<string, unknown>).types as string | undefined;
+        }
       }
 
       if (types) {
-        const filePath = join(packageDir, "node_modules", packageName, types);
-        const resolvedPath = await resolveTypeDefinition(filePath);
-        entryPoints.push(resolvedPath);
+        const entryPoint = join(packageDir, "node_modules", packageName, types);
+        entryPoints.push(entryPoint);
       }
-    }
-
-    // Fallback to main if no exports or no types
-    if (entryPoints.length === 0 && (packageJson.main || packageJson.types)) {
-      const main = packageJson.types || packageJson.main;
-      const filePath = join(packageDir, "node_modules", packageName, main);
-      const resolvedPath = await resolveTypeDefinition(filePath);
-      entryPoints.push(resolvedPath);
     }
 
     return entryPoints;
@@ -101,26 +67,43 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
     // Extract package name from packageSpec (e.g., "elysia@1.4.28" -> "elysia")
     const packageName = packageSpec.split("@")[0] || packageSpec;
+    const packagePath = join(tempDir, "node_modules", packageName);
 
-    // Find all entry points from exports
-    console.log(`🔍 Discovering entry points...`);
-    const entryPoints = await findEntryPoints(tempDir, packageName);
-    console.log(`   Found ${entryPoints.length} entry point(s)`);
-
-    // Run typedoc to generate JSON with all entry points
-    console.log(`📄 Generating TypeDoc JSON...`);
+    // Generate TypeDoc JSON with vanilla TypeDoc (auto-discovers via typedoc export)
+    console.log(`📄 Generating TypeDoc JSON (vanilla)...`);
     const docFile = join(tempDir, "doc.json");
 
-    const typedocArgs = ["dlx", "typedoc"];
-    for (const ep of entryPoints) {
-      typedocArgs.push("--entryPoints", ep);
-    }
-    typedocArgs.push("--json", docFile, "--name", packageName, "--skipErrorChecking");
+    try {
+      await execa(
+        "pnpm",
+        ["dlx", "typedoc", "--json", docFile, "--name", packageName, "--skipErrorChecking"],
+        {
+          cwd: packagePath,
+          stdio: "inherit",
+        },
+      );
+    } catch {
+      // Fallback: use explicit entry points if vanilla approach fails
+      console.log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
+      const entryPoints = await findEntryPointsFallback(tempDir, packageName);
+      if (entryPoints.length === 0) {
+        throw new Error(
+          `Failed to generate TypeDoc: vanilla approach failed and no fallback entry points found`,
+        );
+      }
 
-    await execa("pnpm", typedocArgs, {
-      cwd: tempDir,
-      stdio: "inherit",
-    });
+      console.log(`   Found ${entryPoints.length} entry point(s)`);
+      const typedocArgs = ["dlx", "typedoc"];
+      for (const ep of entryPoints) {
+        typedocArgs.push("--entryPoints", ep);
+      }
+      typedocArgs.push("--json", docFile, "--name", packageName, "--skipErrorChecking");
+
+      await execa("pnpm", typedocArgs, {
+        cwd: tempDir,
+        stdio: "inherit",
+      });
+    }
 
     // Read the generated JSON
     const typedocJson = await readFile(docFile, "utf-8");
