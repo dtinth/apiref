@@ -27,12 +27,14 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
 export function inferDeclarationKind(
   decl: TDDeclaration,
 ): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
-  // Constructor
-  if (decl.kind === Kind.Constructor) return "constructor";
+  // Try main Kind mapping (covers Constructor and Method)
+  const mainKind = reflectionKindToDeclarationKind(decl.kind);
+  if (mainKind === "constructor" || mainKind === "method") {
+    return mainKind;
+  }
+
   // Accessor (getter/setter)
   if (decl.getSignature || decl.setSignature) return "accessor";
-  // Method
-  if (decl.kind === Kind.Method) return "method";
   // Default to property
   return "property";
 }
