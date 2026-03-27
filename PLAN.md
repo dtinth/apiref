@@ -40,7 +40,7 @@ SERVING      → object storage + shared shell CDN
 - Preact SSR (`preact-render-to-string`). No Preact runtime in browser.
 - Markdown via `marked`: TypeDoc comment parts reassembled → `marked.parse()`.
 - CDN resources in `<head>`: Arimo (Google Fonts), Comic Mono (jsDelivr), VS Code codicons, shell CSS + JS.
-- Shiki syntax highlighting: **planned**.
+- **Shiki syntax highlighting:** Implemented with catppuccin-mocha theme (bg color customized to #252423).
 
 ### CLI
 
@@ -124,17 +124,21 @@ type NavNode = {
 
 - No shadow DOM — `createRenderRoot()` returns `this`.
 - `experimentalDecorators: true` + `useDefineForClassFields: false` required (Rolldown emits native TC39 decorator syntax; current Chrome rejects `@decorator class-expression`).
-- Content preservation in `ar-shell`: saves `childNodes` in `connectedCallback()` before Lit's async render clears them, re-inserts via `ref` callback on content wrapper.
+- **Server-side shell layout:** Complete shell structure (header, nav, outline, main) rendered in static HTML from renderer. `ar-shell` on connection populates pre-rendered layout elements (no longer a Lit renderer).
+- **Content preservation:** Static `<main>` element stays in place; `ar-shell` queries and populates `.ar-content-wrap` with navigation and outline components.
+- **Scroll position memory:** Sidebar scroll position saved to sessionStorage before navigation, restored on page load. Active nav item auto-scrolls into view on first load.
+- **Instant hover states:** All transition animations removed for immediate visual feedback.
+- **Module nav labels:** Display full import paths (e.g., `@package/core`, `@package/core/data`) instead of just module names. Sorted with index module first, then alphabetically.
 - Typography: `@tailwindcss/typography` via `@plugin` (Tailwind v4 CSS-first). Dark theme via `--tw-prose-*` CSS variables.
 
 ### Components
 
 | Element        | Status  | Description                                                             |
 | -------------- | ------- | ----------------------------------------------------------------------- |
-| `<ar-shell>`   | Built   | Main layout shell (header + left nav + content + outline)               |
+| `<ar-shell>`   | Built   | Main layout shell (header + left nav + content + outline); DOM connector |
 | `<ar-header>`  | Built   | Top bar: package name/version + mobile hamburger                        |
 | `<ar-nav>`     | Built   | Left sidebar nav tree with VS Code codicon kind icons, active highlight |
-| `<ar-outline>` | Planned | Right "Outline" panel (VS Code Outline-style)                           |
+| `<ar-outline>` | Built   | Right sidebar outline panel with section navigation                     |
 | `<ar-search>`  | Planned | Search powered by Pagefind                                              |
 
 ### Layout
@@ -255,19 +259,30 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 1. ✅ **Active nav highlight** — left accent border + stronger bg on current-page nav item.
 2. ✅ **Outline panel** (`ar-outline`) — right sidebar; `#ar-meta.outline` built from page sections.
-3. **Page hierarchy refactor** — restructure transformer to:
+3. ✅ **Server-side shell layout** — Complete layout structure in static HTML; ar-shell as DOM connector.
+4. ✅ **Scroll position memory** — Sidebar scroll position saved/restored; active item auto-scrolls into view.
+5. ✅ **Module import paths** — Nav displays full import paths, sorted with index first.
+6. ✅ **Syntax highlighting** — Shiki for fenced code blocks with custom theme.
+7. **Page hierarchy refactor** — restructure transformer to:
    - Make Module/Namespace/Class/Function distinct pages
    - Keep Methods/Properties/Constructors as subsections (anchors only, no separate pages)
    - Update nav tree to show only up to Class level
    - Handle dual-nature declarations (function + namespace → separate pages)
-4. **Content layout** — update renderer to:
+8. **Content layout** — update renderer to:
    - Add kind icons + type labels to `h1.ar-declaration-title` and `h2.ar-declaration-title`
    - Create boxed subsection cards for Constructor/Properties/Methods
    - Add parameter/return/example sections within boxes
-5. **Index page links** — make module/class items clickable links to their pages
-6. **Syntax highlighting** — Shiki for fenced code blocks in `ar-description`.
-7. **Pagefind search** — post-process + `<ar-search>` component.
-8. **Worker + Intake** — generation pipeline.
+9. **Index page links** — make module/class items clickable links to their pages
+10. **Pagefind search** — post-process + `<ar-search>` component.
+11. **Worker + Intake** — generation pipeline.
+
+## Recent changes
+
+- **2026-03-27:** Merged shiki code highlighting branch; customized theme background color to #252423
+- **2026-03-27:** Removed all transition animations for instant hover states
+- **2026-03-27:** Module nav labels now show full import paths, sorted with index first
+- **2026-03-27:** Added sidebar scroll position memory and auto-scroll for active nav item
+- **2026-03-27:** Moved shell layout to server-side rendering to eliminate pre-JS layout shift
 
 ## Open questions
 
