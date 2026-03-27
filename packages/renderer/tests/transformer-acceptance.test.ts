@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { beforeAll, describe, test } from "vite-plus/test";
+import { beforeAll, describe, expect, test } from "vite-plus/test";
 import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
@@ -64,6 +64,21 @@ describe("pages", () => {
     tester.page("index/createEmitter/index.html").shouldHaveDeclarations([
       { name: "createEmitter", kind: "function" },
       { name: "createEmitter", kind: "namespace" },
+    ]);
+  });
+  test("Outline should contain both doc blocks and members", () => {
+    tester.page("index/Cache.html").shouldHaveOutline([
+      { title: "Constructor", children: [{ title: expect.any(String) }] },
+      {
+        title: "Methods",
+        children: [
+          { title: "cleanup" },
+          { title: "clear" },
+          { title: "get (1/2)" },
+          { title: "get (2/2)" },
+          { title: "set" },
+        ],
+      },
     ]);
   });
 });

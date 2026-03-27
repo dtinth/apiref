@@ -107,6 +107,32 @@ class PageTester {
       .map((b) => ({ name: b.name, kind: b.declarationKind }));
     expect(declsOnPage).toEqual(decls);
   }
+
+  shouldHaveOutline(expected: Array<{ title: string; children?: Array<{ title: string }> }>): void {
+    const page = this.shouldExist();
+
+    // Extract outline structure from sections
+    const outline = page.sections
+      .filter((s) => s.title) // Only titled sections
+      .map((section) => {
+        const children = section.body
+          .filter((b) => b.kind === "card")
+          .map((block) => {
+            // Extract card title from first block of first section
+            const titleBlock = block.sections[0]?.body[0];
+            return {
+              title: titleBlock?.kind === "declaration-title" ? titleBlock.name : "Unknown",
+            };
+          });
+        return {
+          title: section.title,
+          ...(children.length > 0 && { children }),
+        };
+      })
+      .filter((item) => item.children && item.children.length > 0); // Only keep sections with children
+
+    expect(outline).toEqual(expected);
+  }
 }
 
 export class SiteViewModelTester {
