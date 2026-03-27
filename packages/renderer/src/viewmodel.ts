@@ -101,8 +101,8 @@ export type SectionBlock =
       url?: string;
       flags: MemberFlags;
       sections: Section[];
-      referenceBreadcrumbs?: Breadcrumb[];
     }
+  | { kind: "reference-breadcrumbs"; breadcrumbs: Breadcrumb[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
   | { kind: "flags"; flags: MemberFlags }
   | { kind: "parameters"; parameters: ParameterDocViewModel[] }

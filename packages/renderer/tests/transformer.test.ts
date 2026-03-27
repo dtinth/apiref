@@ -257,10 +257,14 @@ describe("examples renderer fixture", () => {
     expect(authCard?.kind).toBe("card");
     if (authCard?.kind === "card") {
       expect(authCard.url).toBe("plugins/index.html");
-      expect(authCard.referenceBreadcrumbs?.map((breadcrumb) => breadcrumb.label)).toEqual([
-        "@apiref-examples/core",
-        "plugins",
-      ]);
+      const referenceBlock = authCard.sections[1]?.body[0];
+      expect(referenceBlock?.kind).toBe("reference-breadcrumbs");
+      if (referenceBlock?.kind === "reference-breadcrumbs") {
+        expect(referenceBlock.breadcrumbs.map((breadcrumb) => breadcrumb.label)).toEqual([
+          "@apiref-examples/core",
+          "plugins",
+        ]);
+      }
     }
   });
 
@@ -280,11 +284,15 @@ describe("examples renderer fixture", () => {
     expect(recACard?.kind).toBe("card");
     if (recACard?.kind === "card") {
       expect(recACard.url).toBe("data/RecA/index.html");
-      expect(recACard.referenceBreadcrumbs?.map((breadcrumb) => breadcrumb.label)).toEqual([
-        "@apiref-examples/core",
-        "data",
-        "RecA",
-      ]);
+      const referenceBlock = recACard.sections[1]?.body[0];
+      expect(referenceBlock?.kind).toBe("reference-breadcrumbs");
+      if (referenceBlock?.kind === "reference-breadcrumbs") {
+        expect(referenceBlock.breadcrumbs.map((breadcrumb) => breadcrumb.label)).toEqual([
+          "@apiref-examples/core",
+          "data",
+          "RecA",
+        ]);
+      }
     }
   });
 });
