@@ -1,3 +1,5 @@
+export * as RecA from "./rec-a";
+
 /**
  * Data structures and utilities for working with structured information.
  *
