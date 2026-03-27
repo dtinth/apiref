@@ -153,7 +153,7 @@ describe("render examples", () => {
     expect(html).toContain('href="defaultConfig.html"');
   });
 
-  test("FileLogger page renders breadcrumbs above the title", () => {
+  test("renders breadcrumbs above the declaration title", () => {
     const html = pages.get("plugins/LoggingPlugin/File/FileLogger.html")!;
     const breadcrumbIndex = html.indexOf('class="ar-breadcrumbs"');
     const titleIndex = html.indexOf('class="ar-declaration-title"');
