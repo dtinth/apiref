@@ -1,5 +1,5 @@
-import { Kind, PAGE_KINDS } from "./typedoc.ts";
-import type { TDDeclaration, TDSignature } from "./typedoc.ts";
+import type { JSONOutput } from "typedoc";
+import { Kind, PAGE_KINDS } from "./typedoc-kinds.ts";
 import type {
   Breadcrumb,
   Section,
@@ -19,6 +19,9 @@ import {
   extractBlockTagSections,
 } from "./comment-transformer.ts";
 import { getSourceUrl, reflectionKindToDeclarationKind, inferDeclarationKind } from "./utils.ts";
+
+type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
+type TDSignature = JSONOutput.SignatureReflection;
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {
