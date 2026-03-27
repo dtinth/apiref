@@ -6,6 +6,7 @@
  * This package showcases:
  * - Multi-signature methods and functions
  * - Generic types and constraints
+ * - Mapped types with readonly and optional modifiers
  * - Classes with various member types
  * - Interfaces and type aliases
  * - Enums and deeply nested namespaces
@@ -423,6 +424,24 @@ export const defaultConfig = {
 
 /** Type derived from the default config */
 export type AppConfig = typeof defaultConfig;
+
+/**
+ * Makes every property readonly and required.
+ *
+ * @template T - Source object type
+ */
+export type StrictReadonly<T> = {
+  +readonly [Key in keyof T]-?: T[Key];
+};
+
+/**
+ * Maps each property to an optional change handler.
+ *
+ * @template T - Source object type
+ */
+export type ChangeHandlers<T> = {
+  [Key in keyof T]?: (value: T[Key]) => void;
+};
 
 export const Something = 123;
 export type Something = number;

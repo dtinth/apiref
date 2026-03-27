@@ -306,6 +306,48 @@ describe("examples renderer fixture", () => {
       }
     }
   });
+
+  test("mapped type aliases preserve modifiers and nested types", () => {
+    const strictReadonlyPage = site.pages.find((p) => p.url === "index/StrictReadonly.html");
+    const strictReadonlyBlock = strictReadonlyPage?.sections
+      .flatMap((section) => section.body)
+      .find((block) => block.kind === "type-declaration");
+
+    expect(strictReadonlyBlock?.kind).toBe("type-declaration");
+    if (strictReadonlyBlock?.kind === "type-declaration") {
+      expect(strictReadonlyBlock.type).toEqual({
+        kind: "mapped",
+        parameter: "Key",
+        parameterType: {
+          kind: "type-operator",
+          operator: "keyof",
+          target: { kind: "reference", name: "T", url: null, typeArguments: [] },
+        },
+        templateType: {
+          kind: "indexed-access",
+          objectType: { kind: "reference", name: "T", url: null, typeArguments: [] },
+          indexType: { kind: "reference", name: "Key", url: null, typeArguments: [] },
+        },
+        readonlyModifier: "+",
+        optionalModifier: "-",
+      });
+    }
+
+    const changeHandlersPage = site.pages.find((p) => p.url === "index/ChangeHandlers.html");
+    const changeHandlersBlock = changeHandlersPage?.sections
+      .flatMap((section) => section.body)
+      .find((block) => block.kind === "type-declaration");
+
+    expect(changeHandlersBlock?.kind).toBe("type-declaration");
+    if (changeHandlersBlock?.kind === "type-declaration") {
+      expect(changeHandlersBlock.type.kind).toBe("mapped");
+      if (changeHandlersBlock.type.kind === "mapped") {
+        expect(changeHandlersBlock.type.optionalModifier).toBe("+");
+        expect(changeHandlersBlock.type.readonlyModifier).toBeNull();
+        expect(changeHandlersBlock.type.templateType.kind).toBe("reflection");
+      }
+    }
+  });
 });
 
 describe("transformType", () => {

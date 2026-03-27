@@ -157,13 +157,21 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
       return (
         <>
           {"{ "}
-          <span class="ar-type-keyword">{renderMappedReadonlyModifier(type.readonlyModifier)}</span>
+          {type.readonlyModifier && (
+            <span class="ar-type-keyword">
+              {renderMappedReadonlyModifier(type.readonlyModifier)}
+            </span>
+          )}
           {"["}
           {type.parameter}
           <span class="ar-type-keyword"> in </span>
           {renderType(type.parameterType, resolve)}
           {"]"}
-          <span class="ar-type-keyword">{renderMappedOptionalModifier(type.optionalModifier)}</span>
+          {type.optionalModifier && (
+            <span class="ar-type-keyword">
+              {renderMappedOptionalModifier(type.optionalModifier)}
+            </span>
+          )}
           {": "}
           {renderType(type.templateType, resolve)}
           {" }"}
