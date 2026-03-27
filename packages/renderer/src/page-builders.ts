@@ -125,10 +125,20 @@ export function buildMultiDeclarationPage(
   const url = ctx.idToUrl.get(decls[0].id);
   if (!url) return null;
 
+  // Sort declarations: functions first, then namespaces, then others
+  const sortedDecls = [...decls].sort((a, b) => {
+    const kindPriority = (kind: number) => {
+      if (kind === Kind.Function) return 0;
+      if (kind === Kind.Namespace) return 1;
+      return 2;
+    };
+    return kindPriority(a.kind) - kindPriority(b.kind);
+  });
+
   const sections: Section[] = [];
 
   // Build sections for each declaration
-  for (const decl of decls) {
+  for (const decl of sortedDecls) {
     // Add a heading for this declaration's kind
     const kind = reflectionKindToDeclarationKind(decl.kind);
 
@@ -180,7 +190,7 @@ export function buildMultiDeclarationPage(
 
   return {
     url,
-    title: decls[0].name,
+    title: sortedDecls[0].name,
     kind: "multiple",
     breadcrumbs: parentBreadcrumbs,
     sections,

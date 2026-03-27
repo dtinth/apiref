@@ -60,4 +60,10 @@ describe("pages", () => {
   test("Multi-nature pages should display multiple kinds", () => {
     tester.page("index/Something.html").shouldHaveKind("multiple");
   });
+  test("Function doc should come before namespace", () => {
+    tester.page("index/createEmitter/index.html").shouldHaveDeclarations([
+      { name: "createEmitter", kind: "function" },
+      { name: "createEmitter", kind: "namespace" },
+    ]);
+  });
 });

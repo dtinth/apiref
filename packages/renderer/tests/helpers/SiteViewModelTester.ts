@@ -88,10 +88,24 @@ class PageTester {
     return this.pages.find((p) => p.url === this.url) ?? null;
   }
 
-  shouldHaveKind(kind: string): void {
+  private shouldExist(): PageViewModel {
     const page = this.resolve();
     expect(page, `Expected page at URL ${this.url} to exist`).toBeDefined();
-    expect(page?.kind).toBe(kind);
+    return page!;
+  }
+
+  shouldHaveKind(kind: string): void {
+    const page = this.shouldExist();
+    expect(page.kind).toBe(kind);
+  }
+
+  shouldHaveDeclarations(decls: { name: string; kind: string }[]): void {
+    const page = this.shouldExist();
+    const declsOnPage = page.sections
+      .flatMap((s) => s.body)
+      .filter((b) => b.kind === "declaration-title")
+      .map((b) => ({ name: b.name, kind: b.declarationKind }));
+    expect(declsOnPage).toEqual(decls);
   }
 }
 
