@@ -276,6 +276,8 @@ export type TypeViewModel =
       trueType: TypeViewModel;
       falseType: TypeViewModel;
     }
+  | { kind: "template-literal"; head: string; tail: [TypeViewModel, string][] }
+  | { kind: "predicate"; name: string; asserts: boolean; targetType: TypeViewModel | null }
   | { kind: "unknown"; raw: string };
 
 /**

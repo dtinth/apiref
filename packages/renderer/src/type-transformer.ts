@@ -99,6 +99,21 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
         falseType: transformType(tdType.falseType, ctx),
       };
 
+    case "templateLiteral":
+      return {
+        kind: "template-literal",
+        head: tdType.head,
+        tail: tdType.tail.map(([type, text]) => [transformType(type, ctx), text]),
+      };
+
+    case "predicate":
+      return {
+        kind: "predicate",
+        name: tdType.name,
+        asserts: tdType.asserts,
+        targetType: tdType.targetType ? transformType(tdType.targetType, ctx) : null,
+      };
+
     case "reflection": {
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));

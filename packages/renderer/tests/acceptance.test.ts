@@ -133,8 +133,16 @@ describe("pages", () => {
 });
 
 describe("type rendering", () => {
-  test("Type aliases with 'typeof' render correctly", () => {
+  test("Type aliases with 'typeof' renders correctly", () => {
     const page = tester.page("index/AppConfig.html");
     page.section("Type").shouldHaveSignature("typeof defaultConfig");
+  });
+  test("Type aliases with template literal renders correctly", () => {
+    const page = tester.page("index/SqlQuery.html");
+    page.section("Type").shouldHaveSignature("`SELECT ${string} FROM ${string}`");
+  });
+  test("Signature with type assertions renders correctly", () => {
+    const page = tester.page("index/isNumber.html");
+    page.section("Signature").shouldHaveSignature("(value: unknown): value is number");
   });
 });

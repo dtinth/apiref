@@ -189,6 +189,32 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
         </>
       );
 
+    case "template-literal":
+      return (
+        <>
+          {"`"}
+          {type.head}
+          {type.tail.map((item, i) => (
+            <Fragment key={i}>
+              {" ${"}
+              {renderType(item[0], resolve)}
+              {"}"}
+              {item[1]}
+            </Fragment>
+          ))}
+          {"`"}
+        </>
+      );
+
+    case "predicate":
+      return (
+        <>
+          {type.name}
+          <span class="ar-type-keyword"> is </span>
+          {type.targetType ? renderType(type.targetType, resolve) : <span class="ar-type-unknown">unknown</span>}
+        </>
+      );
+
     case "unknown":
       return <span class="ar-type-unknown">{type.raw}</span>;
   }

@@ -4,7 +4,7 @@ import { render as renderToString } from "preact-render-to-string";
 import { convert } from "html-to-text";
 import { buildOutline } from "../../src/outline-builder.ts";
 import { PageContext } from "../../src/components/PageContext.tsx";
-import { TypeView } from "../../src/components/TypeView.tsx";
+import { TypeView, SignatureLine } from "../../src/components/TypeView.tsx";
 import type {
   NavNode,
   PageViewModel,
@@ -167,13 +167,31 @@ class SectionTester {
     expect(sections).toHaveLength(1);
     const section = sections[0]!;
     const body = section.body[0];
-    expect(body).toMatchObject({ kind: "type-declaration" });
-    const type = (body as Extract<SectionBlock, { kind: "type-declaration" }>).type;
 
-    const html = renderToString(
-      h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })),
-    );
-    const text = convert(html, { preserveNewlines: false, selectors: [{ selector: "a", options: { ignoreHref: true } }] }).trim();
+    let html: string;
+
+    if (body.kind === "type-declaration") {
+      // Type alias: render the type
+      const type = body.type;
+      html = renderToString(
+        h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })),
+      );
+    } else if (body.kind === "signatures") {
+      // Function signature: render using SignatureLine
+      const sig = body.signatures[0];
+      if (!sig) throw new Error("No signature found");
+
+      html = renderToString(
+        h(PageContext.Provider, { value: "index.html" }, h(SignatureLine, { sig, name: "" })),
+      );
+    } else {
+      throw new Error(`Unexpected block kind: ${body.kind}`);
+    }
+
+    const text = convert(html, {
+      preserveNewlines: false,
+      selectors: [{ selector: "a", options: { ignoreHref: true } }],
+    }).trim();
     expect(text).toBe(expected);
   }
 }
