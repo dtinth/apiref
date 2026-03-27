@@ -17,6 +17,13 @@ import {
   buildVariableSections,
 } from "./section-builders.ts";
 
+/** Build section id from title and optional prefix. */
+function buildSectionId(idPrefix: string, title: string): string {
+  const sectionPart = title.toLowerCase().replace(/\s+/g, "-");
+  if (!idPrefix) return `~${sectionPart}`;
+  return `${idPrefix}~${sectionPart}`;
+}
+
 export function buildPackageIndexPage(
   project: TDProject,
   topLevel: TDDeclaration[],
@@ -165,7 +172,11 @@ export function buildMultiDeclarationPage(
       const doc = transformComment(commentSource, ctx);
       if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
       const blockTags = extractBlockTagSections(commentSource, ctx);
-      sections.push(...blockTags.examples);
+      sections.push(
+        ...blockTags.examples.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "examples") })),
+        ...blockTags.returns.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "returns") })),
+        ...blockTags.throws.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "throws") })),
+      );
     }
 
     // Build kind-specific sections
@@ -231,7 +242,11 @@ export function buildDeclarationPage(
     const doc = transformComment(commentSource, ctx);
     if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
     const blockTags = extractBlockTagSections(commentSource, ctx);
-    sections.push(...blockTags.examples);
+    sections.push(
+      ...blockTags.examples.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "examples") })),
+      ...blockTags.returns.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "returns") })),
+      ...blockTags.throws.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "throws") })),
+    );
   }
 
   switch (decl.kind) {
