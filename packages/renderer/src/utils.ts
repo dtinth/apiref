@@ -19,12 +19,6 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
       return "namespace";
     case Kind.Module:
       return "module";
-    case Kind.Constructor:
-      return "constructor";
-    case Kind.Method:
-      return "method";
-    case Kind.Accessor:
-      return "accessor";
     default:
       return null;
   }
@@ -33,15 +27,16 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
 export function inferDeclarationKind(
   decl: TDDeclaration,
 ): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
-  // Try main Kind mapping (covers Constructor and Method)
-  const mainKind = reflectionKindToDeclarationKind(decl.kind);
-  if (mainKind === "constructor" || mainKind === "method") {
-    return mainKind;
+  switch (decl.kind) {
+    case Kind.Constructor:
+      return "constructor";
+    case Kind.Method:
+      return "method";
+    case Kind.Accessor:
+      return "accessor";
   }
 
-  // Accessor (getter/setter)
   if (decl.getSignature || decl.setSignature) return "accessor";
-  // Default to property
   return "property";
 }
 
