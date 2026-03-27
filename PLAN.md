@@ -133,13 +133,13 @@ type NavNode = {
 
 ### Components
 
-| Element        | Status  | Description                                                             |
-| -------------- | ------- | ----------------------------------------------------------------------- |
+| Element        | Status  | Description                                                              |
+| -------------- | ------- | ------------------------------------------------------------------------ |
 | `<ar-shell>`   | Built   | Main layout shell (header + left nav + content + outline); DOM connector |
-| `<ar-header>`  | Built   | Top bar: package name/version + mobile hamburger                        |
-| `<ar-nav>`     | Built   | Left sidebar nav tree with VS Code codicon kind icons, active highlight |
-| `<ar-outline>` | Built   | Right sidebar outline panel with section navigation                     |
-| `<ar-search>`  | Planned | Search powered by Pagefind                                              |
+| `<ar-header>`  | Built   | Top bar: package name/version + mobile hamburger                         |
+| `<ar-nav>`     | Built   | Left sidebar nav tree with VS Code codicon kind icons, active highlight  |
+| `<ar-outline>` | Built   | Right sidebar outline panel with section navigation                      |
+| `<ar-search>`  | Planned | Search powered by Pagefind                                               |
 
 ### Layout
 
