@@ -22,7 +22,6 @@ export class ArOutline extends LitElement {
   }
 
   private renderSection(section: OutlineSection, showLabel: boolean) {
-    if (section.items.length === 0) return nothing;
     return html`
       <div class="ar-outline-section">
         ${showLabel
