@@ -119,7 +119,7 @@ describe("render visual-storyboard", () => {
 
   test("StoryboardWriter.html shows source links on member cards", () => {
     const html = pages.get("index/StoryboardWriter.html")!;
-    expect(html).toContain('class="ar-card-title-link"');
+    expect(html).toContain('id="constructor" class="ar-card"');
     expect(html).toContain(
       'href="https://github.com/dtinth/visual-storyboard/blob/4726c729d692cf70930c04b5c27ba17639df4494/packages/core/src/writer.ts#L66"',
     );
