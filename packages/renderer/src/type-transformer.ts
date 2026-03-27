@@ -60,6 +60,12 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
         elements: tdType.elements.map((t) => transformType(t, ctx)),
       };
 
+    case "query":
+      return {
+        kind: "query",
+        queryType: transformType(tdType.queryType, ctx),
+      };
+
     case "typeOperator":
       return {
         kind: "type-operator",

@@ -9,6 +9,11 @@ function loadFixture(name: string): unknown {
   return JSON.parse(readFileSync(path, "utf-8"));
 }
 
+function loadRendererFixture(name: string): unknown {
+  const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
+  return JSON.parse(readFileSync(path, "utf-8"));
+}
+
 // ---------------------------------------------------------------------------
 // Schema version guard
 // ---------------------------------------------------------------------------
@@ -211,6 +216,27 @@ describe("visual-storyboard (multi-module)", () => {
   test("breadcrumbs on class page reference module", () => {
     const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
     expect(page?.breadcrumbs.some((b) => b.label === "index")).toBe(true);
+  });
+});
+
+describe("examples renderer fixture", () => {
+  const site = transform(loadRendererFixture("examples"), { version: "1.0.0" });
+
+  test("AppConfig type alias preserves typeof query types", () => {
+    const page = site.pages.find((p) => p.url === "index/AppConfig.html");
+    const section = page?.sections.find((s) => s.body.some((b) => b.kind === "type-declaration"));
+    expect(section).toBeDefined();
+    if (section?.body[0]?.kind === "type-declaration") {
+      expect(section.body[0].type).toEqual({
+        kind: "query",
+        queryType: {
+          kind: "reference",
+          name: "defaultConfig",
+          url: "index/defaultConfig.html",
+          typeArguments: [],
+        },
+      });
+    }
   });
 });
 

@@ -146,4 +146,10 @@ describe("render examples", () => {
     );
     expect(renderedPages.some((page) => page.includes("<span style="))).toBe(true);
   });
+
+  test("AppConfig renders typeof type aliases", () => {
+    const html = pages.get("index/AppConfig.html")!;
+    expect(html).toContain("typeof");
+    expect(html).toContain('href="defaultConfig.html"');
+  });
 });

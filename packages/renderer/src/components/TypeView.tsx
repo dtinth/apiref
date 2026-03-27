@@ -127,6 +127,14 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
       return <span class="ar-type-reflection">{"{}"}</span>;
     }
 
+    case "query":
+      return (
+        <>
+          <span class="ar-type-keyword">typeof </span>
+          {renderType(type.queryType, resolve)}
+        </>
+      );
+
     case "type-operator":
       return (
         <>
