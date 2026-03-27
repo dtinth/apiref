@@ -1,4 +1,4 @@
-import { Kind, type TDProject, type TDDeclaration } from "./typedoc.ts";
+import { Kind, type TDComment, type TDProject, type TDDeclaration } from "./typedoc.ts";
 import type { PageViewModel, Breadcrumb, Section } from "./viewmodel.ts";
 import type { TransformContext } from "./transform-context.ts";
 import {
@@ -22,6 +22,38 @@ function buildSectionId(idPrefix: string, title: string): string {
   const sectionPart = title.toLowerCase().replace(/\s+/g, "-");
   if (!idPrefix) return `~${sectionPart}`;
   return `${idPrefix}~${sectionPart}`;
+}
+
+function buildCommentSections(
+  comment: TDComment | undefined,
+  ctx: TransformContext,
+  options: { includeBlockTags?: boolean } = {},
+): Section[] {
+  if (!comment) return [];
+
+  const sections: Section[] = [];
+  const doc = transformComment(comment, ctx);
+  if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
+
+  if (options.includeBlockTags !== false) {
+    const blockTags = extractBlockTagSections(comment, ctx);
+    sections.push(
+      ...blockTags.examples.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "examples"),
+      })),
+      ...blockTags.returns.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "returns"),
+      })),
+      ...blockTags.throws.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "throws"),
+      })),
+    );
+  }
+
+  return sections;
 }
 
 export function buildPackageIndexPage(
@@ -168,25 +200,11 @@ export function buildMultiDeclarationPage(
         ? (decl.signatures?.[0]?.comment ?? decl.comment)
         : decl.comment;
 
-    if (commentSource) {
-      const doc = transformComment(commentSource, ctx);
-      if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
-      const blockTags = extractBlockTagSections(commentSource, ctx);
-      sections.push(
-        ...blockTags.examples.map((s) => ({
-          ...s,
-          id: s.id || buildSectionId("", s.title || "examples"),
-        })),
-        ...blockTags.returns.map((s) => ({
-          ...s,
-          id: s.id || buildSectionId("", s.title || "returns"),
-        })),
-        ...blockTags.throws.map((s) => ({
-          ...s,
-          id: s.id || buildSectionId("", s.title || "throws"),
-        })),
-      );
-    }
+    sections.push(
+      ...buildCommentSections(commentSource, ctx, {
+        includeBlockTags: decl.kind !== Kind.Function,
+      }),
+    );
 
     // Build kind-specific sections
     switch (decl.kind) {
@@ -247,25 +265,11 @@ export function buildDeclarationPage(
       ? (decl.signatures?.[0]?.comment ?? decl.comment)
       : decl.comment;
 
-  if (commentSource) {
-    const doc = transformComment(commentSource, ctx);
-    if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
-    const blockTags = extractBlockTagSections(commentSource, ctx);
-    sections.push(
-      ...blockTags.examples.map((s) => ({
-        ...s,
-        id: s.id || buildSectionId("", s.title || "examples"),
-      })),
-      ...blockTags.returns.map((s) => ({
-        ...s,
-        id: s.id || buildSectionId("", s.title || "returns"),
-      })),
-      ...blockTags.throws.map((s) => ({
-        ...s,
-        id: s.id || buildSectionId("", s.title || "throws"),
-      })),
-    );
-  }
+  sections.push(
+    ...buildCommentSections(commentSource, ctx, {
+      includeBlockTags: decl.kind !== Kind.Function,
+    }),
+  );
 
   switch (decl.kind) {
     case Kind.Class:

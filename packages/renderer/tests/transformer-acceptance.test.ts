@@ -105,7 +105,7 @@ describe("pages", () => {
       },
     ]);
   });
-  test.skip("Function page outline should have correct sections", () => {
+  test("Function page outline should have correct sections", () => {
     tester
       .page("utils/debounce.html")
       .shouldHaveOutlineSectionTitles([
