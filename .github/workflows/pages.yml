@@ -32,11 +32,7 @@ jobs:
         run: vp pack
 
       - name: Generate TypeDoc JSON
-        run: |
-          vp exec typedoc \
-            --entryPoints packages/renderer/src/index.ts \
-            --tsconfig packages/renderer/tsconfig.json \
-            --json typedoc.json
+        run: vp run generate-fixture
 
       - name: Generate API reference HTML
         run: |
