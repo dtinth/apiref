@@ -246,12 +246,12 @@ h2: Methods
 
 ## Packages
 
-| Package            | Status    | Description                                     |
-| ------------------ | --------- | ----------------------------------------------- |
-| `@apiref/renderer` | Built     | TypeDoc JSON → static HTML                      |
-| `@apiref/shell`    | Built     | Web components + Tailwind CSS (CDN)             |
-| `apiref-worker`    | Scaffolded | CLI: `pnpm install` → `typedoc --json`          |
-| `intake`           | Not started | Intake API + web form                           |
+| Package            | Status      | Description                            |
+| ------------------ | ----------- | -------------------------------------- |
+| `@apiref/renderer` | Built       | TypeDoc JSON → static HTML             |
+| `@apiref/shell`    | Built       | Web components + Tailwind CSS (CDN)    |
+| `apiref-worker`    | Scaffolded  | CLI: `pnpm install` → `typedoc --json` |
+| `intake`           | Not started | Intake API + web form                  |
 
 Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 

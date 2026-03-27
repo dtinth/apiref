@@ -179,6 +179,19 @@ describe("render examples", () => {
     expect(html).toContain('href="defaultConfig.html"');
   });
 
+  test("mapped type aliases render mapped syntax", () => {
+    const strictReadonlyHtml = pages.get("index/StrictReadonly.html")!;
+    expect(strictReadonlyHtml).toContain("+readonly ");
+    expect(strictReadonlyHtml).toContain("[Key");
+    expect(strictReadonlyHtml).toContain(" in ");
+    expect(strictReadonlyHtml).toContain("-?");
+
+    const changeHandlersHtml = pages.get("index/ChangeHandlers.html")!;
+    expect(changeHandlersHtml).toContain("[Key");
+    expect(changeHandlersHtml).toContain("+?");
+    expect(changeHandlersHtml).toContain("ar-type-ref ar-type-ref--external");
+  });
+
   test("renders breadcrumbs above the declaration title", () => {
     const html = pages.get("plugins/LoggingPlugin/File/FileLogger.html")!;
     const breadcrumbIndex = html.indexOf('class="ar-breadcrumbs"');
@@ -232,6 +245,6 @@ describe("TypeView", () => {
         readonlyModifier: "+",
         optionalModifier: "-",
       }),
-    ).toContain("{ <span class=\"ar-type-keyword\">+readonly </span>[Key");
+    ).toContain('{ <span class="ar-type-keyword">+readonly </span>[Key');
   });
 });
