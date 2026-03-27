@@ -26,31 +26,34 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
       return <span class="ar-type-literal">{type.value}</span>;
 
     case "reference": {
-      const inner = (
-        <>
+      const name = type.url ? (
+        <a href={resolve(type.url)} class="ar-type-ref">
           {type.name}
-          {type.typeArguments.length > 0 && (
-            <>
-              {"<"}
-              {type.typeArguments.map((a, i) => (
-                <Fragment key={i}>
-                  {i > 0 && ", "}
-                  {renderType(a, resolve)}
-                </Fragment>
-              ))}
-              {">"}
-            </>
-          )}
+        </a>
+      ) : (
+        <span class="ar-type-ref ar-type-ref--external">{type.name}</span>
+      );
+
+      const typeArgs =
+        type.typeArguments.length > 0 ? (
+          <>
+            {"<"}
+            {type.typeArguments.map((a, i) => (
+              <Fragment key={i}>
+                {i > 0 && ", "}
+                {renderType(a, resolve)}
+              </Fragment>
+            ))}
+            {">"}
+          </>
+        ) : null;
+
+      return (
+        <>
+          {name}
+          {typeArgs}
         </>
       );
-      if (type.url) {
-        return (
-          <a href={resolve(type.url)} class="ar-type-ref">
-            {inner}
-          </a>
-        );
-      }
-      return <span class="ar-type-ref ar-type-ref--external">{inner}</span>;
     }
 
     case "union":
