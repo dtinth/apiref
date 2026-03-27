@@ -21,7 +21,8 @@
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
 body {
-  @apply bg-ar-bg text-ar-text font-sans;
+  @apply bg-ar-bg text-ar-text font-sans antialiased;
+  letter-spacing: 0.01em;
 }
 
 /* ── Layout: shell ──────────────────────────────────────────────────────── */
@@ -103,9 +104,17 @@ ar-shell {
   @apply pl-20;
 }
 
+.ar-nav-item--depth-5 {
+  @apply pl-24;
+}
+
+.ar-nav-item--depth-6 {
+  @apply pl-28;
+}
+
 .ar-nav-item--active {
-  @apply text-white bg-white/10 border-l-2 border-ar-accent-cyan;
-  padding-left: calc(1rem - 2px); /* compensate for 2px border */
+  @apply text-white bg-white/10;
+  box-shadow: inset 2px 0 0 var(--color-ar-accent-cyan);
 }
 
 .ar-nav-item--active.ar-nav-item--depth-0 {
