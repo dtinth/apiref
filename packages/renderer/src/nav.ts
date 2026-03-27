@@ -15,8 +15,7 @@ export function buildModuleImportPath(pkgName: string, moduleName: string): stri
 export function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
   const url = idToUrl.get(decl.id) ?? "index.html";
   const kindName = reflectionKindToDeclarationKind(decl.kind) ?? "unknown";
-  const deprecated =
-    decl.flags.isDeprecated ?? decl.comment?.modifierTags?.includes("@deprecated") ?? false;
+  const deprecated = decl.comment?.modifierTags?.includes("@deprecated") ?? false;
   return {
     label: decl.name,
     url,

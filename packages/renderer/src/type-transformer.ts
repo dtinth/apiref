@@ -169,6 +169,9 @@ export function transformParameter(param: TDParameter, ctx: TransformContext): P
 
 function transformReflectionMember(decl: TDDeclaration, ctx: TransformContext): MemberViewModel {
   const flags = transformFlags(decl.flags);
+  if (decl.comment?.modifierTags?.includes("@deprecated")) {
+    flags.deprecated = true;
+  }
   const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
   const type = decl.type ? transformType(decl.type, ctx) : undefined;
 
@@ -187,6 +190,5 @@ export function transformFlags(flags: TDDeclaration["flags"]): MemberFlags {
   if (flags.isReadonly) result.readonly = true;
   if (flags.isStatic) result.static = true;
   if (flags.isAbstract) result.abstract = true;
-  if (flags.isDeprecated) result.deprecated = true;
   return result;
 }

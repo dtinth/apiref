@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, describe } from "vite-plus/test";
+import type { JSONOutput } from "typedoc";
 import type { TransformContext } from "../src/transform-context.ts";
 import { transformType } from "../src/type-transformer.ts";
 import { transform } from "../src/transformer.ts";
@@ -360,12 +361,25 @@ describe("transformType", () => {
           parameterType: {
             type: "typeOperator",
             operator: "keyof",
-            target: { type: "reference", name: "Input" },
+            target: {
+              type: "reference",
+              name: "Input",
+              target: -1 as JSONOutput.ReflectionId,
+            } as JSONOutput.ReferenceType,
           },
           templateType: {
             type: "indexedAccess",
-            objectType: { type: "reference", name: "Input" },
-            indexType: { type: "reference", name: "Key", refersToTypeParameter: true },
+            objectType: {
+              type: "reference",
+              name: "Input",
+              target: -1 as JSONOutput.ReflectionId,
+            } as JSONOutput.ReferenceType,
+            indexType: {
+              type: "reference",
+              name: "Key",
+              target: -1 as JSONOutput.ReflectionId,
+              refersToTypeParameter: true,
+            } as JSONOutput.ReferenceType,
           },
           readonlyModifier: "+",
           optionalModifier: "-",

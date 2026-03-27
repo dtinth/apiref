@@ -18,7 +18,12 @@ import {
   transformCommentParts,
   extractBlockTagSections,
 } from "./comment-transformer.ts";
-import { getSourceUrl, reflectionKindToDeclarationKind, inferDeclarationKind } from "./utils.ts";
+import {
+  getSourceUrl,
+  inferDeclarationKind,
+  isReferenceReflection,
+  reflectionKindToDeclarationKind,
+} from "./utils.ts";
 
 type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 type TDSignature = JSONOutput.SignatureReflection;
@@ -343,7 +348,7 @@ function referenceTargetForDeclaration(
   decl: TDDeclaration,
   ctx: TransformContext,
 ): { url: string; breadcrumbs: Breadcrumb[] } | null {
-  if (decl.variant !== "reference" || typeof decl.target !== "number") return null;
+  if (!isReferenceReflection(decl) || typeof decl.target !== "number") return null;
 
   const url = ctx.idToUrl.get(decl.target);
   const breadcrumbs = ctx.idToBreadcrumbs.get(decl.target);
