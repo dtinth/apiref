@@ -214,7 +214,11 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
         <>
           {type.name}
           <span class="ar-type-keyword"> is </span>
-          {type.targetType ? renderType(type.targetType, resolve) : <span class="ar-type-unknown">unknown</span>}
+          {type.targetType ? (
+            renderType(type.targetType, resolve)
+          ) : (
+            <span class="ar-type-unknown">unknown</span>
+          )}
         </>
       );
 

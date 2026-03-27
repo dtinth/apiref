@@ -8,6 +8,7 @@ catalog:
   "@shikijs/themes": 4.0.2
   "@tailwindcss/typography": ^0.5.19
   "@tailwindcss/vite": ^4.2.2
+  '@types/html-to-text': ^9.0.4
   "@types/node": ^24
   elysia: ^1.4.28
   html-to-text: ^9.0.5

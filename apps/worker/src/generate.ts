@@ -108,7 +108,10 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
       if (gitRemote && gitRevision) {
         const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
-        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`);
+        typedocArgs.push(
+          "--sourceLinkTemplate",
+          `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`,
+        );
       }
 
       await execa("pnpm", typedocArgs, {
@@ -141,7 +144,10 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
       if (gitRemote && gitRevision) {
         const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
-        typedocArgs.push("--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`);
+        typedocArgs.push(
+          "--sourceLinkTemplate",
+          `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`,
+        );
       }
 
       await execa("pnpm", typedocArgs, {
