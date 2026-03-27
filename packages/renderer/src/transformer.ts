@@ -46,9 +46,6 @@ import {
 } from "./section-builders.ts";
 import { transformType, transformTypeParameter } from "./type-transformer.ts";
 
-// Re-export for backward compatibility
-export { transformType, transformTypeParameter };
-
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
  */
