@@ -7,7 +7,7 @@ import {
   extractBlockTagSections,
 } from "./comment-transformer.ts";
 import { declarationAsCards } from "./card-builder.ts";
-import { inferGroups, reflectionKindToDeclarationKind } from "./utils.ts";
+import { getSourceUrl, inferGroups, reflectionKindToDeclarationKind } from "./utils.ts";
 import {
   buildClassSections,
   buildMemberSections,
@@ -70,6 +70,7 @@ export function buildPackageIndexPage(
         kind: "declaration-title",
         name: ctx.pkgName,
         declarationKind: "package-index",
+        sourceUrl: undefined,
       },
     ],
   });
@@ -126,7 +127,14 @@ export function buildModulePage(
   const sections: Section[] = [];
 
   sections.push({
-    body: [{ kind: "declaration-title", name: mod.name, declarationKind: "module" }],
+    body: [
+      {
+        kind: "declaration-title",
+        name: mod.name,
+        declarationKind: "module",
+        sourceUrl: getSourceUrl(mod),
+      },
+    ],
   });
 
   if (mod.comment) {
@@ -190,7 +198,14 @@ export function buildMultiDeclarationPage(
     // Add the declaration-title for this specific declaration
     if (kind) {
       sections.push({
-        body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }],
+        body: [
+          {
+            kind: "declaration-title",
+            name: decl.name,
+            declarationKind: kind,
+            sourceUrl: getSourceUrl(decl, decl.signatures?.[0]),
+          },
+        ],
       });
     }
 
@@ -256,7 +271,14 @@ export function buildDeclarationPage(
 
   // Prepend declaration-title section
   sections.push({
-    body: [{ kind: "declaration-title", name: decl.name, declarationKind: kind }],
+    body: [
+      {
+        kind: "declaration-title",
+        name: decl.name,
+        declarationKind: kind,
+        sourceUrl: getSourceUrl(decl, decl.signatures?.[0]),
+      },
+    ],
   });
 
   // Summary from comment (prefer signature comment for functions)

@@ -91,7 +91,12 @@ export interface Breadcrumb {
  * - `parameters`: Parameter documentation list
  */
 export type SectionBlock =
-  | { kind: "declaration-title"; name: string; declarationKind: DeclarationKind }
+  | {
+      kind: "declaration-title";
+      name: string;
+      declarationKind: DeclarationKind;
+      sourceUrl?: string;
+    }
   | { kind: "doc"; doc: DocNode[] }
   | { kind: "signatures"; signatures: SignatureViewModel[] }
   | { kind: "index-signature"; signature: SignatureViewModel }

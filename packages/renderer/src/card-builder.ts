@@ -18,7 +18,7 @@ import {
   transformCommentParts,
   extractBlockTagSections,
 } from "./comment-transformer.ts";
-import { reflectionKindToDeclarationKind, inferDeclarationKind } from "./utils.ts";
+import { getSourceUrl, reflectionKindToDeclarationKind, inferDeclarationKind } from "./utils.ts";
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {
@@ -34,12 +34,13 @@ export function buildSignatureCard(
   sig: SignatureViewModel,
   flags: MemberFlags,
   kind: DeclarationKind,
+  sourceUrl?: string,
   extraSections: Section[] = [],
   cardIdPrefix: string = "",
 ): SectionBlock & { kind: "card" } {
   const sections: Section[] = [
     {
-      body: [{ kind: "declaration-title", name: label, declarationKind: kind }],
+      body: [{ kind: "declaration-title", name: label, declarationKind: kind, sourceUrl }],
     },
   ];
 
@@ -95,6 +96,7 @@ export function declarationAsCards(
   const url =
     referenceTarget?.url ?? (PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined);
   const kind = declarationKindForMember(decl, signatures);
+  const sourceUrl = getSourceUrl(decl, rawSignatures[0]);
 
   // If the member has its own page, use the old single-card-with-link approach
   // (card shows summary only; examples/blockTags appear on the dedicated page)
@@ -116,6 +118,7 @@ export function declarationAsCards(
                 kind: "declaration-title",
                 name: decl.name,
                 declarationKind: kind,
+                sourceUrl,
               },
             ],
           },
@@ -152,6 +155,7 @@ export function declarationAsCards(
                 kind: "declaration-title",
                 name: decl.name,
                 declarationKind: kind,
+                sourceUrl,
               },
             ],
           },
@@ -195,12 +199,13 @@ export function declarationAsCards(
       decl.name,
       label,
       anchor,
-      sig,
-      i === 0 ? flags : {},
-      kind,
-      extraSections,
-      anchor,
-    );
+        sig,
+        i === 0 ? flags : {},
+        kind,
+        getSourceUrl(rawSignatures[i], decl),
+        extraSections,
+        anchor,
+      );
   });
 }
 

@@ -8,7 +8,7 @@ import type {
   SignatureViewModel,
   SiteViewModel,
 } from "../viewmodel.ts";
-import { DeclarationTitle } from "./DeclarationTitle.tsx";
+import { DeclarationTitle, SourceLink } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
 import { PageContext, useResolveLink } from "./PageContext.tsx";
 import { IndexSignatureLine, SignatureLine, TypeView } from "./TypeView.tsx";
@@ -170,7 +170,10 @@ function BlockView({
       if (context === "page") {
         return (
           <h1 class="ar-declaration-title">
-            <DeclarationTitle kind={block.declarationKind} title={block.name} />
+            <span class="ar-declaration-heading">
+              <DeclarationTitle kind={block.declarationKind} title={block.name} />
+              {block.sourceUrl ? <SourceLink href={block.sourceUrl} /> : null}
+            </span>
           </h1>
         );
       } else {
@@ -281,15 +284,18 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
   const titleFromCard = titleBlock?.kind === "declaration-title" ? titleBlock : null;
 
   const header = titleFromCard ? (
-    card.url ? (
-      <a href={resolve(card.url)} class="ar-card-header">
-        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
-      </a>
-    ) : (
-      <h3 class="ar-card-header">
-        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
-      </h3>
-    )
+    <h3 class="ar-card-header">
+      <span class="ar-declaration-heading">
+        {card.url ? (
+          <a href={resolve(card.url)} class="ar-card-title-link">
+            <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
+          </a>
+        ) : (
+          <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
+        )}
+        {titleFromCard.sourceUrl ? <SourceLink href={titleFromCard.sourceUrl} /> : null}
+      </span>
+    </h3>
   ) : null;
 
   const cardClasses = card.url ? "ar-card ar-card--link" : "ar-card";
