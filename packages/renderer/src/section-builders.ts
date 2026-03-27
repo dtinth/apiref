@@ -1,10 +1,10 @@
-import type { TDDeclaration } from "./typedoc.ts";
-import type { Section } from "./viewmodel.ts";
+import { buildSignatureCard, declarationAsCards } from "./card-builder.ts";
+import { extractBlockTagSections, transformCommentParts } from "./comment-transformer.ts";
 import type { TransformContext } from "./transform-context.ts";
-import { transformType, transformSignature } from "./type-transformer.ts";
-import { declarationAsCards, buildSignatureCard } from "./card-builder.ts";
-import { transformCommentParts, extractBlockTagSections } from "./comment-transformer.ts";
+import { transformSignature, transformType } from "./type-transformer.ts";
+import type { TDDeclaration } from "./typedoc.ts";
 import { inferGroups } from "./utils.ts";
+import type { Section } from "./viewmodel.ts";
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {
@@ -110,7 +110,10 @@ export function buildFunctionSections(
     // Type parameters
     const typeParamDocs = (rawSig.typeParameters ?? [])
       .filter((tp) => tp.comment?.summary?.length)
-      .map((tp) => ({ name: tp.name, doc: transformCommentParts(tp.comment!.summary, ctx) }));
+      .map((tp) => ({
+        name: tp.name,
+        doc: transformCommentParts(tp.comment!.summary, ctx),
+      }));
     if (typeParamDocs.length > 0) {
       sections.push({
         title: "Type Parameters",
@@ -121,7 +124,10 @@ export function buildFunctionSections(
     // Parameters
     const params = (rawSig.parameters ?? [])
       .filter((p) => p.comment?.summary?.length)
-      .map((p) => ({ name: p.name, doc: transformCommentParts(p.comment!.summary, ctx) }));
+      .map((p) => ({
+        name: p.name,
+        doc: transformCommentParts(p.comment!.summary, ctx),
+      }));
     if (params.length > 0) {
       sections.push({
         title: "Parameters",
@@ -134,7 +140,10 @@ export function buildFunctionSections(
         ...s,
         id: buildSectionId(idPrefix, s.title || "returns"),
       })),
-      ...blockTags.throws.map((s) => ({ ...s, id: buildSectionId(idPrefix, s.title || "throws") })),
+      ...blockTags.throws.map((s) => ({
+        ...s,
+        id: buildSectionId(idPrefix, s.title || "throws"),
+      })),
     );
     return sections;
   }
@@ -148,7 +157,10 @@ export function buildFunctionSections(
     // Type parameters
     const typeParamDocs = (sigs[i].typeParameters ?? [])
       .filter((tp) => tp.comment?.summary?.length)
-      .map((tp) => ({ name: tp.name, doc: transformCommentParts(tp.comment!.summary, ctx) }));
+      .map((tp) => ({
+        name: tp.name,
+        doc: transformCommentParts(tp.comment!.summary, ctx),
+      }));
     if (typeParamDocs.length > 0) {
       extraSections.push({
         title: "Type Parameters",
@@ -158,7 +170,10 @@ export function buildFunctionSections(
     // Parameters
     const params = (sigs[i].parameters ?? [])
       .filter((p) => p.comment?.summary?.length)
-      .map((p) => ({ name: p.name, doc: transformCommentParts(p.comment!.summary, ctx) }));
+      .map((p) => ({
+        name: p.name,
+        doc: transformCommentParts(p.comment!.summary, ctx),
+      }));
     if (params.length > 0) {
       extraSections.push({
         title: "Parameters",
@@ -171,7 +186,13 @@ export function buildFunctionSections(
     return buildSignatureCard(decl.name, label, anchor, sig, {}, "function", extraSections, anchor);
   });
 
-  return [{ title: "Signatures", id: buildSectionId(idPrefix, "Signatures"), body: cards }];
+  return [
+    {
+      title: "Signatures",
+      id: buildSectionId(idPrefix, "Signatures"),
+      body: cards,
+    },
+  ];
 }
 
 export function buildTypeAliasSections(
@@ -182,6 +203,8 @@ export function buildTypeAliasSections(
   if (!decl.type) return [];
   return [
     {
+      title: "Type",
+      id: "type",
       body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }],
     },
   ];
@@ -213,6 +236,8 @@ export function buildVariableSections(
   if (!decl.type) return [];
   return [
     {
+      title: "Type",
+      id: "type",
       body: [{ kind: "type-declaration", type: transformType(decl.type, ctx) }],
     },
   ];
