@@ -8,6 +8,7 @@ export default defineConfig({
     },
     dts: true,
     exports: true,
+    sourcemap: true,
   },
   lint: {
     options: {
