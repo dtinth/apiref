@@ -1,6 +1,7 @@
 import { expect } from "vite-plus/test";
 import { h } from "preact";
 import { render as renderToString } from "preact-render-to-string";
+import { convert } from "html-to-text";
 import { buildOutline } from "../../src/outline-builder.ts";
 import { PageContext } from "../../src/components/PageContext.tsx";
 import { TypeView } from "../../src/components/TypeView.tsx";
@@ -172,7 +173,7 @@ class SectionTester {
     const html = renderToString(
       h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })),
     );
-    const text = html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&");
+    const text = convert(html, { preserveNewlines: false, selectors: [{ selector: "a", options: { ignoreHref: true } }] }).trim();
     expect(text).toBe(expected);
   }
 }
