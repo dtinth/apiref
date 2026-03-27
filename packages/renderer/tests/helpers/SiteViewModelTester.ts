@@ -1,5 +1,5 @@
 import { expect } from "vite-plus/test";
-import type { NavNode, SiteViewModel } from "../../src/viewmodel.ts";
+import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
 
 interface ChildFilter {
   label: string;
@@ -78,10 +78,31 @@ class NavTester {
   }
 }
 
+class PageTester {
+  constructor(
+    private url: string,
+    private pages: PageViewModel[],
+  ) {}
+
+  private resolve(): PageViewModel | null {
+    return this.pages.find((p) => p.url === this.url) ?? null;
+  }
+
+  shouldHaveKind(kind: string): void {
+    const page = this.resolve();
+    expect(page, `Expected page at URL ${this.url} to exist`).toBeDefined();
+    expect(page?.kind).toBe(kind);
+  }
+}
+
 export class SiteViewModelTester {
   constructor(public site: SiteViewModel) {}
 
   get nav(): NavTester {
     return new NavTester(this.site.navTree);
+  }
+
+  page(url: string): PageTester {
+    return new PageTester(url, this.site.pages);
   }
 }

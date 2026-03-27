@@ -30,6 +30,14 @@ describe("nav", () => {
       .child("@apiref-examples/core")
       .child("Something")
       .shouldHaveKinds(["type-alias", "variable"]);
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("Something", { kind: "type-alias" })
+      .shouldLinkTo("index/Something.html");
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("Something", { kind: "variable" })
+      .shouldLinkTo("index/Something.html");
   });
   test("Namespace + function with same name are handled correctly", () => {
     tester.nav
@@ -45,5 +53,11 @@ describe("nav", () => {
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "function" })
       .shouldLinkTo("index/createEmitter/index.html");
+  });
+});
+
+describe("pages", () => {
+  test("Multi-nature pages should display multiple kinds", () => {
+    tester.page("index/Something.html").shouldHaveKind("multiple");
   });
 });
