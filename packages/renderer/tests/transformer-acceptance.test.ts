@@ -5,9 +5,7 @@ import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
 function createTester(): SiteViewModelTester {
-  const path = fileURLToPath(
-    new URL(`../fixtures/examples.json`, import.meta.url),
-  );
+  const path = fileURLToPath(new URL(`../fixtures/examples.json`, import.meta.url));
   const typedocJson = JSON.parse(readFileSync(path, "utf-8"));
   const site = transform(typedocJson, { version: "1.0.0" });
   return new SiteViewModelTester(site);
@@ -22,15 +20,10 @@ describe("nav", () => {
   test("Entry points exist at 1st level", () => {
     tester.nav.child("@apiref-examples/core").shouldHaveKind("module");
     tester.nav.child("@apiref-examples/core/data").shouldHaveKind("module");
-    tester.nav
-      .child("@apiref-examples/core/namespaces")
-      .shouldHaveKind("module");
+    tester.nav.child("@apiref-examples/core/namespaces").shouldHaveKind("module");
   });
   test("Classes are present", () => {
-    tester.nav
-      .child("@apiref-examples/core")
-      .child("ApiError")
-      .shouldHaveKind("class");
+    tester.nav.child("@apiref-examples/core").child("ApiError").shouldHaveKind("class");
   });
   test("Multiple-nature symbols are displayed separately", () => {
     tester.nav

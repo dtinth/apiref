@@ -173,9 +173,18 @@ export function buildMultiDeclarationPage(
       if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
       const blockTags = extractBlockTagSections(commentSource, ctx);
       sections.push(
-        ...blockTags.examples.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "examples") })),
-        ...blockTags.returns.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "returns") })),
-        ...blockTags.throws.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "throws") })),
+        ...blockTags.examples.map((s) => ({
+          ...s,
+          id: s.id || buildSectionId("", s.title || "examples"),
+        })),
+        ...blockTags.returns.map((s) => ({
+          ...s,
+          id: s.id || buildSectionId("", s.title || "returns"),
+        })),
+        ...blockTags.throws.map((s) => ({
+          ...s,
+          id: s.id || buildSectionId("", s.title || "throws"),
+        })),
       );
     }
 
@@ -243,9 +252,18 @@ export function buildDeclarationPage(
     if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
     const blockTags = extractBlockTagSections(commentSource, ctx);
     sections.push(
-      ...blockTags.examples.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "examples") })),
-      ...blockTags.returns.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "returns") })),
-      ...blockTags.throws.map((s) => ({ ...s, id: s.id || buildSectionId("", s.title || "throws") })),
+      ...blockTags.examples.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "examples"),
+      })),
+      ...blockTags.returns.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "returns"),
+      })),
+      ...blockTags.throws.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId("", s.title || "throws"),
+      })),
     );
   }
 
