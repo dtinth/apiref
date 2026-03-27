@@ -16,7 +16,7 @@ import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import type { DocNode } from "../viewmodel.ts";
 import { useResolveLink } from "./PageContext.tsx";
 
-const SHIKI_THEME = "catppuccin-mocha";
+const SHIKI_THEME = catppuccinMocha;
 
 type ShikiLanguage =
   | "bash"
@@ -52,11 +52,16 @@ const shikiLanguageAliases: Record<string, ShikiLanguage> = {
   zsh: "bash",
 };
 
-const shiki = createHighlighterCoreSync({
-  themes: [catppuccinMocha],
-  langs: [bash, css, diff, html, javascript, json, jsx, markdown, tsx, typescript, yaml],
-  engine: createJavaScriptRegexEngine(),
-});
+let shikiHighlighter: ReturnType<typeof createHighlighterCoreSync> | undefined;
+
+function getShiki() {
+  shikiHighlighter ??= createHighlighterCoreSync({
+    themes: [SHIKI_THEME],
+    langs: [bash, css, diff, html, javascript, json, jsx, markdown, tsx, typescript, yaml],
+    engine: createJavaScriptRegexEngine(),
+  });
+  return shikiHighlighter;
+}
 
 const markdownRenderer = new Renderer();
 const renderCodeBlockFallback = markdownRenderer.code.bind(markdownRenderer);
@@ -66,9 +71,9 @@ markdownRenderer.code = (token) => {
   if (!language) return renderCodeBlockFallback(token);
 
   try {
-    return shiki.codeToHtml(token.text, {
+    return getShiki().codeToHtml(token.text, {
       lang: language,
-      theme: SHIKI_THEME,
+      theme: SHIKI_THEME.name,
     });
   } catch {
     return renderCodeBlockFallback(token);
@@ -79,11 +84,11 @@ const markdownParser = new Marked({
   renderer: markdownRenderer,
 });
 
-/** Extract the first fence token and normalize language aliases before passing them to Shiki. */
-function resolveShikiLanguage(language: string | undefined): ShikiLanguage | null {
+/** Extract only the first language token from a fence info string, ignoring extra metadata, and normalize aliases for Shiki. */
+function resolveShikiLanguage(language: string | undefined): ShikiLanguage | undefined {
   const infoString = language?.trim();
-  if (!infoString) return null;
-  return shikiLanguageAliases[infoString.split(/\s+/, 1)[0].toLowerCase()] ?? null;
+  if (!infoString) return undefined;
+  return shikiLanguageAliases[infoString.split(/\s+/, 1)[0].toLowerCase()];
 }
 
 interface DocViewProps {
