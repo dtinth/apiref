@@ -446,4 +446,78 @@ export type ChangeHandlers<T> = {
 export const Something = 123;
 export type Something = number;
 
+// -----------------------------------------------------------------------
+// Additional type variants for comprehensive documentation
+// -----------------------------------------------------------------------
+
+/**
+ * Type predicate function that narrows a value to a specific type.
+ *
+ * @param value - Value to check
+ * @returns true if value is a string
+ */
+export function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+/**
+ * Type predicate for checking if a value is a number.
+ *
+ * @param value - Value to check
+ * @returns true if value is a number
+ */
+export function isNumber(value: unknown): value is number {
+  return typeof value === "number";
+}
+
+/**
+ * Template literal type for SQL queries.
+ *
+ * Represents SQL query strings with parameterized variables.
+ */
+export type SqlQuery = `SELECT ${string} FROM ${string}`;
+
+/**
+ * Template literal type for URL paths.
+ *
+ * Represents valid URL paths starting with a slash.
+ */
+export type UrlPath = `/${string}`;
+
+/**
+ * Tuple with named members - demonstrates tuple element naming.
+ *
+ * @example
+ * ```typescript
+ * const response: HttpResponse = [200, { ok: true }, "Success"];
+ * ```
+ */
+export type HttpResponse = [statusCode: number, data: Record<string, any>, message: string];
+
+/**
+ * REST parameter tuple type - variable length parameter list.
+ *
+ * @param args - Variable number of arguments
+ * @returns Combined string
+ */
+export function joinStrings(...args: string[]): string {
+  return args.join(" ");
+}
+
+/**
+ * Optional tuple member demonstrating partial tuple constraints.
+ */
+export type OptionalTuple = [required: string, optional?: number];
+
+/**
+ * Process a tuple with optional trailing elements.
+ *
+ * @param data - Tuple with required and optional elements
+ * @returns Processed result
+ */
+export function processTuple(data: OptionalTuple): string {
+  const [required, optional] = data;
+  return optional ? `${required}: ${optional}` : required;
+}
+
 export default Cache;
