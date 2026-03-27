@@ -34,6 +34,8 @@ export interface OutlineItem {
   flags: { deprecated?: boolean };
 }
 
+const SCROLL_POSITION_KEY = "ar-nav-scroll-position";
+
 @customElement("ar-shell")
 export class ArShell extends LitElement {
   override createRenderRoot() {
@@ -79,6 +81,26 @@ export class ArShell extends LitElement {
       arNav.currentUrl = location.pathname.replace(/^\//, "") || "index.html";
       arNav.baseHref = meta.baseHref;
       nav.appendChild(arNav);
+
+      // Restore scroll position after nav renders
+      queueMicrotask(() => {
+        const scrollPos = sessionStorage.getItem(SCROLL_POSITION_KEY);
+        if (scrollPos) {
+          nav.scrollTop = parseInt(scrollPos, 10);
+          sessionStorage.removeItem(SCROLL_POSITION_KEY);
+        } else {
+          // Scroll active item into view
+          const activeItem = nav.querySelector(".ar-nav-item--active");
+          if (activeItem) {
+            activeItem.scrollIntoView({ block: "nearest" });
+          }
+        }
+      });
+
+      // Save scroll position before navigation
+      window.addEventListener("pagehide", () => {
+        sessionStorage.setItem(SCROLL_POSITION_KEY, String(nav.scrollTop));
+      });
     }
 
     // Populate outline sidebar
