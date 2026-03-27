@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { expect, test, describe } from "vite-plus/test";
-import { transform } from "../src/transformer.ts";
+import { describe, expect, test } from "vite-plus/test";
 import { renderSite } from "../src/render.tsx";
+import { transform } from "../src/transformer.ts";
 
 const SHELL = "https://cdn.example.com/shell@1.0.0";
 
@@ -164,7 +164,7 @@ describe("render examples", () => {
     expect(html).toContain(">plugins<");
     expect(html).toContain(">LoggingPlugin<");
     expect(html).toContain(">File<");
-    expect(html).toContain(">»<");
+    expect(html).toContain("> » <");
   });
 
   test("reference cards link to the referenced target page with breadcrumb text", () => {
