@@ -73,7 +73,7 @@ markdownRenderer.code = (token) => {
   try {
     return getShiki().codeToHtml(token.text, {
       lang: language,
-      theme: SHIKI_THEME.name,
+      theme: SHIKI_THEME.name ?? "catppuccin-mocha",
     });
   } catch {
     return renderCodeBlockFallback(token);
