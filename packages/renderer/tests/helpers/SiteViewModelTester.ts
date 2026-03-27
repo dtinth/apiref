@@ -1,5 +1,6 @@
 import { expect } from "vite-plus/test";
 import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
+import { buildOutline } from "../../src/outline-builder.ts";
 
 interface ChildFilter {
   label: string;
@@ -111,25 +112,11 @@ class PageTester {
   shouldHaveOutline(expected: Array<{ title: string; children?: Array<{ title: string }> }>): void {
     const page = this.shouldExist();
 
-    // Extract outline structure from sections
-    const outline = page.sections
-      .filter((s) => s.title) // Only titled sections
-      .map((section) => {
-        const children = section.body
-          .filter((b) => b.kind === "card")
-          .map((block) => {
-            // Extract card title from first block of first section
-            const titleBlock = block.sections[0]?.body[0];
-            return {
-              title: titleBlock?.kind === "declaration-title" ? titleBlock.name : "Unknown",
-            };
-          });
-        return {
-          title: section.title,
-          ...(children.length > 0 && { children }),
-        };
-      })
-      .filter((item) => item.children && item.children.length > 0); // Only keep sections with children
+    // Use the actual buildOutline function to generate the outline
+    const outline = buildOutline(page.sections).map((section) => ({
+      title: section.label,
+      children: section.items.map((item) => ({ title: item.label })),
+    }));
 
     expect(outline).toEqual(expected);
   }

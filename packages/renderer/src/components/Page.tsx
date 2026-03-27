@@ -1,5 +1,4 @@
 import type {
-  DeclarationKind,
   MemberFlags,
   PageViewModel,
   Section,
@@ -8,10 +7,10 @@ import type {
   SiteViewModel,
 } from "../viewmodel.ts";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
-import { getKindIcon } from "./kind-icons.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { PageContext, useResolveLink } from "./PageContext.tsx";
+import { buildOutline } from "../outline-builder.ts";
 
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
@@ -22,46 +21,6 @@ interface PageProps {
   site: SiteViewModel;
   page: PageViewModel;
   options: PageRenderOptions;
-}
-
-interface OutlineItem {
-  label: string;
-  anchor: string;
-  kind: DeclarationKind;
-  iconClass: string;
-  flags: { deprecated?: boolean };
-}
-
-interface OutlineSection {
-  label: string;
-  items: OutlineItem[];
-}
-
-function buildOutline(sections: Section[]): OutlineSection[] {
-  const result: OutlineSection[] = [];
-  for (const section of sections) {
-    if (section.title) {
-      const items: OutlineItem[] = [];
-      for (const block of section.body) {
-        if (block.kind === "card") {
-          const titleBlock = block.sections[0]?.body[0];
-          if (titleBlock?.kind === "declaration-title") {
-            items.push({
-              label: titleBlock.name,
-              anchor: block.anchor,
-              kind: titleBlock.declarationKind,
-              iconClass: getKindIcon(titleBlock.declarationKind),
-              flags: { deprecated: block.flags.deprecated },
-            });
-          }
-        }
-      }
-      if (items.length > 0) {
-        result.push({ label: section.title, items });
-      }
-    }
-  }
-  return result;
 }
 
 export function Page({ site, page, options }: PageProps) {
