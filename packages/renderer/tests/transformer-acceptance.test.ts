@@ -59,7 +59,7 @@ describe("nav", () => {
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "namespace" })
       .child("EventMap", { kind: "interface" })
-      .shouldLinkTo("index/EventMap/EventMap.html");
+      .shouldLinkTo("index/createEmitter/EventMap.html");
   });
 });
 
@@ -98,7 +98,7 @@ describe("pages", () => {
     ]);
   });
   test("Index signature should be documented", () => {
-    tester.page("index/EventMap/EventMap.html").shouldHaveOutline([
+    tester.page("index/createEmitter/EventMap.html").shouldHaveOutline([
       {
         label: "Index Signatures",
         anchor: "~index-signatures",

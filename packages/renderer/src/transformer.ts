@@ -288,12 +288,12 @@ function registerReflection(
         idToUrl.set(sig.id, `${url}#${anchor}`);
       }
     } else if (PAGE_KINDS.has(child.kind)) {
-      const childPrefix = pathPrefix ? `${pathPrefix}/${child.name}` : child.name;
+      const childPrefix = pathPrefix ? `${pathPrefix}/${decl.name}` : decl.name;
       const childUrl = declarationUrl(child, childPrefix, false);
       idToUrl.set(child.id, childUrl);
 
       // Recurse for nested PAGE_KINDS within this child
-      const childPathPrefix = pathPrefix ? `${pathPrefix}/${child.name}` : child.name;
+      const childPathPrefix = childPrefix ? `${childPrefix}/${child.name}` : child.name;
       for (const nestedChild of child.children ?? []) {
         if (PAGE_KINDS.has(nestedChild.kind)) {
           registerReflection(nestedChild, childPathPrefix, false, idToUrl);
