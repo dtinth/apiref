@@ -136,8 +136,7 @@ ar-shell {
 }
 
 .ar-breadcrumbs {
-  @apply mb-2 text-sm;
-  color: #8b8685;
+  @apply mb-2 text-sm text-ar-muted;
 }
 
 .ar-breadcrumb-link {
