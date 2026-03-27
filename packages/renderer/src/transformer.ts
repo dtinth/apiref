@@ -6,7 +6,6 @@ import {
   type TDParameter,
   type TDProject,
   type TDSignature,
-  type TDTypeParameter,
 } from "./typedoc.ts";
 import type {
   Breadcrumb,
@@ -45,10 +44,10 @@ import {
   buildEnumSections,
   buildVariableSections,
 } from "./section-builders.ts";
-import { transformType } from "./type-transformer.ts";
+import { transformType, transformTypeParameter } from "./type-transformer.ts";
 
 // Re-export for backward compatibility
-export { transformType };
+export { transformType, transformTypeParameter };
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -946,17 +945,6 @@ export function buildReflectionMemberBlocks(
       type: { kind: "unknown", raw: "unknown" },
     },
   ];
-}
-
-function transformTypeParameter(
-  tp: TDTypeParameter,
-  ctx: TransformContext,
-): TypeParameterViewModel {
-  return {
-    name: tp.name,
-    constraint: tp.type ? transformType(tp.type, ctx) : null,
-    default: tp.default ? transformType(tp.default, ctx) : null,
-  };
 }
 
 // ---------------------------------------------------------------------------

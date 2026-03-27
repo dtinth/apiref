@@ -1,6 +1,6 @@
-import type { TDType } from "./typedoc.ts";
+import type { TDType, TDTypeParameter } from "./typedoc.ts";
 import type { TransformContext } from "./transformer.ts";
-import type { TypeViewModel } from "./viewmodel.ts";
+import type { TypeViewModel, TypeParameterViewModel } from "./viewmodel.ts";
 import { transformSignature, buildReflectionMemberBlocks } from "./transformer.ts";
 
 export function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
@@ -82,4 +82,15 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
       // Unknown or future TypeDoc type variants — preserve as raw JSON
       return { kind: "unknown", raw: JSON.stringify(tdType) };
   }
+}
+
+export function transformTypeParameter(
+  tp: TDTypeParameter,
+  ctx: TransformContext,
+): TypeParameterViewModel {
+  return {
+    name: tp.name,
+    constraint: tp.type ? transformType(tp.type, ctx) : null,
+    default: tp.default ? transformType(tp.default, ctx) : null,
+  };
 }
