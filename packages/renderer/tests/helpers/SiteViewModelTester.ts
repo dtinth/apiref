@@ -1,6 +1,12 @@
 import { expect } from "vite-plus/test";
 import { buildOutline } from "../../src/outline-builder.ts";
-import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
+import type {
+  NavNode,
+  PageViewModel,
+  Section,
+  SectionBlock,
+  SiteViewModel,
+} from "../../src/viewmodel.ts";
 
 interface ChildFilter {
   label: string;
@@ -120,6 +126,69 @@ class PageTester {
     const outline = buildOutline(page.sections);
     const sectionTitles = outline.map((s) => s.label);
     expect(sectionTitles).toEqual(expectedTitles);
+  }
+
+  section(title: string) {
+    return new SectionTester({ resolve: () => this.shouldExist() }, title);
+  }
+}
+
+interface PageResolver {
+  resolve(): PageViewModel;
+}
+
+interface SectionResolver {
+  resolve(): Section[];
+}
+
+class SectionTester {
+  constructor(
+    private pageResolver: PageResolver,
+    private title: string,
+  ) {}
+
+  private resolver: SectionResolver = {
+    resolve: () => {
+      return this.pageResolver.resolve().sections.filter((s) => s.title === this.title);
+    },
+  };
+
+  card(title: string) {
+    return new CardTester(this.resolver, title);
+  }
+}
+
+type Card = Extract<SectionBlock, { kind: "card" }>;
+type DeclarationTitle = Extract<SectionBlock, { kind: "declaration-title" }>;
+
+class CardTester {
+  constructor(
+    private sectionResolver: SectionResolver,
+    private title: string,
+  ) {}
+
+  private resolveCards(): Card[] {
+    return this.sectionResolver
+      .resolve()
+      .flatMap((s) => s.body)
+      .filter((b): b is Card => b.kind === "card")
+      .filter(
+        (c) =>
+          c.sections[0]?.body[0]?.kind === "declaration-title" &&
+          c.sections[0].body[0].name === this.title,
+      );
+  }
+
+  private getDeclarationTitles(): DeclarationTitle[] {
+    const cards = this.resolveCards();
+    return cards
+      .map((c) => c.sections[0]?.body[0])
+      .filter((b): b is DeclarationTitle => (b ? b.kind === "declaration-title" : false));
+  }
+
+  shouldHaveKind(kind: string): void {
+    const decls = this.getDeclarationTitles();
+    expect(decls.map((d) => d.declarationKind)).toEqual([kind]);
   }
 }
 

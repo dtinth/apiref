@@ -97,6 +97,20 @@ describe("pages", () => {
       },
     ]);
   });
+  test("Section in module page", () => {
+    const page = tester.page("index/index.html");
+    page.section("Namespaces").card("createEmitter").shouldHaveKind("namespace");
+    page.section("Enumerations").card("ErrorCategory").shouldHaveKind("enum");
+    page.section("Classes").card("ApiError").shouldHaveKind("class");
+    page.section("Interfaces").card("CacheEntry").shouldHaveKind("interface");
+    page.section("Type Aliases").card("AppConfig").shouldHaveKind("type-alias");
+    page.section("Variables").card("defaultConfig").shouldHaveKind("variable");
+    page.section("Functions").card("createEmitter").shouldHaveKind("function");
+  });
+  test.skip("Section in class page", () => {
+    const page = tester.page("index/Builder.html");
+    page.section("Methods").card("build").shouldHaveKind("method");
+  });
   test("Index signature should be documented", () => {
     tester.page("index/createEmitter/EventMap.html").shouldHaveOutline([
       {
