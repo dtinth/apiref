@@ -1,6 +1,6 @@
+import type { TransformContext } from "./transform-context.ts";
 import type { TDComment, TDCommentPart } from "./typedoc.ts";
 import type { DocNode, Section } from "./viewmodel.ts";
-import type { TransformContext } from "./transform-context.ts";
 
 export function transformComment(comment: TDComment, ctx: TransformContext): DocNode[] {
   return transformCommentParts(comment.summary, ctx);
@@ -42,14 +42,11 @@ export function extractBlockTagSections(
           body: [{ kind: "doc", doc }],
         });
     } else if (tag.tag === "@throws") {
-      const first = tag.content[0];
-      const isType = first?.kind === "code";
-      const name = isType ? first.text : "Throws";
-      const entryDoc = isType ? transformCommentParts(tag.content.slice(1), ctx) : doc;
-      result.throws.push({
-        title: "Throws",
-        body: [{ kind: "parameters", parameters: [{ name, doc: entryDoc }] }],
-      });
+      if (doc.length > 0)
+        result.throws.push({
+          title: "Throws",
+          body: [{ kind: "doc", doc }],
+        });
     }
   }
   if (examples.length > 0) {
