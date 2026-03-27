@@ -152,4 +152,18 @@ describe("render examples", () => {
     expect(html).toContain("typeof");
     expect(html).toContain('href="defaultConfig.html"');
   });
+
+  test("FileLogger page renders breadcrumbs above the title", () => {
+    const html = pages.get("plugins/LoggingPlugin/File/FileLogger.html")!;
+    const breadcrumbIndex = html.indexOf('class="ar-breadcrumbs"');
+    const titleIndex = html.indexOf('class="ar-declaration-title"');
+
+    expect(breadcrumbIndex).toBeGreaterThan(-1);
+    expect(titleIndex).toBeGreaterThan(breadcrumbIndex);
+    expect(html).toContain(">@apiref-examples/core<");
+    expect(html).toContain(">plugins<");
+    expect(html).toContain(">LoggingPlugin<");
+    expect(html).toContain(">File<");
+    expect(html).toContain(">»<");
+  });
 });
