@@ -199,13 +199,13 @@ export function declarationAsCards(
       decl.name,
       label,
       anchor,
-        sig,
-        i === 0 ? flags : {},
-        kind,
-        getSourceUrl(rawSignatures[i], decl),
-        extraSections,
-        anchor,
-      );
+      sig,
+      i === 0 ? flags : {},
+      kind,
+      getSourceUrl(rawSignatures[i], decl),
+      extraSections,
+      anchor,
+    );
   });
 }
 
