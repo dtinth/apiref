@@ -32,6 +32,7 @@ import {
   transformCommentParts,
   extractBlockTagSections,
 } from "./comment-transformer.ts";
+import { buildModuleImportPath, declarationNavNode } from "./nav.ts";
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -1189,28 +1190,6 @@ function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
 // ---------------------------------------------------------------------------
 // Nav helpers
 // ---------------------------------------------------------------------------
-
-function buildModuleImportPath(pkgName: string, moduleName: string): string {
-  if (moduleName === "index") {
-    return pkgName;
-  }
-  return `${pkgName}/${moduleName}`;
-}
-
-function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
-  const url = idToUrl.get(decl.id) ?? "index.html";
-  const kindName = reflectionKindToDeclarationKind(decl.kind) ?? "unknown";
-  const deprecated =
-    decl.flags.isDeprecated ?? decl.comment?.modifierTags?.includes("@deprecated") ?? false;
-  return {
-    label: decl.name,
-    url,
-    kind: kindName,
-    iconClass: getKindIcon(kindName),
-    flags: { deprecated: deprecated || undefined },
-    children: [],
-  };
-}
 
 // ---------------------------------------------------------------------------
 // Utility
