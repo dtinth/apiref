@@ -4,6 +4,8 @@ packages:
   - tools/*
 
 catalog:
+  "@shikijs/langs": 4.0.2
+  "@shikijs/themes": 4.0.2
   "@tailwindcss/typography": ^0.5.19
   "@tailwindcss/vite": ^4.2.2
   "@types/node": ^24

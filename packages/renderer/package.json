@@ -34,6 +34,8 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
+    "@shikijs/langs": "catalog:",
+    "@shikijs/themes": "catalog:",
     "marked": "catalog:",
     "preact": "catalog:",
     "preact-render-to-string": "catalog:",

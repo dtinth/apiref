@@ -1,5 +1,18 @@
+import bash from "@shikijs/langs/bash";
+import css from "@shikijs/langs/css";
+import diff from "@shikijs/langs/diff";
+import html from "@shikijs/langs/html";
+import javascript from "@shikijs/langs/javascript";
+import json from "@shikijs/langs/json";
+import jsx from "@shikijs/langs/jsx";
+import markdown from "@shikijs/langs/markdown";
+import tsx from "@shikijs/langs/tsx";
+import typescript from "@shikijs/langs/typescript";
+import yaml from "@shikijs/langs/yaml";
+import catppuccinMocha from "@shikijs/themes/catppuccin-mocha";
 import { Marked, Renderer } from "marked";
-import { createHighlighter } from "shiki";
+import { createHighlighterCoreSync } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import type { DocNode } from "../viewmodel.ts";
 import { useResolveLink } from "./PageContext.tsx";
 
@@ -39,21 +52,10 @@ const shikiLanguageAliases: Record<string, ShikiLanguage> = {
   zsh: "bash",
 };
 
-const shiki = await createHighlighter({
-  themes: [SHIKI_THEME],
-  langs: [
-    "bash",
-    "css",
-    "diff",
-    "html",
-    "javascript",
-    "json",
-    "jsx",
-    "markdown",
-    "tsx",
-    "typescript",
-    "yaml",
-  ],
+const shiki = createHighlighterCoreSync({
+  themes: [catppuccinMocha],
+  langs: [bash, css, diff, html, javascript, json, jsx, markdown, tsx, typescript, yaml],
+  engine: createJavaScriptRegexEngine(),
 });
 
 const markdownRenderer = new Renderer();
@@ -77,6 +79,7 @@ const markdownParser = new Marked({
   renderer: markdownRenderer,
 });
 
+/** Extract the first fence token and normalize language aliases before passing them to Shiki. */
 function resolveShikiLanguage(language: string | undefined): ShikiLanguage | null {
   const infoString = language?.trim();
   if (!infoString) return null;
