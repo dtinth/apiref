@@ -1,4 +1,4 @@
-import { Kind, type TDDeclaration } from "./typedoc.ts";
+import { Kind, type TDDeclaration, type TDSignature, type TDSource } from "./typedoc.ts";
 import type { DeclarationKind, NavNode } from "./viewmodel.ts";
 
 export function reflectionKindToDeclarationKind(kind: number): DeclarationKind | null {
@@ -61,6 +61,16 @@ export function inferGroups(decls: TDDeclaration[]): Array<{ title: string; chil
   }));
 }
 
+export function getSourceUrl(
+  ...nodes: Array<{ sources?: TDSource[] } | TDSignature | TDDeclaration | undefined>
+): string | undefined {
+  for (const node of nodes) {
+    const url = node?.sources?.map((source) => source.url).find(isGitHubUrl);
+    if (url) return url;
+  }
+  return undefined;
+}
+
 function kindGroupTitle(kind: number): string {
   switch (kind) {
     case Kind.Class:
@@ -89,5 +99,15 @@ function kindGroupTitle(kind: number): string {
       return "Members";
     default:
       return "Other";
+  }
+}
+
+function isGitHubUrl(url: string | undefined): url is string {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname === "github.com" || parsed.hostname === "www.github.com";
+  } catch {
+    return false;
   }
 }

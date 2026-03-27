@@ -75,6 +75,15 @@ describe("render pw-utilities", () => {
     expect(html).toContain("ar-declaration--function");
   });
 
+  test("stabilize.html has a source link button", () => {
+    const html = pages.get("stabilize.html")!;
+    expect(html).toContain('class="ar-source-link"');
+    expect(html).toContain(
+      'href="https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/stabilize.ts#L10"',
+    );
+    expect(html).toContain('aria-label="View source on GitHub"');
+  });
+
   test("LocatorLike.html has method section", () => {
     const html = pages.get("LocatorLike.html")!;
     expect(html).toContain("evaluate");
@@ -106,6 +115,14 @@ describe("render visual-storyboard", () => {
     expect(html).toContain("createFrame");
     expect(html).toContain("finalize");
     expect(html).toContain("writeInfo");
+  });
+
+  test("StoryboardWriter.html shows source links on member cards", () => {
+    const html = pages.get("index/StoryboardWriter.html")!;
+    expect(html).toContain('class="ar-card-title-link"');
+    expect(html).toContain(
+      'href="https://github.com/dtinth/visual-storyboard/blob/4726c729d692cf70930c04b5c27ba17639df4494/packages/core/src/writer.ts#L66"',
+    );
   });
 
   test("StoryboardEvent.html has type-declaration section", () => {

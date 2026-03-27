@@ -24,3 +24,18 @@ export function DeclarationTitle({ kind, title }: DeclarationTitleProps) {
     </span>
   );
 }
+
+export function SourceLink({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      class="ar-source-link"
+      aria-label="View source on GitHub"
+      title="View source on GitHub"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <i class="codicon codicon-source-control" aria-hidden="true" />
+    </a>
+  );
+}

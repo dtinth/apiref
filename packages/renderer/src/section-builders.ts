@@ -3,7 +3,7 @@ import { extractBlockTagSections, transformCommentParts } from "./comment-transf
 import type { TransformContext } from "./transform-context.ts";
 import { transformSignature, transformType } from "./type-transformer.ts";
 import type { TDDeclaration } from "./typedoc.ts";
-import { inferGroups } from "./utils.ts";
+import { getSourceUrl, inferGroups } from "./utils.ts";
 import type { Section } from "./viewmodel.ts";
 
 /** Build section id from title and optional prefix. */
@@ -183,7 +183,17 @@ export function buildFunctionSections(
     extraSections.push(...blockTags.returns, ...blockTags.throws);
     const label = `${decl.name} (${i + 1}/${n})`;
     const anchor = `${decl.name}-${i + 1}`;
-    return buildSignatureCard(decl.name, label, anchor, sig, {}, "function", extraSections, anchor);
+    return buildSignatureCard(
+      decl.name,
+      label,
+      anchor,
+      sig,
+      {},
+      "function",
+      getSourceUrl(sigs[i], decl),
+      extraSections,
+      anchor,
+    );
   });
 
   return [
