@@ -201,6 +201,25 @@ export interface TypeParameterViewModel {
 }
 
 /**
+ * A member within a reflection type (inline object/function type).
+ *
+ * Represents the essential type information for a member property or method
+ * within a reflection, without rendering structure.
+ */
+export interface MemberViewModel {
+  /** Member name. */
+  name: string;
+  /** Member kind (method, property, constructor, etc.). */
+  kind: DeclarationKind;
+  /** Callable signatures, if this member is a method. */
+  signatures?: SignatureViewModel[];
+  /** Type, if this member is a property. */
+  type?: TypeViewModel;
+  /** Member flags (static, readonly, optional, deprecated). */
+  flags?: MemberFlags;
+}
+
+/**
  * A TypeScript type, represented as a tagged union.
  *
  * Covers all TypeScript type constructs including primitives, generics, unions,
@@ -223,7 +242,7 @@ export type TypeViewModel =
   | { kind: "array"; elementType: TypeViewModel }
   | { kind: "tuple"; elements: TypeViewModel[] }
   | { kind: "intrinsic"; name: string }
-  | { kind: "reflection"; signatures: SignatureViewModel[]; members: SectionBlock[] }
+  | { kind: "reflection"; signatures: SignatureViewModel[]; members: MemberViewModel[] }
   | { kind: "type-operator"; operator: string; target: TypeViewModel }
   | { kind: "indexed-access"; objectType: TypeViewModel; indexType: TypeViewModel }
   | {

@@ -1,15 +1,8 @@
 import { ANCHOR_KINDS, Kind, PAGE_KINDS, type TDDeclaration, type TDProject } from "./typedoc.ts";
-import type {
-  Breadcrumb,
-  NavNode,
-  PageViewModel,
-  SectionBlock,
-  SiteViewModel,
-} from "./viewmodel.ts";
+import type { Breadcrumb, NavNode, PageViewModel, SiteViewModel } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
-import { byLabel, inferDeclarationKind } from "./utils.ts";
+import { byLabel } from "./utils.ts";
 import { buildModuleImportPath, declarationNavNode } from "./nav.ts";
-import { transformType, transformSignature, transformFlags } from "./type-transformer.ts";
 import {
   buildPackageIndexPage,
   buildModulePage,
@@ -326,54 +319,6 @@ function encodeModulePath(moduleName: string): string {
 // ---------------------------------------------------------------------------
 // Member / signature helpers
 // ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Reflection type member blocks
-// ---------------------------------------------------------------------------
-
-export function buildReflectionMemberBlocks(
-  decl: TDDeclaration,
-  ctx: TransformContext,
-): SectionBlock[] {
-  const flags = transformFlags(decl.flags);
-  const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-  const type = decl.type ? transformType(decl.type, ctx) : null;
-
-  // For reflection type members, create minimal blocks for inline rendering
-  // Only include type info, not full documentation
-  if (signatures.length > 0) {
-    // Function/method property: name: (params) => returnType
-    return [
-      {
-        kind: "declaration-title",
-        name: decl.name,
-        declarationKind: inferDeclarationKind(decl),
-      },
-      { kind: "signatures", signatures },
-    ];
-  }
-
-  if (type) {
-    // Property with a type: name: type or name?: type
-    return [
-      {
-        kind: "type-declaration",
-        name: decl.name,
-        type,
-        optional: flags.optional,
-      },
-    ];
-  }
-
-  // No type info available, render as empty property
-  return [
-    {
-      kind: "type-declaration",
-      name: decl.name,
-      type: { kind: "unknown", raw: "unknown" },
-    },
-  ];
-}
 
 // ---------------------------------------------------------------------------
 // Type transformer

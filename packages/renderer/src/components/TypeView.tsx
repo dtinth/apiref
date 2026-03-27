@@ -1,6 +1,6 @@
 import { Fragment } from "preact";
 import type {
-  SectionBlock,
+  MemberViewModel,
   TypeViewModel,
   SignatureViewModel,
   TypeParameterViewModel,
@@ -164,28 +164,14 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
 }
 
 function renderReflectionTypeMember(
-  block: SectionBlock,
+  member: MemberViewModel,
   resolve: (url: string) => string,
 ): preact.ComponentChild {
-  if (block.kind === "declaration-title") {
-    return <>{block.name}</>;
-  }
-
-  if (block.kind === "type-declaration") {
+  if (member.signatures && member.signatures[0]) {
+    const sig = member.signatures[0];
     return (
       <>
-        {block.name}
-        {block.optional ? "?" : ""}
-        {": "}
-        {renderType(block.type, resolve)}
-      </>
-    );
-  }
-
-  if (block.kind === "signatures" && block.signatures[0]) {
-    const sig = block.signatures[0];
-    return (
-      <>
+        {member.name}
         {": ("}
         {renderSignatureParams(sig, resolve)}
         {") => "}
@@ -194,7 +180,18 @@ function renderReflectionTypeMember(
     );
   }
 
-  return null;
+  if (member.type) {
+    return (
+      <>
+        {member.name}
+        {member.flags?.optional ? "?" : ""}
+        {": "}
+        {renderType(member.type, resolve)}
+      </>
+    );
+  }
+
+  return <>{member.name}</>;
 }
 
 function renderSignatureParams(

@@ -12,8 +12,9 @@ import type {
   SignatureViewModel,
   ParameterViewModel,
   MemberFlags,
+  MemberViewModel,
 } from "./viewmodel.ts";
-import { buildReflectionMemberBlocks } from "./transformer.ts";
+import { inferDeclarationKind } from "./utils.ts";
 
 export function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
   switch (tdType.type) {
@@ -85,8 +86,8 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
     case "reflection": {
       const decl = tdType.declaration;
       const sigs = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
-      // For reflection members, extract just the essential type info (not full cards)
-      const members = (decl.children ?? []).flatMap((c) => buildReflectionMemberBlocks(c, ctx));
+      // For reflection members, extract just the essential type info (not document structure)
+      const members = (decl.children ?? []).map((c) => transformReflectionMember(c, ctx));
       return { kind: "reflection", signatures: sigs, members };
     }
 
@@ -128,6 +129,20 @@ export function transformParameter(param: TDParameter, ctx: TransformContext): P
     name: param.name,
     type,
     optional: param.flags.isOptional ?? false,
+  };
+}
+
+function transformReflectionMember(decl: TDDeclaration, ctx: TransformContext): MemberViewModel {
+  const flags = transformFlags(decl.flags);
+  const signatures = (decl.signatures ?? []).map((s) => transformSignature(s, ctx));
+  const type = decl.type ? transformType(decl.type, ctx) : undefined;
+
+  return {
+    name: decl.name,
+    kind: inferDeclarationKind(decl),
+    signatures: signatures.length > 0 ? signatures : undefined,
+    type,
+    flags: Object.keys(flags).length > 0 ? flags : undefined,
   };
 }
 
