@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate API reference HTML
         run: |
-          node packages/renderer/dist/cli.mjs typedoc.json \
+          node packages/renderer/dist/cli.mjs packages/renderer/fixtures/examples.json \
             --out _site \
             --assets-base https://cdn.apiref.page/assets
 
