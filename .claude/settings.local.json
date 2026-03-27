@@ -4,7 +4,8 @@
       "Bash(vp check:*)",
       "Bash(vp fmt:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(vp test:*)"
     ]
   }
 }
