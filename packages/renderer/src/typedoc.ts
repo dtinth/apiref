@@ -70,6 +70,7 @@ export interface TDTypeParameter {
   variant: "typeParam";
   kind: 131072;
   flags: TDFlags;
+  comment?: TDComment;
   /** Constraint */
   type?: TDType;
   default?: TDType;

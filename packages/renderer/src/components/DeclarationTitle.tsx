@@ -9,14 +9,9 @@ import { getKindIcon } from "./kind-icons.ts";
 export interface DeclarationTitleProps {
   kind: DeclarationKind;
   title: string;
-  kindLabelClass?: string;
 }
 
-export function DeclarationTitle({
-  kind,
-  title,
-  kindLabelClass = "ar-declaration-kind",
-}: DeclarationTitleProps) {
+export function DeclarationTitle({ kind, title }: DeclarationTitleProps) {
   const iconClass = getKindIcon(kind);
   return (
     <span class="ar-declaration-title-wrapper">
@@ -24,7 +19,7 @@ export function DeclarationTitle({
       <span class="ar-declaration-title-text">
         <span>{title}</span>
         <span> </span>
-        <span class={kindLabelClass}>{kind}</span>
+        <span class="ar-declaration-kind">{kind}</span>
       </span>
     </span>
   );

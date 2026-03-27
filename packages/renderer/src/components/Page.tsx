@@ -249,6 +249,15 @@ function BlockView({
         </dl>
       );
 
+    case "examples":
+      return (
+        <div class="ar-examples">
+          {block.examples.map((ex, i) => (
+            <DocView key={i} doc={ex} />
+          ))}
+        </div>
+      );
+
     default:
       return null;
   }
@@ -257,7 +266,12 @@ function BlockView({
 function FlagsView({ flags }: { flags: MemberFlags }) {
   return (
     <div>
-      {flags.deprecated && <span class="ar-badge ar-badge--deprecated">deprecated</span>}
+      {flags.deprecated && (
+        <>
+          <span class="ar-badge ar-badge--deprecated">deprecated</span>
+          {flags.deprecatedMessage?.length ? <DocView doc={flags.deprecatedMessage} /> : null}
+        </>
+      )}
       {flags.static && <span class="ar-badge ar-badge--static">static</span>}
       {flags.abstract && <span class="ar-badge ar-badge--abstract">abstract</span>}
       {flags.readonly && <span class="ar-badge ar-badge--readonly">readonly</span>}
@@ -274,19 +288,11 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
   const header = titleFromCard ? (
     card.url ? (
       <a href={resolve(card.url)} class="ar-card-header">
-        <DeclarationTitle
-          kind={titleFromCard.declarationKind}
-          title={titleFromCard.name}
-          kindLabelClass="ar-card-kind"
-        />
+        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
       </a>
     ) : (
       <h3 class="ar-card-header">
-        <DeclarationTitle
-          kind={titleFromCard.declarationKind}
-          title={titleFromCard.name}
-          kindLabelClass="ar-card-kind"
-        />
+        <DeclarationTitle kind={titleFromCard.declarationKind} title={titleFromCard.name} />
       </h3>
     )
   ) : null;
@@ -313,7 +319,6 @@ function SignatureBlock({ sig, label }: { sig: SignatureViewModel; label?: strin
       <div class="ar-signature">
         <SignatureLine sig={sig} name={label || ""} />
       </div>
-      <DocView doc={sig.doc} />
     </div>
   );
 }

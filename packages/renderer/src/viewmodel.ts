@@ -97,7 +97,8 @@ export type SectionBlock =
   | { kind: "card"; anchor: string; url?: string; flags: MemberFlags; sections: Section[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
   | { kind: "flags"; flags: MemberFlags }
-  | { kind: "parameters"; parameters: ParameterDocViewModel[] };
+  | { kind: "parameters"; parameters: ParameterDocViewModel[] }
+  | { kind: "examples"; examples: DocNode[][] };
 
 /**
  * A section with optional title and flat list of content blocks.
@@ -134,6 +135,8 @@ export interface MemberFlags {
   optional?: boolean;
   /** Member is marked as `@deprecated`. */
   deprecated?: boolean;
+  /** Deprecation message from `@deprecated` block tag, if any. */
+  deprecatedMessage?: DocNode[];
   /** Member is static (not on instance). */
   static?: boolean;
   /** Member is read-only. */
@@ -143,9 +146,11 @@ export interface MemberFlags {
 }
 
 /**
- * A callable signature (function or method definition).
+ * A callable signature (function or method definition) for rendering in `SignatureLine`.
  *
- * Includes type parameters (generics), parameters, return type, and documentation.
+ * Purely for type-notation display (e.g., `<T extends string>(x: T): T`).
+ * Documentation (param descriptions, @returns, @throws, @example, etc.)
+ * is emitted as separate Section[] by the transformer, not attached here.
  */
 export interface SignatureViewModel {
   /** Generic type parameters (e.g., `<T>`, `<K extends string>`). */
@@ -154,8 +159,6 @@ export interface SignatureViewModel {
   parameters: ParameterViewModel[];
   /** Return type of this signature. */
   returnType: TypeViewModel;
-  /** JSDoc/TSDoc comments. */
-  doc: DocNode[];
 }
 
 /**
@@ -174,12 +177,13 @@ export interface ParameterViewModel {
   type: TypeViewModel;
   /** Whether the parameter is optional. */
   optional: boolean;
-  /** JSDoc `@param` documentation. */
-  doc: DocNode[];
 }
 
 /**
- * A generic type parameter with optional constraint and default.
+ * A generic type parameter for rendering in `SignatureLine` (e.g., `<T extends string>`).
+ *
+ * Purely for type-notation display. Documentation for type params (@template)
+ * is emitted as a separate { kind: "parameters" } section by the transformer.
  *
  * @example
  * ```typescript
