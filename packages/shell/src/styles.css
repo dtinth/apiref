@@ -334,6 +334,11 @@ a.ar-card-header {
     background: unset;
     padding: unset;
   }
+  & pre.shiki {
+    border: solid #555453;
+    border-width: 1px 1px 2px;
+    box-shadow: 0 1px 0 #252423;
+  }
   & h1 {
     color: #8b8685;
     text-shadow: 2px 2px #00000040;
