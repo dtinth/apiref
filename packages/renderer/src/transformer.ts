@@ -236,7 +236,7 @@ function collectNameGroupPages(
           const declUrl = idToUrl.get(decl.id);
           if (declUrl) {
             const nestedNavChildren: NavNode[] = [];
-        for (const child of getDeclarationChildren(decl)) {
+            for (const child of getDeclarationChildren(decl)) {
               if (PAGE_KINDS.has(child.kind)) {
                 collectDeclarationPages(
                   child,
