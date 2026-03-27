@@ -24,7 +24,7 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
   }
 }
 
-export function inferMemberKind(
+export function inferDeclarationKind(
   decl: TDDeclaration,
 ): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
   // Constructor
