@@ -154,7 +154,7 @@ ar-shell {
 
 .ar-declaration-heading {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.5em;
 }
 
