@@ -110,8 +110,8 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
   const resolve = useResolveLink();
   return (
     <nav class="ar-breadcrumbs" aria-label="Breadcrumb">
-      {breadcrumbs.map((breadcrumb) => (
-        <span key={`${breadcrumb.label}:${breadcrumb.url}`} class="ar-breadcrumb-item">
+      {breadcrumbs.map((breadcrumb, index) => (
+        <span key={index} class="ar-breadcrumb-item">
           <a href={resolve(breadcrumb.url)} class="ar-breadcrumb-link">
             {breadcrumb.label}
           </a>
