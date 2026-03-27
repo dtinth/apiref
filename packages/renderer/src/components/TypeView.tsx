@@ -159,7 +159,7 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
           {"{ "}
           {type.readonlyModifier && (
             <span class="ar-type-keyword">
-              {renderMappedReadonlyModifier(type.readonlyModifier)}
+              {renderMappedModifier(type.readonlyModifier, "readonly")}
             </span>
           )}
           {"["}
@@ -168,9 +168,7 @@ function renderType(type: TypeViewModel, resolve: (url: string) => string): prea
           {renderType(type.parameterType, resolve)}
           {"]"}
           {type.optionalModifier && (
-            <span class="ar-type-keyword">
-              {renderMappedOptionalModifier(type.optionalModifier)}
-            </span>
+            <span class="ar-type-keyword">{renderMappedModifier(type.optionalModifier, "?")}</span>
           )}
           {": "}
           {renderType(type.templateType, resolve)}
@@ -296,15 +294,9 @@ function renderParam(
   );
 }
 
-function renderMappedReadonlyModifier(modifier: "+" | "-" | null): string {
-  if (modifier === "+") return "+readonly ";
-  if (modifier === "-") return "-readonly ";
-  return "";
-}
-
-function renderMappedOptionalModifier(modifier: "+" | "-" | null): string {
-  if (modifier === "+") return "+?";
-  if (modifier === "-") return "-?";
+function renderMappedModifier(modifier: "+" | "-" | null, target: "readonly" | "?"): string {
+  if (modifier === "+") return `+${target}${target === "readonly" ? " " : ""}`;
+  if (modifier === "-") return `-${target}`;
   return "";
 }
 
