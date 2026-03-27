@@ -104,7 +104,8 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     }
   }
 
-  const ctx: TransformContext = { idToUrl, pkgName, pkgVersion };
+  const idToBreadcrumbs = buildBreadcrumbLookup(project, children, isSingleEntry, pkgName, idToUrl);
+  const ctx: TransformContext = { idToUrl, idToBreadcrumbs, pkgName, pkgVersion };
 
   const pages: PageViewModel[] = [];
   const navTree: NavNode[] = [];
@@ -172,6 +173,38 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   }
 
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };
+}
+
+function buildBreadcrumbLookup(
+  project: TDProject,
+  children: TDDeclaration[],
+  isSingleEntry: boolean,
+  pkgName: string,
+  idToUrl: Map<number, string>,
+): Map<number, Breadcrumb[]> {
+  const idToBreadcrumbs = new Map<number, Breadcrumb[]>();
+  idToBreadcrumbs.set(project.id, [{ label: pkgName, url: "index.html" }]);
+
+  if (isSingleEntry) {
+    for (const child of children) {
+      collectDeclarationBreadcrumbs(child, [], idToUrl, idToBreadcrumbs);
+    }
+  } else {
+    for (const mod of children) {
+      const modUrl = idToUrl.get(mod.id) ?? "index.html";
+      const modBreadcrumbs = [
+        { label: pkgName, url: "index.html" },
+        { label: mod.name, url: modUrl },
+      ];
+      idToBreadcrumbs.set(mod.id, modBreadcrumbs);
+
+      for (const child of mod.children ?? []) {
+        collectDeclarationBreadcrumbs(child, modBreadcrumbs, idToUrl, idToBreadcrumbs);
+      }
+    }
+  }
+
+  return idToBreadcrumbs;
 }
 
 function collectNameGroupPages(
@@ -265,6 +298,36 @@ function collectDeclarationPages(
 
       // Populate the namespace's nav node with its children
       navNode.children = nestedNavChildren.sort(byLabel);
+    }
+  }
+}
+
+function collectDeclarationBreadcrumbs(
+  decl: TDDeclaration,
+  parentBreadcrumbs: Breadcrumb[],
+  idToUrl: Map<number, string>,
+  idToBreadcrumbs: Map<number, Breadcrumb[]>,
+): void {
+  const url = idToUrl.get(decl.id);
+  if (!url) return;
+
+  const label = decl.kind === Kind.Constructor ? "constructor" : decl.name;
+  const breadcrumbs = parentBreadcrumbs.concat({ label, url });
+  idToBreadcrumbs.set(decl.id, breadcrumbs);
+
+  if (!PAGE_KINDS.has(decl.kind)) return;
+
+  for (const child of decl.children ?? []) {
+    if (PAGE_KINDS.has(child.kind)) {
+      collectDeclarationBreadcrumbs(child, breadcrumbs, idToUrl, idToBreadcrumbs);
+      continue;
+    }
+
+    if (ANCHOR_KINDS.has(child.kind)) {
+      const childUrl = idToUrl.get(child.id);
+      if (!childUrl) continue;
+      const childLabel = child.kind === Kind.Constructor ? "constructor" : child.name;
+      idToBreadcrumbs.set(child.id, breadcrumbs.concat({ label: childLabel, url: childUrl }));
     }
   }
 }

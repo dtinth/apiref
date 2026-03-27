@@ -240,6 +240,51 @@ describe("examples renderer fixture", () => {
       });
     }
   });
+
+  test("reference cards link to documented targets with breadcrumb labels", () => {
+    const page = site.pages.find((p) => p.url === "index/index.html");
+    const referencesSection = page?.sections.find(
+      (section) => section.title === "References" && section.body.some((block) => block.kind === "card"),
+    );
+    const authCard = referencesSection?.body.find(
+      (block) =>
+        block.kind === "card" &&
+        block.sections[0]?.body[0]?.kind === "declaration-title" &&
+        block.sections[0]?.body[0]?.name === "Auth",
+    );
+
+    expect(authCard?.kind).toBe("card");
+    if (authCard?.kind === "card") {
+      expect(authCard.url).toBe("plugins/index.html");
+      expect(authCard.referenceBreadcrumbs?.map((breadcrumb) => breadcrumb.label)).toEqual([
+        "@apiref-examples/core",
+        "plugins",
+      ]);
+    }
+  });
+
+  test("nested namespace reference cards resolve to the referenced page", () => {
+    const page = site.pages.find((p) => p.url === "data/RecA/RecB/index.html");
+    const referencesSection = page?.sections.find(
+      (section) => section.title === "References" && section.body.some((block) => block.kind === "card"),
+    );
+    const recACard = referencesSection?.body.find(
+      (block) =>
+        block.kind === "card" &&
+        block.sections[0]?.body[0]?.kind === "declaration-title" &&
+        block.sections[0]?.body[0]?.name === "RecA",
+    );
+
+    expect(recACard?.kind).toBe("card");
+    if (recACard?.kind === "card") {
+      expect(recACard.url).toBe("data/RecA/index.html");
+      expect(recACard.referenceBreadcrumbs?.map((breadcrumb) => breadcrumb.label)).toEqual([
+        "@apiref-examples/core",
+        "data",
+        "RecA",
+      ]);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

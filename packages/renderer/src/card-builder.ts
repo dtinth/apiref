@@ -1,6 +1,7 @@
 import { Kind, PAGE_KINDS } from "./typedoc.ts";
 import type { TDDeclaration, TDSignature } from "./typedoc.ts";
 import type {
+  Breadcrumb,
   Section,
   SectionBlock,
   MemberFlags,
@@ -90,7 +91,8 @@ export function declarationAsCards(
   const type = decl.type ? transformType(decl.type, ctx) : null;
   const commentSource = rawSignatures[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
-  const url = PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined;
+  const referenceTarget = referenceTargetForDeclaration(decl, ctx);
+  const url = referenceTarget?.url ?? (PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined);
   const kind = declarationKindForMember(decl, signatures);
 
   // If the member has its own page, use the old single-card-with-link approach
@@ -102,6 +104,7 @@ export function declarationAsCards(
         kind: "card",
         anchor: baseName,
         url,
+        referenceBreadcrumbs: referenceTarget?.breadcrumbs,
         flags,
         sections: [
           {
@@ -322,4 +325,17 @@ function parameterDocsForSignatures(
         .map((p) => ({ name: p.name, doc: transformCommentParts(p.comment!.summary, ctx) })),
     )
     .filter((parameters) => parameters.length > 0);
+}
+
+function referenceTargetForDeclaration(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+): { url: string; breadcrumbs: Breadcrumb[] } | null {
+  if (decl.variant !== "reference" || typeof decl.target !== "number") return null;
+
+  const url = ctx.idToUrl.get(decl.target);
+  const breadcrumbs = ctx.idToBreadcrumbs.get(decl.target);
+  if (!url || !breadcrumbs || breadcrumbs.length === 0) return null;
+
+  return { url, breadcrumbs };
 }
