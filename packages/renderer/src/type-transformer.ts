@@ -122,8 +122,11 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
       return { kind: "reflection", signatures: sigs, members };
     }
 
+    case "unknown":
+      return { kind: "unknown", raw: (tdType as any).name || JSON.stringify(tdType) };
+
     default:
-      // Unknown or future TypeDoc type variants — preserve as raw JSON
+      // Future TypeDoc type variants — preserve as raw JSON
       return { kind: "unknown", raw: JSON.stringify(tdType) };
   }
 }
