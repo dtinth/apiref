@@ -57,7 +57,7 @@ export function transformType(tdType: TDType, ctx: TransformContext): TypeViewMo
     case "tuple":
       return {
         kind: "tuple",
-        elements: tdType.elements.map((t) => transformType(t, ctx)),
+        elements: (tdType.elements ?? []).map((t) => transformType(t, ctx)),
       };
 
     case "query":
