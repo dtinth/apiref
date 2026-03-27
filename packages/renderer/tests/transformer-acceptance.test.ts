@@ -107,7 +107,7 @@ describe("pages", () => {
     page.section("Variables").card("defaultConfig").shouldHaveKind("variable");
     page.section("Functions").card("createEmitter").shouldHaveKind("function");
   });
-  test.skip("Section in class page", () => {
+  test("Section in class page", () => {
     const page = tester.page("index/Builder.html");
     page.section("Methods").card("build").shouldHaveKind("method");
   });
