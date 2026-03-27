@@ -1,7 +1,5 @@
-import { LitElement, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import { ref } from "lit/directives/ref.js";
-import "./ar-header.ts";
+import { customElement } from "lit/decorators.js";
+import { LitElement } from "lit";
 import "./ar-nav.ts";
 import "./ar-outline.ts";
 
@@ -38,84 +36,73 @@ export interface OutlineItem {
 
 @customElement("ar-shell")
 export class ArShell extends LitElement {
-  // No shadow DOM — Tailwind classes apply directly
   override createRenderRoot() {
     return this;
   }
 
-  @state() private meta: ArMeta | null = null;
-  @state() private sidebarOpen = false;
-
-  /** Original children saved before Lit's first render clears them. */
-  private _savedChildren: Node[] = [];
-
   override connectedCallback() {
     super.connectedCallback();
-    // Save original children NOW — before Lit's async render runs
-    this._savedChildren = Array.from(this.childNodes);
 
     const metaEl = document.getElementById("ar-meta");
-    if (metaEl?.textContent) {
-      try {
-        this.meta = JSON.parse(metaEl.textContent) as ArMeta;
-      } catch {
-        console.error("[ar-shell] Failed to parse #ar-meta JSON");
-      }
+    if (!metaEl?.textContent) {
+      console.error("[ar-shell] #ar-meta not found");
+      return;
+    }
+
+    let meta: ArMeta;
+    try {
+      meta = JSON.parse(metaEl.textContent) as ArMeta;
+    } catch {
+      console.error("[ar-shell] Failed to parse #ar-meta JSON");
+      return;
+    }
+
+    // Populate header with hamburger button
+    const header = this.querySelector("header.ar-header");
+    if (header) {
+      const button = document.createElement("button");
+      button.className = "ar-header-menu-btn";
+      button.setAttribute("aria-label", "Toggle navigation");
+      button.setAttribute("aria-expanded", "false");
+      button.innerHTML =
+        '<svg class="codicon codicon-list-unordered" viewBox="0 0 16 16"><path d="M1.5 3h13v1h-13V3zm0 4h13v1h-13V7zm0 4h13v1h-13v-1z"/></svg>';
+      header.insertBefore(button, header.firstChild);
+
+      button.addEventListener("click", () => this.toggleSidebar(button));
+    }
+
+    // Populate sidebar nav
+    const nav = this.querySelector("nav.ar-sidebar");
+    if (nav) {
+      const arNav = document.createElement("ar-nav") as any;
+      arNav.nodes = meta.navTree;
+      arNav.currentUrl = location.pathname.replace(/^\//, "") || "index.html";
+      arNav.baseHref = meta.baseHref;
+      nav.appendChild(arNav);
+    }
+
+    // Populate outline sidebar
+    const aside = this.querySelector("aside.ar-outline-sidebar");
+    if (aside) {
+      const arOutline = document.createElement("ar-outline") as any;
+      arOutline.sections = meta.outline;
+      aside.appendChild(arOutline);
     }
   }
 
-  private readonly toggleSidebar = () => {
-    this.sidebarOpen = !this.sidebarOpen;
-  };
+  private toggleSidebar(button: HTMLElement) {
+    const nav = this.querySelector("nav.ar-sidebar");
+    if (!nav) return;
 
-  /** Move saved children into the content wrapper on first render. */
-  private readonly onContentRef = (el: Element | undefined) => {
-    if (el && this._savedChildren.length > 0) {
-      for (const node of this._savedChildren) {
-        el.appendChild(node);
-      }
-      this._savedChildren = [];
+    const isOpen = nav.classList.contains("ar-sidebar--visible");
+    if (isOpen) {
+      nav.classList.remove("ar-sidebar--visible");
+      nav.classList.add("ar-sidebar--hidden");
+      button.setAttribute("aria-expanded", "false");
+    } else {
+      nav.classList.remove("ar-sidebar--hidden");
+      nav.classList.add("ar-sidebar--visible");
+      button.setAttribute("aria-expanded", "true");
     }
-  };
-
-  override render() {
-    const { meta } = this;
-    const currentUrl = location.pathname.replace(/^\//, "") || "index.html";
-    const outline = meta?.outline ?? [];
-    const hasOutline = outline.length > 0;
-
-    return html`
-      <ar-header
-        .pkgName=${meta?.package ?? ""}
-        .pkgVersion=${meta?.version ?? ""}
-        .baseHref=${meta?.baseHref ?? ""}
-        .hasSidebar=${true}
-        .sidebarOpen=${this.sidebarOpen}
-        @toggle-sidebar=${this.toggleSidebar}
-      ></ar-header>
-
-      <nav
-        class=${`ar-sidebar ${this.sidebarOpen ? "ar-sidebar--visible" : "ar-sidebar--hidden"}`}
-        aria-label="Package navigation"
-      >
-        ${meta
-          ? html`<ar-nav
-              .nodes=${meta.navTree}
-              .currentUrl=${currentUrl}
-              .baseHref=${meta.baseHref}
-            ></ar-nav>`
-          : nothing}
-      </nav>
-
-      ${hasOutline
-        ? html`<aside class="ar-outline-sidebar" aria-label="Page outline">
-            <ar-outline .sections=${outline}></ar-outline>
-          </aside>`
-        : nothing}
-
-      <div class=${`ar-main ${hasOutline ? "ar-main--with-outline" : ""}`}>
-        <div class="ar-content-wrap" ${ref(this.onContentRef)}></div>
-      </div>
-    `;
   }
 }

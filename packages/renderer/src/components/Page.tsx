@@ -65,6 +65,8 @@ export function Page({ site, page, options }: PageProps) {
   const depth = page.url.split("/").length - 1;
   const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
 
+  const outline = buildOutline(page.sections);
+
   const meta = {
     package: site.package.name,
     version: site.package.version,
@@ -72,7 +74,7 @@ export function Page({ site, page, options }: PageProps) {
     kind: page.kind,
     breadcrumbs: page.breadcrumbs,
     navTree: site.navTree,
-    outline: buildOutline(page.sections),
+    outline,
     baseHref,
   };
 
@@ -105,11 +107,25 @@ export function Page({ site, page, options }: PageProps) {
       </head>
       <body>
         <ar-shell>
-          <main class="ar-content">
-            <PageContext.Provider value={page.url}>
-              <PageContent page={page} />
-            </PageContext.Provider>
-          </main>
+          <header class="ar-header">
+            <a href={`${baseHref}index.html`} class="ar-header-logo">
+              <span class="text-ar-muted">apiref</span>
+              <span class="text-ar-muted">/</span>
+              <span class="ar-header-pkg">{site.package.name}</span>
+              <span class="ar-header-version">{site.package.version}</span>
+            </a>
+          </header>
+          <nav class="ar-sidebar ar-sidebar--hidden" aria-label="Package navigation"></nav>
+          <aside class="ar-outline-sidebar" aria-label="Page outline"></aside>
+          <div class="ar-main ar-main--with-outline">
+            <div class="ar-content-wrap">
+              <main class="ar-content">
+                <PageContext.Provider value={page.url}>
+                  <PageContent page={page} />
+                </PageContext.Provider>
+              </main>
+            </div>
+          </div>
         </ar-shell>
       </body>
     </html>
