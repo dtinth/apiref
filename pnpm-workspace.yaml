@@ -11,6 +11,7 @@ catalog:
   marked: ^17.0.5
   preact: ^10.29.0
   preact-render-to-string: ^6.6.6
+  shiki: 4.0.2
   tailwindcss: ^4.2.2
   typedoc: ^0.28.18
   typescript: ^5

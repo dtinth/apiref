@@ -16,6 +16,12 @@ function renderFixture(name: string) {
   return renderSite(site, { shellBaseUrl: SHELL });
 }
 
+function renderRendererFixture(name: string) {
+  const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
+  const site = transform(JSON.parse(readFileSync(path, "utf-8")), { version: "1.0.0" });
+  return renderSite(site, { shellBaseUrl: SHELL });
+}
+
 // ---------------------------------------------------------------------------
 // pw-utilities
 // ---------------------------------------------------------------------------
@@ -123,5 +129,21 @@ describe("render visual-storyboard", () => {
     const html = pages.get("index/StoryboardWriter.html")!;
     expect(html).toContain('"breadcrumbs"');
     expect(html).toContain('"label":"index"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// examples
+// ---------------------------------------------------------------------------
+
+describe("render examples", () => {
+  const pages = renderRendererFixture("examples");
+
+  test("example code blocks are highlighted with shiki", () => {
+    const renderedPages = [...pages.values()];
+    expect(renderedPages.some((page) => page.includes('class="shiki catppuccin-mocha"'))).toBe(
+      true,
+    );
+    expect(renderedPages.some((page) => page.includes("<span style="))).toBe(true);
   });
 });

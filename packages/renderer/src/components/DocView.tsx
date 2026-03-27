@@ -1,6 +1,87 @@
-import { marked } from "marked";
+import { Marked, Renderer } from "marked";
+import { createHighlighter } from "shiki";
 import type { DocNode } from "../viewmodel.ts";
 import { useResolveLink } from "./PageContext.tsx";
+
+const SHIKI_THEME = "catppuccin-mocha";
+
+type ShikiLanguage =
+  | "bash"
+  | "css"
+  | "diff"
+  | "html"
+  | "javascript"
+  | "json"
+  | "jsx"
+  | "markdown"
+  | "tsx"
+  | "typescript"
+  | "yaml";
+
+const shikiLanguageAliases: Record<string, ShikiLanguage> = {
+  bash: "bash",
+  css: "css",
+  diff: "diff",
+  html: "html",
+  javascript: "javascript",
+  js: "javascript",
+  json: "json",
+  jsx: "jsx",
+  markdown: "markdown",
+  md: "markdown",
+  sh: "bash",
+  shell: "bash",
+  ts: "typescript",
+  tsx: "tsx",
+  typescript: "typescript",
+  yaml: "yaml",
+  yml: "yaml",
+  zsh: "bash",
+};
+
+const shiki = await createHighlighter({
+  themes: [SHIKI_THEME],
+  langs: [
+    "bash",
+    "css",
+    "diff",
+    "html",
+    "javascript",
+    "json",
+    "jsx",
+    "markdown",
+    "tsx",
+    "typescript",
+    "yaml",
+  ],
+});
+
+const markdownRenderer = new Renderer();
+const renderCodeBlockFallback = markdownRenderer.code.bind(markdownRenderer);
+
+markdownRenderer.code = (token) => {
+  const language = resolveShikiLanguage(token.lang);
+  if (!language) return renderCodeBlockFallback(token);
+
+  try {
+    return shiki.codeToHtml(token.text, {
+      lang: language,
+      theme: SHIKI_THEME,
+    });
+  } catch {
+    return renderCodeBlockFallback(token);
+  }
+};
+
+const markdownParser = new Marked({
+  renderer: markdownRenderer,
+});
+
+function resolveShikiLanguage(language: string | undefined): ShikiLanguage | null {
+  const infoString = language?.trim();
+  if (!infoString) return null;
+  return shikiLanguageAliases[infoString.split(/\s+/, 1)[0].toLowerCase()] ?? null;
+}
 
 interface DocViewProps {
   doc: DocNode[];
@@ -25,6 +106,6 @@ function docToMarkdown(doc: DocNode[], resolve: (url: string) => string): string
 export function DocView({ doc }: DocViewProps) {
   const resolve = useResolveLink();
   if (doc.length === 0) return null;
-  const html = marked.parse(docToMarkdown(doc, resolve)) as string;
+  const html = markdownParser.parse(docToMarkdown(doc, resolve)) as string;
   return <div class="ar-description" dangerouslySetInnerHTML={{ __html: html }}></div>;
 }

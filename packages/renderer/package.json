@@ -36,7 +36,8 @@
   "dependencies": {
     "marked": "catalog:",
     "preact": "catalog:",
-    "preact-render-to-string": "catalog:"
+    "preact-render-to-string": "catalog:",
+    "shiki": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
