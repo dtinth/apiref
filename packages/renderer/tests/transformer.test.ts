@@ -201,7 +201,7 @@ describe("visual-storyboard (multi-module)", () => {
   });
 
   test("nav tree has module nodes with children", () => {
-    const modNode = site.navTree.find((n) => n.label === "index");
+    const modNode = site.navTree.find((n) => n.label === "visual-storyboard");
     expect(modNode).toBeDefined();
     expect(modNode?.children.length).toBeGreaterThan(0);
     const childLabels = modNode?.children.map((c) => c.label) ?? [];

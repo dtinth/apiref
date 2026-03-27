@@ -181,7 +181,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         }
       }
       navTree.push({
-        label: mod.name,
+        label: buildModuleImportPath(pkgName, mod.name),
         url: modUrl,
         kind: "module",
         flags: {},
@@ -1089,6 +1089,13 @@ function transformCommentParts(parts: TDCommentPart[], ctx: TransformContext): D
 // ---------------------------------------------------------------------------
 // Nav helpers
 // ---------------------------------------------------------------------------
+
+function buildModuleImportPath(pkgName: string, moduleName: string): string {
+  if (moduleName === "index") {
+    return pkgName;
+  }
+  return `${pkgName}/${moduleName}`;
+}
 
 function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
   const url = idToUrl.get(decl.id) ?? "index.html";
