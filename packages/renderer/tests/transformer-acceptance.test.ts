@@ -68,7 +68,7 @@ describe("pages", () => {
   });
   test("Outline should contain both doc blocks and members", () => {
     tester.page("index/Cache.html").shouldHaveOutline([
-      // { title: "Example", children: [] },
+      { title: "Example", children: [] },
       { title: "Constructors", children: [{ title: expect.any(String) }] },
       {
         title: "Methods",

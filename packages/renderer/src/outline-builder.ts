@@ -18,10 +18,10 @@ export interface OutlineSection {
  * Build an outline structure from page sections.
  *
  * Extracts titled sections and their card items (methods, properties, constructors, etc.)
- * for use in the outline sidebar panel. Only includes sections with at least one item.
+ * for use in the outline sidebar panel. Includes all titled sections, even those without items.
  *
  * @param sections - The page sections to extract outline from
- * @returns Array of outline sections with items
+ * @returns Array of outline sections with items (may be empty for some sections)
  */
 export function buildOutline(sections: Section[]): OutlineSection[] {
   const result: OutlineSection[] = [];
@@ -42,9 +42,7 @@ export function buildOutline(sections: Section[]): OutlineSection[] {
           }
         }
       }
-      if (items.length > 0) {
-        result.push({ label: section.title, items });
-      }
+      result.push({ label: section.title, items });
     }
   }
   return result;
