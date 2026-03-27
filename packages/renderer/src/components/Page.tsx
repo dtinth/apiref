@@ -115,10 +115,7 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
           <a href={resolve(breadcrumb.url)} class="ar-breadcrumb-link">
             {breadcrumb.label}
           </a>
-          <span class="ar-breadcrumb-separator" aria-hidden="true">
-            {" "}
-            »{" "}
-          </span>
+          <span class="ar-breadcrumb-separator" aria-hidden="true">»</span>
         </span>
       ))}
     </nav>
@@ -219,6 +216,13 @@ function BlockView({
         </div>
       );
 
+    case "reference-breadcrumbs":
+      return (
+        <p class="ar-card-reference">
+          References <InlineBreadcrumbs breadcrumbs={block.breadcrumbs} />
+        </p>
+      );
+
     case "flags":
       return <FlagsView flags={block.flags} />;
 
@@ -287,18 +291,13 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
   ) : null;
 
   const cardClasses = card.url ? "ar-card ar-card--link" : "ar-card";
-  const hasBody = Boolean(card.referenceBreadcrumbs?.length) || card.sections.length > 1;
+  const hasBody = card.sections.length > 1;
 
   return (
     <div id={card.anchor} class={cardClasses}>
       {header}
       {hasBody && (
         <div class="ar-card-body">
-          {card.referenceBreadcrumbs?.length ? (
-            <p class="ar-card-reference">
-              References <InlineBreadcrumbs breadcrumbs={card.referenceBreadcrumbs} />
-            </p>
-          ) : null}
           {card.sections.slice(1).map((section, i) => (
             <SectionView key={i} section={section} context="card" />
           ))}
@@ -316,10 +315,7 @@ function InlineBreadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
         <span key={index}>
           <a href={resolve(breadcrumb.url)}>{breadcrumb.label}</a>
           {index + 1 < breadcrumbs.length ? (
-            <span aria-hidden="true" class="ar-breadcrumb-separator">
-              {" "}
-              »{" "}
-            </span>
+            <span aria-hidden="true" class="ar-breadcrumb-separator">»</span>
           ) : null}
         </span>
       ))}

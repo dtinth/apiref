@@ -99,13 +99,15 @@ export function declarationAsCards(
   // If the member has its own page, use the old single-card-with-link approach
   // (card shows summary only; examples/blockTags appear on the dedicated page)
   if (url) {
+    const referenceSections: Section[] = referenceTarget?.breadcrumbs.length
+      ? [{ body: [{ kind: "reference-breadcrumbs", breadcrumbs: referenceTarget.breadcrumbs }] }]
+      : [];
     const docSections: Section[] = doc.length > 0 ? [{ body: [{ kind: "doc", doc }] }] : [];
     return [
       {
         kind: "card",
         anchor: baseName,
         url,
-        referenceBreadcrumbs: referenceTarget?.breadcrumbs,
         flags,
         sections: [
           {
@@ -117,6 +119,7 @@ export function declarationAsCards(
               },
             ],
           },
+          ...referenceSections,
           ...docSections,
         ],
       },
