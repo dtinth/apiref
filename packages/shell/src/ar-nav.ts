@@ -1,7 +1,6 @@
 import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { NavNode } from "./ar-shell.ts";
-import { KIND_ICONS } from "./icon-map.ts";
 
 @customElement("ar-nav")
 export class ArNav extends LitElement {
@@ -24,14 +23,13 @@ export class ArNav extends LitElement {
 
   private renderNode(node: NavNode, depth: number): TemplateResult {
     const isActive = node.url === this.currentUrl;
-    const iconClass = KIND_ICONS[node.kind] ?? "codicon-symbol-misc";
 
     return html`
       <a
         href=${this.baseHref + node.url}
         class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
-        <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
+        <i class=${`codicon ${node.iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
         <span>${node.label}</span>
       </a>
       ${node.children.length > 0 ? this.renderNodes(node.children, depth + 1) : nothing}

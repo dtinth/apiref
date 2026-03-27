@@ -8,6 +8,7 @@ import type {
   SiteViewModel,
 } from "../viewmodel.ts";
 import { DeclarationTitle } from "./DeclarationTitle.tsx";
+import { getKindIcon } from "./kind-icons.ts";
 import { DocView } from "./DocView.tsx";
 import { SignatureLine, TypeView } from "./TypeView.tsx";
 import { PageContext, useResolveLink } from "./PageContext.tsx";
@@ -27,6 +28,7 @@ interface OutlineItem {
   label: string;
   anchor: string;
   kind: DeclarationKind;
+  iconClass: string;
   flags: { deprecated?: boolean };
 }
 
@@ -48,6 +50,7 @@ function buildOutline(sections: Section[]): OutlineSection[] {
               label: titleBlock.name,
               anchor: block.anchor,
               kind: titleBlock.declarationKind,
+              iconClass: getKindIcon(titleBlock.declarationKind),
               flags: { deprecated: block.flags.deprecated },
             });
           }

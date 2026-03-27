@@ -18,6 +18,7 @@ export interface NavNode {
   label: string;
   url: string;
   kind: string;
+  iconClass: string;
   flags: { deprecated?: boolean; beta?: boolean };
   children: NavNode[];
 }
@@ -31,6 +32,7 @@ export interface OutlineItem {
   label: string;
   anchor: string;
   kind: string;
+  iconClass: string;
   flags: { deprecated?: boolean };
 }
 

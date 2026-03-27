@@ -261,8 +261,10 @@ export interface NavNode {
   label: string;
   /** URL of the page this node links to. */
   url: string;
-  /** Kind of declaration (class, function, module, etc.). Used to select icons. */
+  /** Kind of declaration (class, function, module, etc.). */
   kind: string;
+  /** Icon class for this kind (e.g., "codicon-symbol-class"). */
+  iconClass: string;
   /** Optional flags (deprecated, beta). */
   flags: { deprecated?: boolean; beta?: boolean };
   /** Child nodes (for modules or nested containers). */

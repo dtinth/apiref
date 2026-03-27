@@ -27,6 +27,7 @@ import type {
   TypeParameterViewModel,
   TypeViewModel,
 } from "./viewmodel.ts";
+import { getKindIcon } from "./components/kind-icons.ts";
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -184,6 +185,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         label: buildModuleImportPath(pkgName, mod.name),
         url: modUrl,
         kind: "module",
+        iconClass: getKindIcon("module"),
         flags: {},
         children: modNavChildren.sort(byLabel),
       });
@@ -1114,6 +1116,7 @@ function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): 
     label: decl.name,
     url,
     kind: kindName,
+    iconClass: getKindIcon(kindName),
     flags: { deprecated: deprecated || undefined },
     children: [],
   };

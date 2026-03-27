@@ -1,7 +1,6 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { OutlineSection, OutlineItem } from "./ar-shell.ts";
-import { KIND_ICONS } from "./icon-map.ts";
 
 @customElement("ar-outline")
 export class ArOutline extends LitElement {
@@ -33,13 +32,12 @@ export class ArOutline extends LitElement {
   }
 
   private renderItem(item: OutlineItem) {
-    const iconClass = KIND_ICONS[item.kind] ?? "codicon-symbol-misc";
     return html`
       <a
         href=${"#" + item.anchor}
         class=${`ar-outline-item ${item.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
-        <i class=${`codicon ${iconClass} ar-kind-icon ar-kind-icon--${item.kind}`}></i>
+        <i class=${`codicon ${item.iconClass} ar-kind-icon ar-kind-icon--${item.kind}`}></i>
         <span>${item.label}</span>
       </a>
     `;
