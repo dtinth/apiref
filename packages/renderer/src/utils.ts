@@ -24,6 +24,19 @@ export function reflectionKindToDeclarationKind(kind: number): DeclarationKind |
   }
 }
 
+export function inferMemberKind(
+  decl: TDDeclaration,
+): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
+  // Constructor
+  if (decl.kind === Kind.Constructor) return "constructor";
+  // Accessor (getter/setter)
+  if (decl.getSignature || decl.setSignature) return "accessor";
+  // Method
+  if (decl.kind === Kind.Method) return "method";
+  // Default to property
+  return "property";
+}
+
 export function byLabel(a: NavNode, b: NavNode): number {
   return a.label.localeCompare(b.label);
 }

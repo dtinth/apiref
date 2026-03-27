@@ -26,7 +26,7 @@ import type {
   TypeViewModel,
 } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
-import { reflectionKindToDeclarationKind, byLabel, inferGroups } from "./utils.ts";
+import { reflectionKindToDeclarationKind, byLabel, inferGroups, inferMemberKind } from "./utils.ts";
 import {
   transformComment,
   transformCommentParts,
@@ -759,19 +759,6 @@ function declarationKindForMember(
   const pageKind = reflectionKindToDeclarationKind(decl.kind);
   if (pageKind) return pageKind;
   return inferMemberKind(decl);
-}
-
-function inferMemberKind(
-  decl: TDDeclaration,
-): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
-  // Constructor
-  if (decl.kind === Kind.Constructor) return "constructor";
-  // Accessor (getter/setter)
-  if (decl.getSignature || decl.setSignature) return "accessor";
-  // Method
-  if (decl.kind === Kind.Method) return "method";
-  // Default to property
-  return "property";
 }
 
 function buildCardSections(input: {
