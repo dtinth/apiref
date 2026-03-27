@@ -13,11 +13,10 @@
   --color-ar-accent-green: #d7fc70;
   --color-ar-accent-yellow: #ffffbb;
 
-  --font-sans:
-    "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
   --font-mono:
-    "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+    "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
@@ -127,11 +126,27 @@ ar-shell {
 }
 
 .ar-declaration-title {
-  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan flex items-center gap-2 mb-6;
+  @apply text-2xl md:text-3xl font-bold text-ar-accent-cyan mb-6;
+}
+
+.ar-declaration-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.ar-declaration-title-wrapper .ar-kind-icon {
+  flex-shrink: 0;
+  font-size: 1em;
+}
+
+.ar-declaration-title-text {
+  display: block;
+  flex: 1;
 }
 
 .ar-declaration-title .ar-kind-icon {
-  @apply flex-none text-2xl md:text-3xl;
+  @apply text-2xl md:text-3xl;
 }
 
 .ar-declaration-kind {
@@ -168,11 +183,7 @@ ar-shell {
 }
 
 .ar-card-header {
-  @apply text-xl font-semibold text-ar-accent-cyan flex items-center gap-2 mb-2 text-sm;
-}
-
-.ar-card-header .ar-kind-icon {
-  @apply flex-none text-sm;
+  @apply text-xl font-semibold text-ar-accent-cyan mb-2 text-sm;
 }
 
 .ar-card--link:has(a.ar-card-header:hover) {

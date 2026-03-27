@@ -38,10 +38,13 @@ export function DeclarationTitle({
 }: DeclarationTitleProps) {
   const iconClass = getKindIcon(kind);
   return (
-    <>
+    <span class="ar-declaration-title-wrapper">
       <i class={`codicon ${iconClass} ar-kind-icon ar-kind-icon--${kind}`} />
-      <span>{title}</span>
-      <span class={kindLabelClass}>{kind}</span>
-    </>
+      <span class="ar-declaration-title-text">
+        <span>{title}</span>
+        <span> </span>
+        <span class={kindLabelClass}>{kind}</span>
+      </span>
+    </span>
   );
 }
