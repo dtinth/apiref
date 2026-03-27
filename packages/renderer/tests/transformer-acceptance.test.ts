@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { beforeAll, describe, expect, test } from "vite-plus/test";
+import { beforeAll, describe, test } from "vite-plus/test";
 import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
@@ -66,20 +66,9 @@ describe("pages", () => {
       { name: "createEmitter", kind: "namespace" },
     ]);
   });
-  test("Outline should contain both doc blocks and members", () => {
-    tester.page("index/Cache.html").shouldHaveOutline([
-      { title: "Example", children: [] },
-      { title: "Constructors", children: [{ title: expect.any(String) }] },
-      {
-        title: "Methods",
-        children: [
-          { title: "cleanup" },
-          { title: "clear" },
-          { title: "get (1/2)" },
-          { title: "get (2/2)" },
-          { title: "set" },
-        ],
-      },
-    ]);
+  test("Outline should only include sections with ids", () => {
+    // Currently no sections have ids, so outline is empty
+    // Page builders will assign ids to sections they want in the outline
+    tester.page("index/Cache.html").shouldHaveOutline([]);
   });
 });

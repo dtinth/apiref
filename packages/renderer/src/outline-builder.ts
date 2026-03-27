@@ -11,22 +11,23 @@ export interface OutlineItem {
 
 export interface OutlineSection {
   label: string;
+  id: string; // DOM id for the section (only present if section has an id)
   items: OutlineItem[];
 }
 
 /**
  * Build an outline structure from page sections.
  *
- * Extracts titled sections and their card items (methods, properties, constructors, etc.)
- * for use in the outline sidebar panel. Includes all titled sections, even those without items.
+ * Extracts titled sections with ids and their card items (methods, properties, constructors, etc.)
+ * for use in the outline sidebar panel. Only includes sections that have an explicit id.
  *
  * @param sections - The page sections to extract outline from
- * @returns Array of outline sections with items (may be empty for some sections)
+ * @returns Array of outline sections with items (only those with ids)
  */
 export function buildOutline(sections: Section[]): OutlineSection[] {
   const result: OutlineSection[] = [];
   for (const section of sections) {
-    if (section.title) {
+    if (section.title && section.id) {
       const items: OutlineItem[] = [];
       for (const block of section.body) {
         if (block.kind === "card") {
@@ -42,7 +43,11 @@ export function buildOutline(sections: Section[]): OutlineSection[] {
           }
         }
       }
-      result.push({ label: section.title, items });
+      result.push({
+        label: section.title,
+        id: section.id,
+        items,
+      });
     }
   }
   return result;

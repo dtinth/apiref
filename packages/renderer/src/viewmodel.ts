@@ -109,6 +109,8 @@ export type SectionBlock =
 export interface Section {
   /** Optional section title (e.g., "Methods", "Parameters", "Signature"). */
   title?: string;
+  /** Optional DOM id for the section (used for outline navigation). */
+  id?: string;
   /** Content blocks in this section. */
   body: SectionBlock[];
 }

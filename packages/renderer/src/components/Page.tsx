@@ -128,7 +128,9 @@ function SectionView({
   );
 
   return context === "page" ? (
-    <section class="ar-section">{content}</section>
+    <section class="ar-section" id={section.id}>
+      {content}
+    </section>
   ) : (
     <div class="ar-card-section">{content}</div>
   );
