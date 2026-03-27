@@ -6,7 +6,18 @@ import { declarationAsCards, buildSignatureCard } from "./card-builder.ts";
 import { transformCommentParts, extractBlockTagSections } from "./comment-transformer.ts";
 import { inferGroups } from "./utils.ts";
 
-export function buildClassSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+/** Build section id from title and optional prefix. */
+function buildSectionId(idPrefix: string, title: string): string {
+  const sectionPart = title.toLowerCase().replace(/\s+/g, "-");
+  if (!idPrefix) return `~${sectionPart}`;
+  return `${idPrefix}~${sectionPart}`;
+}
+
+export function buildClassSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  idPrefix: string = "",
+): Section[] {
   const sections: Section[] = [];
   const children = decl.children ?? [];
   const groups = decl.groups ?? inferGroups(children);
@@ -19,13 +30,20 @@ export function buildClassSections(decl: TDDeclaration, ctx: TransformContext): 
 
     sections.push({
       title: group.title,
-      body: members.flatMap((d) => declarationAsCards(d, ctx)),
+      id: buildSectionId(idPrefix, group.title),
+      body: members.flatMap((d) =>
+        declarationAsCards(d, ctx, buildSectionId(idPrefix, group.title)),
+      ),
     });
   }
   return sections;
 }
 
-export function buildMemberSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+export function buildMemberSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  idPrefix: string = "",
+): Section[] {
   const sections: Section[] = [];
   const children = decl.children ?? [];
   const groups = decl.groups ?? inferGroups(children);
@@ -37,13 +55,20 @@ export function buildMemberSections(decl: TDDeclaration, ctx: TransformContext):
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
       title: group.title,
-      body: members.flatMap((d) => declarationAsCards(d, ctx)),
+      id: buildSectionId(idPrefix, group.title),
+      body: members.flatMap((d) =>
+        declarationAsCards(d, ctx, buildSectionId(idPrefix, group.title)),
+      ),
     });
   }
   return sections;
 }
 
-export function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+export function buildFunctionSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  idPrefix: string = "",
+): Section[] {
   const sigs = decl.signatures ?? [];
   if (sigs.length === 0) return [];
 
@@ -56,8 +81,17 @@ export function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext
     const blockTags = extractBlockTagSections(rawSig.comment, ctx);
     const sections: Section[] = [];
     // Order: examples → signature → type params → params → returns → throws
-    sections.push(...blockTags.examples);
-    sections.push({ title: "Signature", body: [{ kind: "signatures", signatures: [sig] }] });
+    sections.push(
+      ...blockTags.examples.map((s) => ({
+        ...s,
+        id: buildSectionId(idPrefix, s.title || "examples"),
+      })),
+    );
+    sections.push({
+      title: "Signature",
+      id: buildSectionId(idPrefix, "Signature"),
+      body: [{ kind: "signatures", signatures: [sig] }],
+    });
     // Type parameters
     const typeParamDocs = (rawSig.typeParameters ?? [])
       .filter((tp) => tp.comment?.summary?.length)
@@ -65,6 +99,7 @@ export function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext
     if (typeParamDocs.length > 0) {
       sections.push({
         title: "Type Parameters",
+        id: buildSectionId(idPrefix, "Type Parameters"),
         body: [{ kind: "parameters", parameters: typeParamDocs }],
       });
     }
@@ -75,10 +110,17 @@ export function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext
     if (params.length > 0) {
       sections.push({
         title: "Parameters",
+        id: buildSectionId(idPrefix, "Parameters"),
         body: [{ kind: "parameters", parameters: params }],
       });
     }
-    sections.push(...blockTags.returns, ...blockTags.throws);
+    sections.push(
+      ...blockTags.returns.map((s) => ({
+        ...s,
+        id: buildSectionId(idPrefix, s.title || "returns"),
+      })),
+      ...blockTags.throws.map((s) => ({ ...s, id: buildSectionId(idPrefix, s.title || "throws") })),
+    );
     return sections;
   }
 
@@ -111,13 +153,17 @@ export function buildFunctionSections(decl: TDDeclaration, ctx: TransformContext
     extraSections.push(...blockTags.returns, ...blockTags.throws);
     const label = `${decl.name} (${i + 1}/${n})`;
     const anchor = `${decl.name}-${i + 1}`;
-    return buildSignatureCard(decl.name, label, anchor, sig, {}, "function", extraSections);
+    return buildSignatureCard(decl.name, label, anchor, sig, {}, "function", extraSections, anchor);
   });
 
-  return [{ title: "Signatures", body: cards }];
+  return [{ title: "Signatures", id: buildSectionId(idPrefix, "Signatures"), body: cards }];
 }
 
-export function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+export function buildTypeAliasSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  _idPrefix: string = "",
+): Section[] {
   if (!decl.type) return [];
   return [
     {
@@ -126,18 +172,29 @@ export function buildTypeAliasSections(decl: TDDeclaration, ctx: TransformContex
   ];
 }
 
-export function buildEnumSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+export function buildEnumSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  idPrefix: string = "",
+): Section[] {
   const children = decl.children ?? [];
   if (children.length === 0) return [];
   return [
     {
       title: "Members",
-      body: children.flatMap((d) => declarationAsCards(d, ctx)),
+      id: buildSectionId(idPrefix, "Members"),
+      body: children.flatMap((d) =>
+        declarationAsCards(d, ctx, buildSectionId(idPrefix, "Members")),
+      ),
     },
   ];
 }
 
-export function buildVariableSections(decl: TDDeclaration, ctx: TransformContext): Section[] {
+export function buildVariableSections(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  _idPrefix: string = "",
+): Section[] {
   if (!decl.type) return [];
   return [
     {

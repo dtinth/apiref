@@ -1,5 +1,5 @@
-import type { DeclarationKind, Section } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
+import type { DeclarationKind, Section } from "./viewmodel.ts";
 
 export interface OutlineItem {
   label: string;
@@ -11,7 +11,7 @@ export interface OutlineItem {
 
 export interface OutlineSection {
   label: string;
-  id: string; // DOM id for the section (only present if section has an id)
+  anchor?: string;
   items: OutlineItem[];
 }
 
@@ -45,7 +45,7 @@ export function buildOutline(sections: Section[]): OutlineSection[] {
       }
       result.push({
         label: section.title,
-        id: section.id,
+        anchor: section.id,
         items,
       });
     }

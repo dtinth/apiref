@@ -54,14 +54,18 @@ export function buildPackageIndexPage(
         .filter((d): d is TDDeclaration => d !== undefined);
       sections.push({
         title: group.title,
-        body: members.flatMap((d) => declarationAsCards(d, ctx)),
+        id: `~${group.title.toLowerCase().replace(/\s+/g, "-")}`,
+        body: members.flatMap((d) =>
+          declarationAsCards(d, ctx, `~${group.title.toLowerCase().replace(/\s+/g, "-")}`),
+        ),
       });
     }
   } else {
     // List modules
     sections.push({
       title: "Modules",
-      body: topLevel.flatMap((d) => declarationAsCards(d, ctx)),
+      id: "~modules",
+      body: topLevel.flatMap((d) => declarationAsCards(d, ctx, "~modules")),
     });
   }
 
@@ -99,9 +103,11 @@ export function buildModulePage(
     const members = group.children
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
+    const groupId = `~${group.title.toLowerCase().replace(/\s+/g, "-")}`;
     sections.push({
       title: group.title,
-      body: members.flatMap((d) => declarationAsCards(d, ctx)),
+      id: groupId,
+      body: members.flatMap((d) => declarationAsCards(d, ctx, groupId)),
     });
   }
 
@@ -165,25 +171,25 @@ export function buildMultiDeclarationPage(
     // Build kind-specific sections
     switch (decl.kind) {
       case Kind.Class:
-        sections.push(...buildClassSections(decl, ctx));
+        sections.push(...buildClassSections(decl, ctx, ""));
         break;
       case Kind.Interface:
-        sections.push(...buildMemberSections(decl, ctx));
+        sections.push(...buildMemberSections(decl, ctx, ""));
         break;
       case Kind.Function:
-        sections.push(...buildFunctionSections(decl, ctx));
+        sections.push(...buildFunctionSections(decl, ctx, ""));
         break;
       case Kind.TypeAlias:
-        sections.push(...buildTypeAliasSections(decl, ctx));
+        sections.push(...buildTypeAliasSections(decl, ctx, ""));
         break;
       case Kind.Enum:
-        sections.push(...buildEnumSections(decl, ctx));
+        sections.push(...buildEnumSections(decl, ctx, ""));
         break;
       case Kind.Variable:
-        sections.push(...buildVariableSections(decl, ctx));
+        sections.push(...buildVariableSections(decl, ctx, ""));
         break;
       case Kind.Namespace:
-        sections.push(...buildMemberSections(decl, ctx));
+        sections.push(...buildMemberSections(decl, ctx, ""));
         break;
     }
   }
@@ -230,25 +236,25 @@ export function buildDeclarationPage(
 
   switch (decl.kind) {
     case Kind.Class:
-      sections.push(...buildClassSections(decl, ctx));
+      sections.push(...buildClassSections(decl, ctx, ""));
       break;
     case Kind.Interface:
-      sections.push(...buildMemberSections(decl, ctx));
+      sections.push(...buildMemberSections(decl, ctx, ""));
       break;
     case Kind.Function:
-      sections.push(...buildFunctionSections(decl, ctx));
+      sections.push(...buildFunctionSections(decl, ctx, ""));
       break;
     case Kind.TypeAlias:
-      sections.push(...buildTypeAliasSections(decl, ctx));
+      sections.push(...buildTypeAliasSections(decl, ctx, ""));
       break;
     case Kind.Enum:
-      sections.push(...buildEnumSections(decl, ctx));
+      sections.push(...buildEnumSections(decl, ctx, ""));
       break;
     case Kind.Variable:
-      sections.push(...buildVariableSections(decl, ctx));
+      sections.push(...buildVariableSections(decl, ctx, ""));
       break;
     case Kind.Namespace:
-      sections.push(...buildMemberSections(decl, ctx));
+      sections.push(...buildMemberSections(decl, ctx, ""));
       break;
   }
 

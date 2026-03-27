@@ -67,8 +67,21 @@ describe("pages", () => {
     ]);
   });
   test("Outline should only include sections with ids", () => {
-    // Currently no sections have ids, so outline is empty
-    // Page builders will assign ids to sections they want in the outline
-    tester.page("index/Cache.html").shouldHaveOutline([]);
+    tester.page("index/Cache.html").shouldHaveOutline([
+      {
+        title: "Constructors",
+        children: [{ title: "constructor" }],
+      },
+      {
+        title: "Methods",
+        children: [
+          { title: "cleanup" },
+          { title: "clear" },
+          { title: "get (1/2)" },
+          { title: "get (2/2)" },
+          { title: "set" },
+        ],
+      },
+    ]);
   });
 });

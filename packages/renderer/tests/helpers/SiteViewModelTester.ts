@@ -1,6 +1,6 @@
 import { expect } from "vite-plus/test";
-import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
 import { buildOutline } from "../../src/outline-builder.ts";
+import type { NavNode, PageViewModel, SiteViewModel } from "../../src/viewmodel.ts";
 
 interface ChildFilter {
   label: string;
@@ -115,7 +115,9 @@ class PageTester {
     // Use the actual buildOutline function to generate the outline
     const outline = buildOutline(page.sections).map((section) => ({
       title: section.label,
-      children: section.items.map((item) => ({ title: item.label })),
+      children: section.items.map((item) => ({
+        title: item.label,
+      })),
     }));
 
     expect(outline).toEqual(expected);

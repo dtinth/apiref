@@ -19,6 +19,13 @@ import {
 } from "./comment-transformer.ts";
 import { reflectionKindToDeclarationKind, inferDeclarationKind } from "./utils.ts";
 
+/** Build section id from title and optional prefix. */
+function buildSectionId(idPrefix: string, title: string): string {
+  const sectionPart = title.toLowerCase().replace(/\s+/g, "-");
+  if (!idPrefix) return `~${sectionPart}`;
+  return `${idPrefix}~${sectionPart}`;
+}
+
 export function buildSignatureCard(
   name: string,
   label: string,
@@ -27,6 +34,7 @@ export function buildSignatureCard(
   flags: MemberFlags,
   kind: DeclarationKind,
   extraSections: Section[] = [],
+  cardIdPrefix: string = "",
 ): SectionBlock & { kind: "card" } {
   const sections: Section[] = [
     {
@@ -40,10 +48,16 @@ export function buildSignatureCard(
 
   sections.push({
     title: "Signature",
+    id: buildSectionId(cardIdPrefix, "Signature"),
     body: [{ kind: "signatures", signatures: [sig] }],
   });
 
-  sections.push(...extraSections);
+  sections.push(
+    ...extraSections.map((s) => ({
+      ...s,
+      id: s.id || buildSectionId(cardIdPrefix, s.title || "section"),
+    })),
+  );
 
   return { kind: "card", anchor, url: undefined, flags, sections };
 }
@@ -51,6 +65,7 @@ export function buildSignatureCard(
 export function declarationAsCards(
   decl: TDDeclaration,
   ctx: TransformContext,
+  _idPrefix: string = "",
 ): Array<SectionBlock & { kind: "card" }> {
   const baseName = decl.kind === Kind.Constructor ? "constructor" : decl.name;
   const flags = transformFlags(decl.flags);
@@ -115,6 +130,7 @@ export function declarationAsCards(
       doc,
       url: undefined,
       ctx,
+      idPrefix: baseName,
     });
     return [
       {
@@ -176,6 +192,7 @@ export function declarationAsCards(
       i === 0 ? flags : {},
       kind,
       extraSections,
+      anchor,
     );
   });
 }
@@ -198,7 +215,10 @@ function buildCardSections(input: {
   doc: DocNode[];
   url?: string;
   ctx: TransformContext;
+  idPrefix?: string;
 }): Section[] {
+  const idPrefix = input.idPrefix ?? "";
+
   if (input.url) {
     return input.doc.length > 0 ? [{ body: [{ kind: "doc", doc: input.doc }] }] : [];
   }
@@ -214,11 +234,13 @@ function buildCardSections(input: {
   if (input.signatures.length > 0) {
     sections.push({
       title: "Signature",
+      id: buildSectionId(idPrefix, "Signature"),
       body: [{ kind: "signatures", signatures: input.signatures }],
     });
   } else if (input.type) {
     sections.push({
       title: "Type",
+      id: buildSectionId(idPrefix, "Type"),
       body: [
         {
           kind: "type-declaration",
@@ -239,7 +261,12 @@ function buildCardSections(input: {
   for (let i = 0; i < input.rawSignatures.length; i++) {
     const rawSig = input.rawSignatures[i];
     const blockTags = extractBlockTagSections(rawSig.comment, input.ctx);
-    sections.push(...blockTags.examples);
+    sections.push(
+      ...blockTags.examples.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId(idPrefix, s.title || "examples"),
+      })),
+    );
     // Type parameters
     const typeParamDocs = (rawSig.typeParameters ?? [])
       .filter((tp) => tp.comment?.summary?.length)
@@ -247,6 +274,7 @@ function buildCardSections(input: {
     if (typeParamDocs.length > 0) {
       sections.push({
         title: "Type Parameters",
+        id: buildSectionId(idPrefix, "Type Parameters"),
         body: [{ kind: "parameters", parameters: typeParamDocs }],
       });
     }
@@ -256,6 +284,7 @@ function buildCardSections(input: {
   for (const parameters of parameterDocsForSignatures(input.rawSignatures, input.ctx)) {
     sections.push({
       title: "Parameters",
+      id: buildSectionId(idPrefix, "Parameters"),
       body: [{ kind: "parameters", parameters }],
     });
   }
@@ -263,7 +292,16 @@ function buildCardSections(input: {
   // Returns and throws
   for (const rawSig of input.rawSignatures) {
     const blockTags = extractBlockTagSections(rawSig.comment, input.ctx);
-    sections.push(...blockTags.returns, ...blockTags.throws);
+    sections.push(
+      ...blockTags.returns.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId(idPrefix, s.title || "returns"),
+      })),
+      ...blockTags.throws.map((s) => ({
+        ...s,
+        id: s.id || buildSectionId(idPrefix, s.title || "throws"),
+      })),
+    );
   }
 
   return sections;
