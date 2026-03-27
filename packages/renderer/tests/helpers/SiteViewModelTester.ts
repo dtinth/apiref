@@ -114,6 +114,13 @@ class PageTester {
     const outline = buildOutline(page.sections);
     expect(outline).toMatchObject(expected);
   }
+
+  shouldHaveOutlineSectionTitles(expectedTitles: string[]): void {
+    const page = this.shouldExist();
+    const outline = buildOutline(page.sections);
+    const sectionTitles = outline.map((s) => s.label);
+    expect(sectionTitles).toEqual(expectedTitles);
+  }
 }
 
 export class SiteViewModelTester {

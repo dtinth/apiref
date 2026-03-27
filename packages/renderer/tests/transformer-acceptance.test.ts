@@ -105,4 +105,15 @@ describe("pages", () => {
       },
     ]);
   });
+  test.skip("Function page outline should have correct sections", () => {
+    tester
+      .page("utils/debounce.html")
+      .shouldHaveOutlineSectionTitles([
+        "Example",
+        "Signature",
+        "Type Parameters",
+        "Parameters",
+        "Returns",
+      ]);
+  });
 });
