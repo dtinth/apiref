@@ -244,7 +244,8 @@ describe("examples renderer fixture", () => {
   test("reference cards link to documented targets with breadcrumb labels", () => {
     const page = site.pages.find((p) => p.url === "index/index.html");
     const referencesSection = page?.sections.find(
-      (section) => section.title === "References" && section.body.some((block) => block.kind === "card"),
+      (section) =>
+        section.title === "References" && section.body.some((block) => block.kind === "card"),
     );
     const authCard = referencesSection?.body.find(
       (block) =>
@@ -266,7 +267,8 @@ describe("examples renderer fixture", () => {
   test("nested namespace reference cards resolve to the referenced page", () => {
     const page = site.pages.find((p) => p.url === "data/RecA/RecB/index.html");
     const referencesSection = page?.sections.find(
-      (section) => section.title === "References" && section.body.some((block) => block.kind === "card"),
+      (section) =>
+        section.title === "References" && section.body.some((block) => block.kind === "card"),
     );
     const recACard = referencesSection?.body.find(
       (block) =>

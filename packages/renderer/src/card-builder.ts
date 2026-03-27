@@ -92,7 +92,8 @@ export function declarationAsCards(
   const commentSource = rawSignatures[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
   const referenceTarget = referenceTargetForDeclaration(decl, ctx);
-  const url = referenceTarget?.url ?? (PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined);
+  const url =
+    referenceTarget?.url ?? (PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined);
   const kind = declarationKindForMember(decl, signatures);
 
   // If the member has its own page, use the old single-card-with-link approach
