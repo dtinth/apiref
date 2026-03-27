@@ -188,6 +188,14 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         children: modNavChildren.sort(byLabel),
       });
     }
+    // Sort modules with index first, then alphabetically
+    navTree.sort((a, b) => {
+      const aIsIndex = a.label === pkgName;
+      const bIsIndex = b.label === pkgName;
+      if (aIsIndex) return -1;
+      if (bIsIndex) return 1;
+      return a.label.localeCompare(b.label);
+    });
   }
 
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };

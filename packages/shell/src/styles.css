@@ -13,10 +13,11 @@
   --color-ar-accent-green: #d7fc70;
   --color-ar-accent-yellow: #ffffbb;
 
-  --font-sans: "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
   --font-mono:
-    "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+    "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
@@ -115,26 +116,6 @@ ar-shell {
 .ar-nav-item--active {
   @apply text-white bg-white/10;
   box-shadow: inset 2px 0 0 var(--color-ar-accent-cyan);
-}
-
-.ar-nav-item--active.ar-nav-item--depth-0 {
-  padding-left: calc(1rem - 2px);
-}
-
-.ar-nav-item--active.ar-nav-item--depth-1 {
-  padding-left: calc(2rem - 2px);
-}
-
-.ar-nav-item--active.ar-nav-item--depth-2 {
-  padding-left: calc(3rem - 2px);
-}
-
-.ar-nav-item--active.ar-nav-item--depth-3 {
-  padding-left: calc(4rem - 2px);
-}
-
-.ar-nav-item--active.ar-nav-item--depth-4 {
-  padding-left: calc(5rem - 2px);
 }
 
 .ar-nav-item-icon {
