@@ -300,3 +300,5 @@ export class EventEmitter<Events extends Record<string, any>> {
     this.listeners.get(String(event))?.forEach((listener) => listener(payload));
   }
 }
+
+export default 42;

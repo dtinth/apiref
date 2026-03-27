@@ -7,7 +7,7 @@
     "ready": "vp fmt && vp lint && vp run test -r && vp run build -r",
     "dev": "vp run website#dev",
     "prepare": "vp config",
-    "generate-fixture": "vp exec typedoc --entryPoints packages/examples/src/index.ts packages/examples/src/data.ts packages/examples/src/utils.ts packages/examples/src/namespaces.ts packages/examples/src/plugins.ts --tsconfig packages/examples/tsconfig.json --json packages/renderer/fixtures/examples.json --name '@apiref-examples/core' --readme packages/examples/README.md",
+    "generate-fixture": "vp exec typedoc --entryPoints packages/examples/src/index.ts packages/examples/src/data.ts packages/examples/src/utils.ts packages/examples/src/namespaces.ts packages/examples/src/plugins.ts packages/examples/src/web.ts --tsconfig packages/examples/tsconfig.json --json packages/renderer/fixtures/examples.json --name '@apiref-examples/core' --readme packages/examples/README.md",
     "render": "vp run @apiref/renderer#build && node packages/renderer/dist/cli.mjs packages/renderer/fixtures/examples.json --out _site --assets-base /assets"
   },
   "devDependencies": {

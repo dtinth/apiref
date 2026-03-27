@@ -426,3 +426,5 @@ export type AppConfig = typeof defaultConfig;
 
 export const Something = 123;
 export type Something = number;
+
+export default Cache;

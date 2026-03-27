@@ -9,6 +9,7 @@ catalog:
   "@tailwindcss/typography": ^0.5.19
   "@tailwindcss/vite": ^4.2.2
   "@types/node": ^24
+  elysia: ^1.4.28
   lit: ^3.3.2
   marked: ^17.0.5
   preact: ^10.29.0
