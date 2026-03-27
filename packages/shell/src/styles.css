@@ -90,7 +90,7 @@ ar-shell {
 
 .ar-nav-item {
   @apply flex items-center gap-1.5 px-4 py-0.5 text-sm text-gray-300 hover:text-white hover:bg-white/5
-         cursor-pointer block text-left;
+         cursor-pointer text-left;
 }
 
 .ar-nav-item--depth-0 {
@@ -193,7 +193,7 @@ ar-shell {
 }
 
 .ar-card-header {
-  @apply text-xl font-semibold text-ar-accent-cyan mb-2 text-sm;
+  @apply text-xl font-semibold text-ar-accent-cyan mb-2;
 }
 
 .ar-card--link:has(a.ar-card-header:hover) {
