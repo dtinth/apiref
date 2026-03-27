@@ -55,8 +55,7 @@ ar-shell {
   @apply md:fixed md:top-[58px] md:w-[20rem] md:bottom-0 md:left-0 md:overflow-y-auto
          overflow-x-hidden bg-ar-sidebar leading-loose md:leading-relaxed
          md:border-r border-ar-border text-gray-300 z-10
-         fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto border-r
-         transition-transform;
+         fixed top-[58px] w-[20rem] bottom-0 left-0 overflow-y-auto border-r;
 }
 
 .ar-sidebar--hidden {
@@ -82,7 +81,7 @@ ar-shell {
 
 .ar-nav-item {
   @apply flex items-center gap-1.5 px-4 py-0.5 text-sm text-gray-300 hover:text-white hover:bg-white/5
-         transition-colors cursor-pointer block text-left;
+         cursor-pointer block text-left;
 }
 
 .ar-nav-item--depth-0 {
@@ -174,10 +173,6 @@ ar-shell {
 
 .ar-card-header .ar-kind-icon {
   @apply flex-none text-sm;
-}
-
-.ar-card--link {
-  @apply transition-all;
 }
 
 .ar-card--link:has(a.ar-card-header:hover) {
@@ -463,7 +458,7 @@ a.ar-card-header {
   color: #b180d7;
 }
 .ar-kind-icon--property {
-  color: #75beff;
+  color: #bfbfbf;
 }
 .ar-kind-icon--accessor {
   color: #75beff;
@@ -500,7 +495,7 @@ a.ar-card-header {
 
 .ar-outline-item {
   @apply flex items-center gap-1.5 px-1 py-0.5 text-xs text-gray-400 hover:text-white
-         hover:bg-white/5 rounded transition-colors cursor-pointer w-full truncate;
+         hover:bg-white/5 rounded cursor-pointer w-full truncate;
 }
 
 .ar-outline-item .codicon {
