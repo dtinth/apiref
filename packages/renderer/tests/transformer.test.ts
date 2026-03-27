@@ -279,8 +279,8 @@ describe("member cards", () => {
         // Skip the first section (which contains declaration-title)
         const contentSections = createFrameCard.sections.slice(1);
         const sectionKinds = contentSections.flatMap((s) => s.body.map((b) => b.kind));
-        // Now includes @returns blockTag processing: signatures, doc, parameters (@param), parameters (@returns)
-        expect(sectionKinds).toEqual(["signatures", "doc", "parameters", "parameters"]);
+        // Now includes @returns blockTag processing: signatures, doc, parameters (@param), doc (@returns)
+        expect(sectionKinds).toEqual(["signatures", "doc", "parameters", "doc"]);
       }
     }
   });
