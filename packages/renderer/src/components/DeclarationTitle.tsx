@@ -35,7 +35,7 @@ export function SourceLink({ href }: { href: string }) {
       target="_blank"
       rel="noreferrer"
     >
-      <i class="codicon codicon-source-control" aria-hidden="true" />
+      <i class="codicon codicon-code" aria-hidden="true" />
     </a>
   );
 }
