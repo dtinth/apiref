@@ -54,6 +54,13 @@ describe("nav", () => {
       .child("createEmitter", { kind: "function" })
       .shouldLinkTo("index/createEmitter/index.html");
   });
+  test("Children of namespace + function should be processed", () => {
+    tester.nav
+      .child("@apiref-examples/core")
+      .child("createEmitter", { kind: "namespace" })
+      .child("EventMap", { kind: "interface" })
+      .shouldLinkTo("index/EventMap/EventMap.html");
+  });
 });
 
 describe("pages", () => {

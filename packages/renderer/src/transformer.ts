@@ -126,26 +126,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     }
 
     for (const [_name, decls] of nameGroups) {
-      if (decls.length > 1 && decls.every((d) => PAGE_KINDS.has(d.kind))) {
-        // Multiple declarations with same name - combine on one page
-        const page = buildMultiDeclarationPage(decls, [], ctx);
-        if (page) {
-          pages.push(page);
-          // Create one nav node that points to the shared page
-          for (const decl of decls) {
-            navChildren.push(declarationNavNode(decl, idToUrl));
-          }
-        }
-      } else {
-        // Single declaration or mixed kinds - process normally
-        for (const child of decls) {
-          const page = buildDeclarationPage(child, [], ctx);
-          if (page) {
-            pages.push(page);
-            navChildren.push(declarationNavNode(child, idToUrl));
-          }
-        }
-      }
+      collectNameGroupPages(decls, [], ctx, pages, navChildren, idToUrl);
     }
     navTree.push(...navChildren.sort(byLabel));
   } else {
@@ -164,32 +145,14 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
       }
 
       for (const [_name, decls] of modChildGroups) {
-        if (decls.length > 1 && decls.every((d) => PAGE_KINDS.has(d.kind))) {
-          // Multiple declarations with same name - combine on one page
-          const page = buildMultiDeclarationPage(
-            decls,
-            modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
-            ctx,
-          );
-          if (page) {
-            pages.push(page);
-            for (const decl of decls) {
-              modNavChildren.push(declarationNavNode(decl, idToUrl));
-            }
-          }
-        } else {
-          // Normal path for single declarations or mixed kinds
-          for (const child of decls) {
-            collectDeclarationPages(
-              child,
-              modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
-              ctx,
-              pages,
-              modNavChildren,
-              idToUrl,
-            );
-          }
-        }
+        collectNameGroupPages(
+          decls,
+          modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
+          ctx,
+          pages,
+          modNavChildren,
+          idToUrl,
+        );
       }
       navTree.push({
         label: buildModuleImportPath(pkgName, mod.name),
@@ -211,6 +174,56 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   }
 
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };
+}
+
+// ---------------------------------------------------------------------------
+// Name group processing (handles multi-decl and single-decl cases)
+// ---------------------------------------------------------------------------
+
+function collectNameGroupPages(
+  decls: TDDeclaration[],
+  breadcrumbs: Breadcrumb[],
+  ctx: TransformContext,
+  pages: PageViewModel[],
+  navChildren: NavNode[],
+  idToUrl: Map<number, string>,
+): void {
+  if (decls.length > 1 && decls.every((d) => PAGE_KINDS.has(d.kind))) {
+    // Multiple declarations with same name - combine on one page
+    const page = buildMultiDeclarationPage(decls, breadcrumbs, ctx);
+    if (page) {
+      pages.push(page);
+      for (const decl of decls) {
+        const navNode = declarationNavNode(decl, idToUrl);
+        navChildren.push(navNode);
+        // For namespace declarations, recurse into PAGE_KINDS children
+        if (decl.kind === Kind.Namespace) {
+          const declUrl = idToUrl.get(decl.id);
+          if (declUrl) {
+            const nestedNavChildren: NavNode[] = [];
+            for (const child of decl.children ?? []) {
+              if (PAGE_KINDS.has(child.kind)) {
+                collectDeclarationPages(
+                  child,
+                  breadcrumbs.concat({ label: decl.name, url: declUrl }),
+                  ctx,
+                  pages,
+                  nestedNavChildren,
+                  idToUrl,
+                );
+              }
+            }
+            navNode.children = nestedNavChildren.sort(byLabel);
+          }
+        }
+      }
+    }
+  } else {
+    // Single declaration or mixed kinds
+    for (const decl of decls) {
+      collectDeclarationPages(decl, breadcrumbs, ctx, pages, navChildren, idToUrl);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
