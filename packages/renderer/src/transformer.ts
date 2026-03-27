@@ -763,14 +763,14 @@ function declarationKindForMember(
 
 function inferMemberKind(
   decl: TDDeclaration,
-  signatures: SignatureViewModel[],
+  _signatures: SignatureViewModel[],
 ): Extract<DeclarationKind, "constructor" | "accessor" | "method" | "property"> {
   // Constructor
   if (decl.kind === Kind.Constructor) return "constructor";
   // Accessor (getter/setter)
   if (decl.getSignature || decl.setSignature) return "accessor";
-  // Method or function (has signatures)
-  if (signatures.length > 0) return "method";
+  // Method
+  if (decl.kind === Kind.Method) return "method";
   // Default to property
   return "property";
 }
