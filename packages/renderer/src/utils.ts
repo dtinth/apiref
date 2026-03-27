@@ -82,6 +82,12 @@ export function isDeclarationReflection(
   return reflection.variant === "declaration" || reflection.variant === "reference";
 }
 
+export function isReferenceReflection(
+  reflection: TDDeclaration,
+): reflection is JSONOutput.ReferenceReflection {
+  return reflection.variant === "reference";
+}
+
 export function getDeclarationChildren(reflection: {
   children?: JSONOutput.SomeReflection[];
 }): TDDeclaration[] {

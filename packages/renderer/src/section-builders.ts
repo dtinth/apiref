@@ -23,10 +23,10 @@ export function buildClassSections(
   const sections: Section[] = [];
   const children = getDeclarationChildren(decl);
   const groups = decl.groups ?? inferGroups(children);
-  const idToDecl = new Map(children.map((c) => [c.id, c]));
+  const idToDecl = new Map<number, TDDeclaration>(children.map((c) => [c.id, c]));
 
   for (const group of groups) {
-    const members = group.children
+    const members = (group.children ?? [])
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
 
@@ -64,10 +64,10 @@ export function buildMemberSections(
   // Then regular members
   const children = getDeclarationChildren(decl);
   const groups = decl.groups ?? inferGroups(children);
-  const idToDecl = new Map(children.map((c) => [c.id, c]));
+  const idToDecl = new Map<number, TDDeclaration>(children.map((c) => [c.id, c]));
 
   for (const group of groups) {
-    const members = group.children
+    const members = (group.children ?? [])
       .map((id) => idToDecl.get(id))
       .filter((d): d is TDDeclaration => d !== undefined);
     sections.push({
