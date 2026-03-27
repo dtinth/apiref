@@ -175,9 +175,15 @@ ar-shell {
   text-shadow: none;
 }
 
+/* ── Sections and cards (scroll margin for outline) ────────────────────── */
+.ar-section {
+  scroll-margin-top: 60px;
+}
+
 /* ── Card items (class properties, methods, etc.) ────────────────────── */
 .ar-card {
   @apply border border-ar-border rounded px-4 py-3 mb-3 space-y-2 bg-ar-sidebar;
+  scroll-margin-top: 60px;
 }
 
 .ar-card-header {
