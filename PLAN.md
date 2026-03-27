@@ -290,6 +290,7 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 ### Problem
 
 The `TypeViewModel.reflection` type previously contained `members: SectionBlock[]`, which violated separation of concerns by mixing:
+
 - **Type information** (what is the type?) — responsibility of TypeViewModel
 - **Document structure** (how do we render it?) — responsibility of Section/SectionBlock
 
