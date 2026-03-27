@@ -94,6 +94,7 @@ export interface TDFlags {
   isProtected?: boolean;
   isConst?: boolean;
   isDeprecated?: boolean;
+  isRest?: boolean;
 }
 
 export interface TDComment {

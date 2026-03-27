@@ -163,6 +163,7 @@ export function transformParameter(param: TDParameter, ctx: TransformContext): P
     name: param.name,
     type,
     optional: param.flags.isOptional ?? false,
+    isRest: param.flags.isRest ?? false,
   };
 }
 

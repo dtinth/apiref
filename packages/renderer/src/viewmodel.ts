@@ -192,6 +192,8 @@ export interface ParameterViewModel {
   type: TypeViewModel;
   /** Whether the parameter is optional. */
   optional: boolean;
+  /** Whether this is a rest parameter (...args). */
+  isRest: boolean;
 }
 
 /**

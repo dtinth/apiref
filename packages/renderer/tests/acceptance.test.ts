@@ -145,4 +145,8 @@ describe("type rendering", () => {
     const page = tester.page("index/isNumber.html");
     page.section("Signature").shouldHaveSignature("(value: unknown): value is number");
   });
+  test("Rest parameter function renders correctly", () => {
+    const page = tester.page("index/joinStrings.html");
+    page.section("Signature").shouldHaveSignature("(...args: string[]): string");
+  });
 });

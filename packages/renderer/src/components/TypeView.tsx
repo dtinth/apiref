@@ -319,6 +319,7 @@ function renderParam(
 ): preact.ComponentChild {
   return (
     <>
+      {p.isRest && "..."}
       <span class="ar-param-name">{p.name}</span>
       {p.optional && "?"}
       {": "}
