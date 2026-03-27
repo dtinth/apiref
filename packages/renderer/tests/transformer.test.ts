@@ -141,7 +141,7 @@ describe("visual-storyboard (multi-module)", () => {
   test("StoryboardWriter has constructor section", () => {
     const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
     const section = page?.sections.find(
-      (s) => s.title === "Constructor" && s.body.some((b) => b.kind === "card"),
+      (s) => s.title === "Constructors" && s.body.some((b) => b.kind === "card"),
     );
     expect(section).toBeDefined();
   });

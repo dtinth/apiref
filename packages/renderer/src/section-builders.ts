@@ -18,7 +18,7 @@ export function buildClassSections(decl: TDDeclaration, ctx: TransformContext): 
       .filter((d): d is TDDeclaration => d !== undefined);
 
     sections.push({
-      title: group.title === "Constructors" ? "Constructor" : group.title,
+      title: group.title,
       body: members.flatMap((d) => declarationAsCards(d, ctx)),
     });
   }
