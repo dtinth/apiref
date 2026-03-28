@@ -35,6 +35,7 @@ export function createLogger(packageSpec: string): { logger: Logger; tmpDir: str
       const timestamp = new Date().toISOString();
       const logEntry = `[${timestamp}] ${message}\n`;
       appendFileSync(logPath, logEntry);
+      console.log(message);
     },
     getLogPath() {
       return logPath;

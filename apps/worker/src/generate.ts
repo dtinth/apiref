@@ -2,10 +2,25 @@ import { execa } from "execa";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
+import type { Logger } from "./logger.js";
+
+function createExecaOptions(cwd: string, logFile?: string): any {
+  const options: any = { cwd };
+  if (logFile) {
+    const output = { file: logFile };
+    options.stdout = output;
+    options.stderr = output;
+  } else {
+    options.stdio = "inherit";
+  }
+  return options;
+}
 
 export interface GenerateOptions {
   packageSpec: string;
   outFile?: string;
+  logger?: Logger;
+  logDir?: string;
 }
 
 async function findEntryPointsFallback(packageDir: string, packageName: string): Promise<string[]> {
@@ -47,7 +62,12 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
 }
 
 export async function generate(options: GenerateOptions): Promise<string> {
-  const { packageSpec, outFile = "typedoc.json" } = options;
+  const { packageSpec, outFile = "typedoc.json", logger, logDir } = options;
+
+  const log = (msg: string) => {
+    if (logger) logger.log(msg);
+    else console.log(msg);
+  };
 
   // Create a temporary directory for installation
   const tempDir = resolve(
@@ -58,12 +78,13 @@ export async function generate(options: GenerateOptions): Promise<string> {
   try {
     await mkdir(tempDir, { recursive: true });
 
+    // Setup log files if logDir is provided
+    const pnpmLogFile = logDir ? join(logDir, "pnpm.log") : null;
+    const typedocLogFile = logDir ? join(logDir, "typedoc.log") : null;
+
     // Install the package
-    console.log(`📦 Installing ${packageSpec}...`);
-    await execa("pnpm", ["add", "--ignore-scripts", packageSpec], {
-      cwd: tempDir,
-      stdio: "inherit",
-    });
+    log(`📦 Installing ${packageSpec}...`);
+    await execa(createExecaOptions(tempDir, pnpmLogFile))`pnpm add --ignore-scripts ${packageSpec}`;
 
     // Extract package name from packageSpec (e.g., "elysia@1.4.28" -> "elysia")
     const packageName = packageSpec.split("@")[0] || packageSpec;
@@ -91,36 +112,18 @@ export async function generate(options: GenerateOptions): Promise<string> {
     }
 
     // Generate TypeDoc JSON with vanilla TypeDoc (auto-discovers via typedoc export)
-    console.log(`📄 Generating TypeDoc JSON (vanilla)...`);
+    log(`📄 Generating TypeDoc JSON (vanilla)...`);
     const docFile = join(tempDir, "doc.json");
 
     try {
-      const typedocArgs = [
-        "dlx",
-        "typedoc",
-        "--json",
-        docFile,
-        "--name",
-        packageName,
-        "--skipErrorChecking",
-        "--disableGit",
-      ];
+      const sourceLink = gitRemote && gitRevision
+        ? ["--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ''}{path}#L{line}`]
+        : [];
 
-      if (gitRemote && gitRevision) {
-        const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
-        typedocArgs.push(
-          "--sourceLinkTemplate",
-          `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`,
-        );
-      }
-
-      await execa("pnpm", typedocArgs, {
-        cwd: packagePath,
-        stdio: "inherit",
-      });
+      await execa(createExecaOptions(packagePath, typedocLogFile))`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
-      console.log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
+      log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
       const entryPoints = await findEntryPointsFallback(tempDir, packageName);
       if (entryPoints.length === 0) {
         throw new Error(
@@ -128,32 +131,13 @@ export async function generate(options: GenerateOptions): Promise<string> {
         );
       }
 
-      console.log(`   Found ${entryPoints.length} entry point(s)`);
-      const typedocArgs = ["dlx", "typedoc"];
-      for (const ep of entryPoints) {
-        typedocArgs.push("--entryPoints", ep);
-      }
-      typedocArgs.push(
-        "--json",
-        docFile,
-        "--name",
-        packageName,
-        "--skipErrorChecking",
-        "--disableGit",
-      );
+      log(`   Found ${entryPoints.length} entry point(s)`);
+      const entryPointArgs = entryPoints.flatMap((ep) => ["--entryPoints", ep]);
+      const sourceLink = gitRemote && gitRevision
+        ? ["--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ''}{path}#L{line}`]
+        : [];
 
-      if (gitRemote && gitRevision) {
-        const pathPrefix = gitDirectory ? `${gitDirectory}/` : "";
-        typedocArgs.push(
-          "--sourceLinkTemplate",
-          `${gitRemote}/blob/${gitRevision}/${pathPrefix}{path}#L{line}`,
-        );
-      }
-
-      await execa("pnpm", typedocArgs, {
-        cwd: tempDir,
-        stdio: "inherit",
-      });
+      await execa(createExecaOptions(tempDir, typedocLogFile))`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
     }
 
     // Read the generated JSON
@@ -162,15 +146,17 @@ export async function generate(options: GenerateOptions): Promise<string> {
     // Write output file
     const outputPath = resolve(outFile);
     await writeFile(outputPath, typedocJson, "utf-8");
-    console.log(`✅ Generated: ${outputPath}`);
+    log(`✅ Generated: ${outputPath}`);
 
     return typedocJson;
   } finally {
     // Cleanup temp directory
     try {
-      await execa("rm", ["-rf", tempDir]);
+      await execa`rm -rf ${tempDir}`;
     } catch {
-      console.warn(`⚠️  Failed to cleanup temp directory: ${tempDir}`);
+      const warnMsg = `⚠️  Failed to cleanup temp directory: ${tempDir}`;
+      if (logger) logger.log(warnMsg);
+      else console.warn(warnMsg);
     }
   }
 }

@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "commander": "catalog:",
-    "execa": "^6.1.0",
+    "execa": "catalog:",
     "pacote": "catalog:"
   },
   "devDependencies": {

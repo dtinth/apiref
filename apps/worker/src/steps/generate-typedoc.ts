@@ -10,7 +10,7 @@ export const generateTypedocStep: PipelineStep = {
     logger.log(`Generating TypeDoc JSON from ${packageSpec}...`);
 
     const outFile = join(tmpDir, "doc.json");
-    await generate({ packageSpec, outFile });
+    await generate({ packageSpec, outFile, logger, logDir: tmpDir });
 
     logger.log(`TypeDoc JSON written to ${outFile}`);
   },
