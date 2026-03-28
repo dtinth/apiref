@@ -103,4 +103,4 @@ Options:
   process.stderr.write(`Wrote ${pagesWritten} pages to ${values.out}/\n`);
 }
 
-main();
+void main();
