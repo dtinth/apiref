@@ -6,7 +6,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(vp test:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(vp run build -r)"
     ]
   }
 }

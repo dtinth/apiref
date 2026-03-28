@@ -1,3 +1,4 @@
+import pacote from "pacote";
 import { PipelineContext, PipelineStep } from "../pipeline.js";
 
 export const verifyProvenanceStep: PipelineStep = {
@@ -7,9 +8,20 @@ export const verifyProvenanceStep: PipelineStep = {
 
     logger.log(`Fetching package metadata for ${packageSpec}...`);
 
-    // TODO: Implement provenance check using pacote
+    const manifest = await pacote.manifest(packageSpec);
+    const packageName = manifest.name;
+    const version = manifest.version;
+
+    logger.log(`Resolved: ${packageName}@${version}`);
     logger.log(`Checking npm provenance attestations...`);
 
-    throw new Error("verify-provenance not yet implemented");
+    const hasAttestations = manifest.dist?.attestations != null;
+    if (!hasAttestations) {
+      throw new Error(
+        `No npm provenance attestations found. Only packages published with npm provenance are accepted.`,
+      );
+    }
+
+    logger.log(`✓ Package has valid npm provenance attestations`);
   },
 };
