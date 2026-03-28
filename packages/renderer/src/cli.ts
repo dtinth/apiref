@@ -1,6 +1,6 @@
+#!/usr/bin/env node
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { transform } from "./transformer.ts";
 import { renderSite } from "./render.tsx";
@@ -55,12 +55,10 @@ export async function runCli(options: CliOptions): Promise<{ pagesWritten: numbe
 }
 
 // ---------------------------------------------------------------------------
-// Entry point — only runs when this file is the direct Node.js entry
+// Entry point — always runs (this is a CLI-only module)
 // ---------------------------------------------------------------------------
 
-const isMain = process.argv[1] !== undefined && fileURLToPath(import.meta.url) === process.argv[1];
-
-if (isMain) {
+async function main() {
   const { values, positionals } = parseArgs({
     args: process.argv.slice(2),
     options: {
@@ -99,3 +97,5 @@ Options:
 
   process.stderr.write(`Wrote ${pagesWritten} pages to ${values.out}/\n`);
 }
+
+main();
