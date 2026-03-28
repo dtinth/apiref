@@ -47,3 +47,15 @@ To make documentation pages link back to the source code correctly:
     },
   }
   ```
+
+- For monorepos, make sure to set `repository.directory` in the root `package.json` to the subdirectory of the package, so that links point to the correct location in the repository.
+
+  ```jsonc
+  {
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/dtinth/visual-storyboard.git",
+      "directory": "packages/core",
+    },
+  }
+  ```
