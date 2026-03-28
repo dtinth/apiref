@@ -15,7 +15,8 @@ export const verifyProvenanceStep: PipelineStep = {
     logger.log(`Resolved: ${packageName}@${version}`);
     logger.log(`Checking npm provenance attestations...`);
 
-    const hasAttestations = manifest.dist?.attestations != null;
+    const hasAttestations =
+      (manifest.dist as unknown as Record<string, unknown>)?.attestations != null;
     if (!hasAttestations) {
       throw new Error(
         `No npm provenance attestations found. Only packages published with npm provenance are accepted.`,

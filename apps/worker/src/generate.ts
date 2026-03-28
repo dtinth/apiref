@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import type { Logger } from "./logger.js";
 
-function createExecaOptions(cwd: string, logFile?: string): any {
+function createExecaOptions(cwd: string, logFile?: string | null): any {
   const options: any = { cwd };
   if (logFile) {
     const output = { file: logFile };
@@ -116,11 +116,17 @@ export async function generate(options: GenerateOptions): Promise<string> {
     const docFile = join(tempDir, "doc.json");
 
     try {
-      const sourceLink = gitRemote && gitRevision
-        ? ["--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ''}{path}#L{line}`]
-        : [];
+      const sourceLink =
+        gitRemote && gitRevision
+          ? [
+              "--sourceLinkTemplate",
+              `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
+            ]
+          : [];
 
-      await execa(createExecaOptions(packagePath, typedocLogFile))`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
+      await execa(
+        createExecaOptions(packagePath, typedocLogFile),
+      )`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
       log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
@@ -133,11 +139,17 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
       log(`   Found ${entryPoints.length} entry point(s)`);
       const entryPointArgs = entryPoints.flatMap((ep) => ["--entryPoints", ep]);
-      const sourceLink = gitRemote && gitRevision
-        ? ["--sourceLinkTemplate", `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ''}{path}#L{line}`]
-        : [];
+      const sourceLink =
+        gitRemote && gitRevision
+          ? [
+              "--sourceLinkTemplate",
+              `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
+            ]
+          : [];
 
-      await execa(createExecaOptions(tempDir, typedocLogFile))`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
+      await execa(
+        createExecaOptions(tempDir, typedocLogFile),
+      )`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
     }
 
     // Read the generated JSON
