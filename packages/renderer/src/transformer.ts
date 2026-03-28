@@ -1,8 +1,9 @@
-import type { JSONOutput } from "typedoc";
 import { ANCHOR_KINDS, Kind, PAGE_KINDS } from "./typedoc-kinds.ts";
+import { getDeclarationChildren } from "./typedoc.ts";
+import type { TDDeclaration, TDProject } from "./typedoc.ts";
 import type { Breadcrumb, NavNode, PageViewModel, SiteViewModel } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
-import { byLabel, getDeclarationChildren } from "./utils.ts";
+import { byLabel } from "./utils.ts";
 import { buildModuleImportPath, declarationNavNode } from "./nav.ts";
 import {
   buildPackageIndexPage,
@@ -11,9 +12,6 @@ import {
   buildDeclarationPage,
 } from "./page-builders.ts";
 import type { TransformContext } from "./transform-context.ts";
-
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
-type TDProject = JSONOutput.ProjectReflection;
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.

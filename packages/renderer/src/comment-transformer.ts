@@ -1,9 +1,6 @@
 import type { TransformContext } from "./transform-context.ts";
-import type { JSONOutput } from "typedoc";
+import type { TDComment, TDCommentPart } from "./typedoc.ts";
 import type { DocNode, Section } from "./viewmodel.ts";
-
-type TDComment = JSONOutput.Comment;
-type TDCommentPart = JSONOutput.CommentDisplayPart;
 
 export function transformComment(comment: TDComment, ctx: TransformContext): DocNode[] {
   return transformCommentParts(comment.summary, ctx);
