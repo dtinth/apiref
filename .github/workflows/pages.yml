@@ -43,8 +43,7 @@ jobs:
       - name: Copy shell assets
         run: |
           mkdir -p _site/assets
-          cp packages/shell/dist/shell.js _site/assets/
-          cp packages/shell/dist/styles.css _site/assets/
+          cp -rv packages/shell/dist/* _site/assets/
 
       - uses: actions/upload-pages-artifact@v3
         with:
