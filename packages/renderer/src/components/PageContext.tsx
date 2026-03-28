@@ -8,14 +8,45 @@ import { createContext, useContext } from "preact/compat";
 export const PageContext = createContext("");
 
 /**
- * Hook to get a function that resolves root-relative URLs to page-relative URLs.
+ * Preact context for the base URL prefix.
+ * When set, all generated links are absolute from this prefix instead of relative.
+ * @example "/package/name/v/1.0.0/"
+ */
+export const BasePrefixContext = createContext<string | undefined>(undefined);
+
+/**
+ * Hook to get a function that resolves root-relative URLs to page-relative (or absolute) URLs.
+ * When baseUrl is set, returns absolute URLs; otherwise returns relative URLs.
  * @example
  * const resolve = useResolveLink();
+ * // Without baseUrl:
  * resolve("MyClass.html") // => on page "module/Helper.html", returns "../MyClass.html"
+ * // With baseUrl = "/pkg/v/1.0.0/":
+ * resolve("MyClass.html") // => "/pkg/v/1.0.0/MyClass.html"
  */
 export function useResolveLink(): (url: string) => string {
   const pageUrl = useContext(PageContext);
-  return (url) => makeRelative(pageUrl, url);
+  const basePrefix = useContext(BasePrefixContext);
+
+  return (url: string) => {
+    if (basePrefix !== undefined) {
+      // Keep same-page anchor links as-is (#anchor)
+      if (url.startsWith("#")) return url;
+
+      // Split URL into path and hash
+      const hashIndex = url.indexOf("#");
+      const path = hashIndex >= 0 ? url.slice(0, hashIndex) : url;
+      const hash = hashIndex >= 0 ? url.slice(hashIndex) : "";
+
+      // Same-page anchor: return just the hash
+      if (path === pageUrl) return hash;
+
+      // Return absolute path with base prefix
+      return basePrefix + (hash ? `${path}${hash}` : path);
+    }
+
+    return makeRelative(pageUrl, url);
+  };
 }
 
 /**

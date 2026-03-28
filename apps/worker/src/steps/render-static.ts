@@ -5,7 +5,7 @@ import { PipelineContext, PipelineStep } from "../pipeline.js";
 export const renderStaticStep: PipelineStep = {
   name: "render-static",
   async run(context: PipelineContext) {
-    const { logger, tmpDir, resolvedVersion } = context;
+    const { logger, tmpDir, resolvedPackageName, resolvedVersion } = context;
 
     const docJsonPath = join(tmpDir, "doc.json");
     const outputDir = join(tmpDir, "site");
@@ -16,11 +16,15 @@ export const renderStaticStep: PipelineStep = {
     logger.log(`Output: ${outputDir}`);
 
     const versionArg = resolvedVersion ? ["--version", resolvedVersion] : [];
+    const baseUrlArg =
+      resolvedPackageName && resolvedVersion
+        ? ["--base-url", `/package/${resolvedPackageName}/v/${resolvedVersion}/`]
+        : [];
 
     await execa({
       stdout: { file: renderLogFile },
       stderr: { file: renderLogFile },
-    })`node_modules/.bin/apiref-render ${docJsonPath} --out ${outputDir} ${versionArg}`;
+    })`node_modules/.bin/apiref-render ${docJsonPath} --out ${outputDir} ${versionArg} ${baseUrlArg}`;
 
     logger.log(`✓ Static site rendered to ${outputDir}`);
   },

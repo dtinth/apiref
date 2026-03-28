@@ -16,13 +16,15 @@ export interface CliOptions {
   assetsBase: string;
   /** Override package version from the TypeDoc JSON. */
   version?: string;
+  /** Base URL for all generated links (makes them absolute from root). */
+  baseUrl?: string;
 }
 
 /**
  * Core CLI logic — separated from arg-parsing so it can be tested directly.
  */
 export async function runCli(options: CliOptions): Promise<{ pagesWritten: number }> {
-  const { input, out, assetsBase, version } = options;
+  const { input, out, assetsBase, version, baseUrl } = options;
 
   // Read input
   let raw: string;
@@ -42,7 +44,7 @@ export async function runCli(options: CliOptions): Promise<{ pagesWritten: numbe
   const site = transform(json, { version });
 
   // Render → HTML pages
-  const pages = renderSite(site, { shellBaseUrl: assetsBase });
+  const pages = renderSite(site, { shellBaseUrl: assetsBase, baseUrl });
 
   // Write files
   for (const [url, html] of pages) {
@@ -65,6 +67,7 @@ async function main() {
       out: { type: "string", short: "o", default: "dist" },
       "assets-base": { type: "string", default: DEFAULT_ASSETS_BASE },
       version: { type: "string" },
+      "base-url": { type: "string" },
       help: { type: "boolean", short: "h", default: false },
     },
     allowPositionals: true,
@@ -82,6 +85,7 @@ Options:
   --assets-base <url>   Base URL for shell assets
                         (default: ${DEFAULT_ASSETS_BASE})
   --version <ver>       Override package version from typedoc.json
+  --base-url <path>     Base URL path for all generated links (e.g. /package/name/v/1.0.0/)
   -h, --help            Show this help
 `,
     );
@@ -93,6 +97,7 @@ Options:
     out: values.out!,
     assetsBase: values["assets-base"]!,
     version: values.version,
+    baseUrl: values["base-url"],
   });
 
   process.stderr.write(`Wrote ${pagesWritten} pages to ${values.out}/\n`);

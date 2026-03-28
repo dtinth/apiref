@@ -81,7 +81,15 @@ export class ArShell extends LitElement {
     if (nav) {
       const arNav = document.createElement("ar-nav") as any;
       arNav.nodes = meta.navTree;
-      arNav.currentUrl = location.pathname.replace(/^\//, "") || "index.html";
+
+      // Calculate currentUrl: strip baseHref prefix if absolute, otherwise strip leading /
+      const baseHref = meta.baseHref;
+      const strippedPath =
+        baseHref.startsWith("/") && location.pathname.startsWith(baseHref)
+          ? location.pathname.slice(baseHref.length)
+          : location.pathname.replace(/^\//, "");
+      arNav.currentUrl = strippedPath || "index.html";
+
       arNav.baseHref = meta.baseHref;
       nav.appendChild(arNav);
 

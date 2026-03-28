@@ -10,12 +10,14 @@ import type {
 } from "../viewmodel.ts";
 import { DeclarationTitle, SourceLink } from "./DeclarationTitle.tsx";
 import { DocView } from "./DocView.tsx";
-import { PageContext, useResolveLink } from "./PageContext.tsx";
+import { PageContext, BasePrefixContext, useResolveLink } from "./PageContext.tsx";
 import { IndexSignatureLine, SignatureLine, TypeView } from "./TypeView.tsx";
 
 export interface PageRenderOptions {
   /** Base URL for the CDN shell assets, e.g. "https://cdn.example.com/shell@1.0.0" */
   shellBaseUrl: string;
+  /** Base URL path for all generated links, e.g. "/package/name/v/1.0.0/" */
+  baseUrl?: string;
 }
 
 interface PageProps {
@@ -26,7 +28,11 @@ interface PageProps {
 
 export function Page({ site, page, options }: PageProps) {
   const depth = page.url.split("/").length - 1;
-  const baseHref = depth === 0 ? "./" : Array(depth).fill("..").join("/") + "/";
+  const baseHref = options.baseUrl
+    ? options.baseUrl
+    : depth === 0
+      ? "./"
+      : Array(depth).fill("..").join("/") + "/";
 
   const outline = buildOutline(page.sections);
 
@@ -49,6 +55,8 @@ export function Page({ site, page, options }: PageProps) {
         <title>
           {page.title} — {site.package.name}
         </title>
+        {options.baseUrl && <link rel="canonical" href={options.baseUrl + page.url} />}
+        <link rel="icon" href={`${options.shellBaseUrl}/interface.svg`} type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -83,9 +91,11 @@ export function Page({ site, page, options }: PageProps) {
           <div class="ar-main ar-main--with-outline">
             <div class="ar-content-wrap">
               <main class="ar-content">
-                <PageContext.Provider value={page.url}>
-                  <PageContent page={page} />
-                </PageContext.Provider>
+                <BasePrefixContext.Provider value={options.baseUrl}>
+                  <PageContext.Provider value={page.url}>
+                    <PageContent page={page} />
+                  </PageContext.Provider>
+                </BasePrefixContext.Provider>
               </main>
             </div>
           </div>
