@@ -20,9 +20,30 @@ Automatically generated TypeScript API documentation for npm packages — a [doc
 ```
 INTAKE       → check provenance + types → Grist queue
 GENERATION   → pnpm install + typedoc --json → upload typedoc.json
-RENDERING    → typedoc.json → HTML files → upload
-SERVING      → object storage + shared shell CDN
+RENDERING    → typedoc.json → HTML files (with --base-url) → rclone upload
+SERVING      → object storage (S3-compatible, R2, GCS) + shared shell CDN
 ```
+
+### Deployment and Storage
+
+**Object Storage Paths:**
+
+- Destination: `package/{name}/v/{version}/` (mirrors npm registry structure)
+- Format: Absolute root-relative paths in all links (e.g., `/package/@scope/pkg/v/1.0.0/path/to/page.html`)
+- Uses `--base-url` flag to generate absolute links, avoiding S3 trailing-slash ambiguity
+
+**Upload Process:**
+
+- Uses `rclone copy` with `--progress --no-traverse` flags
+- Environment: `APIREF_STORAGE_BUCKET` sets destination root
+- Inter-step communication: `PipelineContext` carries `resolvedPackageName` and `resolvedVersion` from verify-provenance to render-static to upload-storage
+
+**Link Generation:**
+
+- With `--base-url`: All links are absolute from site root (e.g., `/package/@scope/pkg/v/1.0.0/path`)
+- Without `--base-url`: Uses relative links based on page depth (legacy behavior)
+- Canonical link: Generated when baseUrl provided; points to absolute path
+- Same-page anchors: Always relative, never affected by baseUrl
 
 ## Renderer (`@apiref/renderer`) — BUILT
 
@@ -44,8 +65,15 @@ SERVING      → object storage + shared shell CDN
 
 ### CLI
 
-`apiref-render [--out <dir>] [--assets-base <url>] <input.json>`
-Default assets base: `https://dtinth.github.io/apiref/assets/`
+`apiref-render [--out <dir>] [--assets-base <url>] [--base-url <url>] [--shell-base-url <url>] [--version <version>] <input.json>`
+
+**Options:**
+
+- `--out` — Output directory (default: `./dist`)
+- `--assets-base` — CDN base URL for resources (default: `https://dtinth.github.io/apiref/assets/`)
+- `--base-url` — Absolute root-relative base URL for all links (e.g., `/package/@pkg/lib/v/1.0.0/`). When provided, generates absolute links instead of relative links. Enables deployment to S3-compatible storage without trailing-slash issues.
+- `--shell-base-url` — Base URL for shell assets; used for favicon and shell CSS/JS (default: `--assets-base`)
+- `--version` — Package version (passed to renderer, used in metadata)
 
 ### Page hierarchy
 
@@ -298,6 +326,12 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 ## Recent changes
 
+- **2026-03-28:** Implemented upload-storage step using rclone with destination path `package/{name}/v/{version}/`
+- **2026-03-28:** Implemented --base-url flag for absolute root-relative links; resolves S3 trailing-slash problem
+- **2026-03-28:** Added canonical link generation when baseUrl provided; added favicon pointing to shell interface.svg
+- **2026-03-28:** Created BasePrefixContext for baseUrl configuration; updated link resolution to support both relative and absolute paths
+- **2026-03-28:** Fixed GitHub Pages workflow to copy all shell assets using bulk cp -rv instead of individual files
+- **2026-03-28:** Fixed shell nav active-item detection at subpaths; strips baseHref prefix before comparing location.pathname
 - **2026-03-28:** Consolidated renderer TypeDoc aliases; migrated to official TypeDoc JSONOutput types
 - **2026-03-28:** Added rest parameter support to signature rendering
 - **2026-03-28:** Added monorepo support via `repository.directory` field in TypeDoc JSON

@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import type { Logger } from "./logger.js";
@@ -38,7 +38,7 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
         continue;
       }
 
-      // Check for typedoc conditional export first (vanilla TypeDoc way)
+      // Tier 1: typedoc/types conditional export
       let types: string | undefined;
       if (typeof value === "object" && value !== null) {
         types = (value as Record<string, unknown>).typedoc as string | undefined;
@@ -48,8 +48,39 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
       }
 
       if (types) {
-        const entryPoint = join(packageDir, "node_modules", packageName, types);
-        entryPoints.push(entryPoint);
+        entryPoints.push(join(packageDir, "node_modules", packageName, types));
+        continue;
+      }
+
+      // Tier 2: infer .d.mts or .d.ts from the .mjs/.js export path
+      const defaultPath =
+        typeof value === "string"
+          ? value
+          : typeof value === "object" && value !== null
+            ? ((value as Record<string, unknown>).default as string | undefined)
+            : undefined;
+
+      if (defaultPath) {
+        for (const [from, to] of [
+          [/\.mjs$/, ".d.mts"],
+          [/\.js$/, ".d.ts"],
+        ] as [RegExp, string][]) {
+          if (from.test(defaultPath)) {
+            const candidate = join(
+              packageDir,
+              "node_modules",
+              packageName,
+              defaultPath.replace(from, to),
+            );
+            try {
+              await access(candidate);
+              entryPoints.push(candidate);
+            } catch {
+              // file doesn't exist, skip
+            }
+            break;
+          }
+        }
       }
     }
 
@@ -127,6 +158,17 @@ export async function generate(options: GenerateOptions): Promise<string> {
       await execa(
         createExecaOptions(packagePath, typedocLogFile),
       )`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
+
+      // Check if vanilla output is meaningful (not just package.json)
+      const vanillaJson = JSON.parse(await readFile(docFile, "utf-8"));
+      const vanillaChildren: { name: string; sources?: { fileName: string }[] }[] =
+        vanillaJson.children ?? [];
+      const onlyPackageJson = vanillaChildren.every(
+        (c) => c.name === "package.json" || c.sources?.every((s) => s.fileName === "package.json"),
+      );
+      if (onlyPackageJson) {
+        throw new Error("Vanilla TypeDoc generated empty or package.json-only output");
+      }
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
       log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);

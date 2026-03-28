@@ -1,29 +1,7 @@
-# Vite+ Monorepo Starter
+# apiref
 
-A starter for creating a Vite+ monorepo.
+Automatically-generated documentation sites for npm packages.
 
-## Development
+## Publishing documentation
 
-- Check everything is ready:
-
-```bash
-vp run ready
-```
-
-- Run the tests:
-
-```bash
-vp run test -r
-```
-
-- Build the monorepo:
-
-```bash
-vp run build -r
-```
-
-- Run the development server:
-
-```bash
-vp run dev
-```
+Package must use [trusted publishing](https://docs.npmjs.com/trusted-publishers/) with [provenance](https://docs.npmjs.com/generating-provenance-statements) enabled.
