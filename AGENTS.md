@@ -100,3 +100,7 @@ Run `pitchfork start --all` to:
 
 - **Shell package changes** (ar-nav.ts, ar-outline.ts, styles.css, etc.): Changes auto-rebuild via pitchfork. Refresh the browser to see updates.
 - **Renderer package changes** (transformer, viewmodel, Page.tsx, etc.): Run `vp run render` to regenerate the static site, then refresh the browser.
+
+### Building
+
+- `vp run build -r`

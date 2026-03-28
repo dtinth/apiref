@@ -30,6 +30,7 @@
     "check": "vp check"
   },
   "dependencies": {
+    "commander": "catalog:",
     "execa": "^6.1.0"
   },
   "devDependencies": {

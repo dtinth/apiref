@@ -246,16 +246,16 @@ h2: Methods
 
 ## Packages
 
-| Package            | Status      | Description                            |
-| ------------------ | ----------- | -------------------------------------- |
-| `@apiref/renderer` | Built       | TypeDoc JSON → static HTML             |
-| `@apiref/shell`    | Built       | Web components + Tailwind CSS (CDN)    |
-| `apiref-worker`    | Scaffolded  | CLI: `pnpm install` → `typedoc --json` |
-| `intake`           | Not started | Intake API + web form                  |
+| Package            | Status      | Description                                         |
+| ------------------ | ----------- | --------------------------------------------------- |
+| `@apiref/renderer` | Built       | TypeDoc JSON → static HTML                          |
+| `@apiref/shell`    | Built       | Web components + Tailwind CSS (CDN)                 |
+| `apiref-worker`    | Built       | CLI: vanilla TypeDoc + git links + monorepo support |
+| `intake`           | Not started | Intake API + web form                               |
 
 Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
-### Worker CLI (`apiref-worker`)
+### Worker CLI (`apiref-worker`) — BUILT
 
 `apps/worker/` — Standalone generation CLI.
 
@@ -263,11 +263,15 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 - **Core logic:**
   - Creates temporary directory
   - Installs package using `pnpm add --ignore-scripts`
-  - Runs `typedoc --json` to generate documentation JSON
+  - Extracts git metadata from `package.json`: `repository.url`, `version`, `repository.directory` (for monorepos)
+  - Attempts vanilla TypeDoc generation via `pnpm dlx typedoc` (auto-discovers via `typedoc` export)
+  - Fallback: If vanilla fails, parses `package.json` exports for `typedoc` conditional export and uses explicit entry points
+  - Generates TypeDoc with `--sourceLinkTemplate` when git info available (supports monorepo via `repository.directory`)
   - Writes output to specified file (default: `typedoc.json`)
   - Cleans up temp directory on success or error
-- **Error handling:** Gracefully rejects packages incompatible with Node 24+
-- **CLI parsing:** Built-in Node.js `util.parseArgs()` (available in Node 24+)
+- **Git source links:** Automatically extracts git remote and tag from package.json; generates GitHub/GitLab links with monorepo path prefix
+- **Entry point fallback:** `findEntryPointsFallback()` parses package.json exports to find `.d.ts` files when vanilla TypeDoc fails
+- **Error handling:** Throws with descriptive messages on parse failures or missing entry points
 - **Dependencies:** `execa` for process execution
 
 ## Immediate next steps
@@ -278,7 +282,7 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 4. ✅ **Scroll position memory** — Sidebar scroll position saved/restored; active item auto-scrolls into view.
 5. ✅ **Module import paths** — Nav displays full import paths, sorted with index first.
 6. ✅ **Syntax highlighting** — Shiki for fenced code blocks with custom theme.
-7. ✅ **Worker CLI scaffold** — `apiref-generate <pkg-spec>` local generation tool.
+7. ✅ **Worker CLI** — `apiref-generate <pkg-spec>` with vanilla TypeDoc, git links, monorepo support, entry point fallback.
 8. **Page hierarchy refactor** — restructure transformer to:
    - Make Module/Namespace/Class/Function distinct pages
    - Keep Methods/Properties/Constructors as subsections (anchors only, no separate pages)
@@ -294,6 +298,14 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 ## Recent changes
 
+- **2026-03-28:** Consolidated renderer TypeDoc aliases; migrated to official TypeDoc JSONOutput types
+- **2026-03-28:** Added rest parameter support to signature rendering
+- **2026-03-28:** Added monorepo support via `repository.directory` field in TypeDoc JSON
+- **2026-03-28:** Added git source links to generated TypeDoc JSON output; integrated into renderer
+- **2026-03-28:** Improved apiref-worker CLI to prioritize vanilla TypeDoc with fallback; enhanced .d.ts export resolution
+- **2026-03-28:** Enhanced type rendering: template literals, predicate types, type arguments outside references
+- **2026-03-28:** Implemented HTML-to-text conversion for signature shouldHaveSignature() logic
+- **2026-03-28:** Fixed module name normalization; improved declaration heading alignment; updated source link styling
 - **2026-03-28:** Scaffolded `apiref-worker` CLI app — `apiref-generate <pkg>` for local generation
 - **2026-03-27:** Fixed TypeViewModel architectural issue (see below)
 - **2026-03-27:** Merged shiki code highlighting branch; customized theme background color to #252423
