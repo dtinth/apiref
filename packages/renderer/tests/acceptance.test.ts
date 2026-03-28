@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { beforeAll, describe, test } from "vite-plus/test";
+import { beforeAll, describe, test, expect } from "vite-plus/test";
 import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
@@ -148,5 +148,53 @@ describe("type rendering", () => {
   test("Rest parameter function renders correctly", () => {
     const page = tester.page("index/joinStrings.html");
     page.section("Signature").shouldHaveSignature("(...args: string[]): string");
+  });
+});
+
+describe("apiref.json", () => {
+  test("has correct package metadata", () => {
+    expect(tester.apirefJson).toMatchObject({
+      package: "@apiref-examples/core",
+      version: "1.0.0",
+      generatorVersion: 1,
+    });
+  });
+
+  test("tree is not empty", () => {
+    expect(tester.apirefJson.tree.length).toBeGreaterThan(0);
+  });
+
+  test("top-level modules are in the tree", () => {
+    const moduleNames = tester.apirefJson.tree.map((n) => n.name);
+    expect(moduleNames).toContain("@apiref-examples/core");
+    expect(moduleNames).toContain("@apiref-examples/core/data");
+  });
+
+  test("module has correct kind", () => {
+    const coreModule = tester.apirefJson.tree.find((n) => n.name === "@apiref-examples/core");
+    expect(coreModule).toMatchObject({
+      kind: "module",
+      name: "@apiref-examples/core",
+    });
+  });
+
+  test("tree nodes with members have outline", () => {
+    // Cache is a class with methods, should have outline
+    const coreModule = tester.apirefJson.tree.find((n) => n.name === "@apiref-examples/core");
+    expect(coreModule?.children).toBeDefined();
+    const cacheNode = coreModule?.children?.find((n) => n.name === "Cache");
+    expect(cacheNode?.outline).toBeDefined();
+    expect(cacheNode?.outline?.length).toBeGreaterThan(0);
+  });
+
+  test("outline items have correct structure", () => {
+    const coreModule = tester.apirefJson.tree.find((n) => n.name === "@apiref-examples/core");
+    const cacheNode = coreModule?.children?.find((n) => n.name === "Cache");
+    const constructorItem = cacheNode?.outline?.find((item) => item.anchor === "constructor");
+    expect(constructorItem).toMatchObject({
+      name: "constructor",
+      kind: "constructor",
+      anchor: "constructor",
+    });
   });
 });

@@ -1,64 +1,8 @@
 #!/usr/bin/env node
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
 import { parseArgs } from "node:util";
-import { transform } from "./transformer.ts";
-import { renderSite } from "./render.tsx";
+import { runCli } from "./run-cli.ts";
 
 const DEFAULT_ASSETS_BASE = "https://cdn.apiref.page/assets";
-
-export interface CliOptions {
-  /** Path to typedoc.json, or "-" to read from stdin. */
-  input: string;
-  /** Output directory. */
-  out: string;
-  /** Base URL for shell CDN assets. */
-  assetsBase: string;
-  /** Override package version from the TypeDoc JSON. */
-  version?: string;
-  /** Base URL for all generated links (makes them absolute from root). */
-  baseUrl?: string;
-}
-
-/**
- * Core CLI logic — separated from arg-parsing so it can be tested directly.
- */
-export async function runCli(options: CliOptions): Promise<{ pagesWritten: number }> {
-  const { input, out, assetsBase, version, baseUrl } = options;
-
-  // Read input
-  let raw: string;
-  if (input === "-") {
-    const chunks: Buffer[] = [];
-    for await (const chunk of process.stdin) {
-      chunks.push(chunk as Buffer);
-    }
-    raw = Buffer.concat(chunks).toString("utf-8");
-  } else {
-    raw = readFileSync(input, "utf-8");
-  }
-
-  const json: unknown = JSON.parse(raw);
-
-  // Transform → ViewModel
-  const site = transform(json, { version });
-
-  // Render → HTML pages
-  const pages = renderSite(site, { shellBaseUrl: assetsBase, baseUrl });
-
-  // Write files
-  for (const [url, html] of pages) {
-    const filePath = join(out, url);
-    mkdirSync(dirname(filePath), { recursive: true });
-    writeFileSync(filePath, html, "utf-8");
-  }
-
-  return { pagesWritten: pages.size };
-}
-
-// ---------------------------------------------------------------------------
-// Entry point — always runs (this is a CLI-only module)
-// ---------------------------------------------------------------------------
 
 async function main() {
   const { values, positionals } = parseArgs({
@@ -100,7 +44,7 @@ Options:
     baseUrl: values["base-url"],
   });
 
-  process.stderr.write(`Wrote ${pagesWritten} pages to ${values.out}/\n`);
+  process.stderr.write(`Wrote ${pagesWritten} pages and apiref.json to ${values.out}/\n`);
 }
 
 void main();

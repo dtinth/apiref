@@ -3,6 +3,7 @@ import { h } from "preact";
 import { render as renderToString } from "preact-render-to-string";
 import { convert } from "html-to-text";
 import { buildOutline } from "../../src/outline-builder.ts";
+import { buildApirefJson } from "../../src/apiref-json.ts";
 import { PageContext } from "../../src/components/PageContext.tsx";
 import { TypeView, SignatureLine } from "../../src/components/TypeView.tsx";
 import type {
@@ -235,6 +236,10 @@ export class SiteViewModelTester {
 
   get nav(): NavTester {
     return new NavTester(this.site.navTree);
+  }
+
+  get apirefJson() {
+    return buildApirefJson(this.site);
   }
 
   page(url: string): PageTester {

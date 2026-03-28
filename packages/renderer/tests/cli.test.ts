@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, describe } from "vite-plus/test";
-import { runCli } from "../src/cli.ts";
+import { runCli } from "../src/run-cli.ts";
 
 function fixture(name: string): string {
   return fileURLToPath(new URL(`../../../fixtures/${name}.json`, import.meta.url));
