@@ -21,10 +21,12 @@ export const renderStaticStep: PipelineStep = {
         ? ["--base-url", `/package/${resolvedPackageName}/v/${resolvedVersion}/`]
         : [];
 
+    const rendererCliPath = join(import.meta.dirname, "../../../packages/renderer/dist/cli.mjs");
+
     await execa({
       stdout: { file: renderLogFile },
       stderr: { file: renderLogFile },
-    })`node_modules/.bin/apiref-render ${docJsonPath} --out ${outputDir} ${versionArg} ${baseUrlArg}`;
+    })`node ${rendererCliPath} ${docJsonPath} --out ${outputDir} ${versionArg} ${baseUrlArg}`;
 
     logger.log(`✓ Static site rendered to ${outputDir}`);
   },
