@@ -4,6 +4,8 @@ export interface PipelineContext {
   packageSpec: string;
   logger: Logger;
   tmpDir: string;
+  resolvedPackageName?: string;
+  resolvedVersion?: string;
 }
 
 export interface PipelineStep {

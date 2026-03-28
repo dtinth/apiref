@@ -12,6 +12,10 @@ export const verifyProvenanceStep: PipelineStep = {
     const packageName = manifest.name;
     const version = manifest.version;
 
+    // Store resolved values in context for downstream steps
+    context.resolvedPackageName = packageName;
+    context.resolvedVersion = version;
+
     logger.log(`Resolved: ${packageName}@${version}`);
     logger.log(`Checking npm provenance attestations...`);
 
