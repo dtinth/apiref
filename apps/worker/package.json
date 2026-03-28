@@ -35,6 +35,7 @@
     "pacote": "catalog:"
   },
   "devDependencies": {
+    "@apiref/renderer": "workspace:*",
     "@types/node": "catalog:",
     "@types/pacote": "catalog:",
     "typescript": "catalog:",

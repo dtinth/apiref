@@ -109,6 +109,9 @@ importers:
         specifier: 'catalog:'
         version: 21.5.0
     devDependencies:
+      '@apiref/renderer':
+        specifier: workspace:*
+        version: link:../../packages/renderer
       '@types/node':
         specifier: 'catalog:'
         version: 24.12.0
