@@ -1,5 +1,12 @@
-import type { JSONOutput } from "typedoc";
 import type { TransformContext } from "./transform-context.ts";
+import { getDeclarationChildren } from "./typedoc.ts";
+import type {
+  TDDeclaration,
+  TDParameter,
+  TDSignature,
+  TDType,
+  TDTypeParameter,
+} from "./typedoc.ts";
 import type {
   TypeViewModel,
   TypeParameterViewModel,
@@ -8,13 +15,7 @@ import type {
   MemberFlags,
   MemberViewModel,
 } from "./viewmodel.ts";
-import { getDeclarationChildren, inferDeclarationKind } from "./utils.ts";
-
-type TDType = JSONOutput.SomeType;
-type TDTypeParameter = JSONOutput.TypeParameterReflection;
-type TDSignature = JSONOutput.SignatureReflection;
-type TDParameter = JSONOutput.ParameterReflection;
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
+import { inferDeclarationKind } from "./utils.ts";
 
 export function transformType(tdType: TDType, ctx: TransformContext): TypeViewModel {
   switch (tdType.type) {

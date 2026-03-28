@@ -1,10 +1,11 @@
-import type { JSONOutput } from "typedoc";
+import type { TDDeclaration, TDSignature, TDSource } from "./typedoc.ts";
+export {
+  getDeclarationChildren,
+  isDeclarationReflection,
+  isReferenceReflection,
+} from "./typedoc.ts";
 import { Kind } from "./typedoc-kinds.ts";
 import type { DeclarationKind, NavNode } from "./viewmodel.ts";
-
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
-type TDSignature = JSONOutput.SignatureReflection;
-type TDSource = JSONOutput.SourceReference;
 
 export function reflectionKindToDeclarationKind(kind: number): DeclarationKind | null {
   switch (kind) {
@@ -74,24 +75,6 @@ export function getSourceUrl(
     if (url) return url;
   }
   return undefined;
-}
-
-export function isDeclarationReflection(
-  reflection: JSONOutput.SomeReflection,
-): reflection is TDDeclaration {
-  return reflection.variant === "declaration" || reflection.variant === "reference";
-}
-
-export function isReferenceReflection(
-  reflection: TDDeclaration,
-): reflection is JSONOutput.ReferenceReflection {
-  return reflection.variant === "reference";
-}
-
-export function getDeclarationChildren(reflection: {
-  children?: JSONOutput.SomeReflection[];
-}): TDDeclaration[] {
-  return (reflection.children ?? []).filter(isDeclarationReflection);
 }
 
 function kindGroupTitle(kind: number): string {

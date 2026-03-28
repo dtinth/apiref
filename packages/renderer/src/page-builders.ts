@@ -1,5 +1,6 @@
-import type { JSONOutput } from "typedoc";
 import { Kind } from "./typedoc-kinds.ts";
+import { getDeclarationChildren } from "./typedoc.ts";
+import type { TDComment, TDDeclaration, TDProject } from "./typedoc.ts";
 import type { PageViewModel, Breadcrumb, Section } from "./viewmodel.ts";
 import type { TransformContext } from "./transform-context.ts";
 import {
@@ -8,12 +9,7 @@ import {
   extractBlockTagSections,
 } from "./comment-transformer.ts";
 import { declarationAsCards } from "./card-builder.ts";
-import {
-  getDeclarationChildren,
-  getSourceUrl,
-  inferGroups,
-  reflectionKindToDeclarationKind,
-} from "./utils.ts";
+import { getSourceUrl, inferGroups, reflectionKindToDeclarationKind } from "./utils.ts";
 import {
   buildClassSections,
   buildMemberSections,
@@ -22,10 +18,6 @@ import {
   buildEnumSections,
   buildVariableSections,
 } from "./section-builders.ts";
-
-type TDComment = JSONOutput.Comment;
-type TDProject = JSONOutput.ProjectReflection;
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {

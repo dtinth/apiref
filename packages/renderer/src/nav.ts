@@ -1,9 +1,7 @@
-import type { JSONOutput } from "typedoc";
+import type { TDDeclaration } from "./typedoc.ts";
 import type { NavNode } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
 import { reflectionKindToDeclarationKind } from "./utils.ts";
-
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 
 export function buildModuleImportPath(pkgName: string, moduleName: string): string {
   if (moduleName === "index") {

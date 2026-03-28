@@ -1,12 +1,11 @@
 import { buildSignatureCard, declarationAsCards } from "./card-builder.ts";
 import { extractBlockTagSections, transformCommentParts } from "./comment-transformer.ts";
 import type { TransformContext } from "./transform-context.ts";
+import { getDeclarationChildren } from "./typedoc.ts";
+import type { TDDeclaration } from "./typedoc.ts";
 import { transformSignature, transformType } from "./type-transformer.ts";
-import type { JSONOutput } from "typedoc";
-import { getDeclarationChildren, getSourceUrl, inferGroups } from "./utils.ts";
+import { getSourceUrl, inferGroups } from "./utils.ts";
 import type { Section } from "./viewmodel.ts";
-
-type TDDeclaration = JSONOutput.DeclarationReflection | JSONOutput.ReferenceReflection;
 
 /** Build section id from title and optional prefix. */
 function buildSectionId(idPrefix: string, title: string): string {
