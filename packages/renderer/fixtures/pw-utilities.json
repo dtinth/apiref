@@ -439,9 +439,9 @@
   },
   "files": {
     "entries": {
-      "1": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities/dist/index.d.mts",
-      "2": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities/README.md",
-      "3": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities"
+      "1": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/pw-utilities/dist/index.d.mts",
+      "2": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/pw-utilities/README.md",
+      "3": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/pw-utilities"
     },
     "reflections": {
       "1": 1,

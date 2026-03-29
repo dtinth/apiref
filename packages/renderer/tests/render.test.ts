@@ -40,8 +40,8 @@ describe("render pw-utilities", () => {
 
   test("produces a page for every URL", () => {
     expect(pages.has("index.html")).toBe(true);
-    expect(pages.has("LocatorLike.html")).toBe(true);
-    expect(pages.has("stabilize.html")).toBe(true);
+    expect(pages.has("main/LocatorLike.html")).toBe(true);
+    expect(pages.has("main/stabilize.html")).toBe(true);
   });
 
   test("index.html is a complete HTML document", () => {
@@ -69,32 +69,32 @@ describe("render pw-utilities", () => {
   });
 
   test("stabilize.html has the page title", () => {
-    const html = pages.get("stabilize.html")!;
+    const html = pages.get("main/stabilize.html")!;
     expect(html).toContain("stabilize");
   });
 
   test("stabilize.html contains the function description", () => {
-    const html = pages.get("stabilize.html")!;
+    const html = pages.get("main/stabilize.html")!;
     // Part of the summary text from the fixture
     expect(html).toContain("Scrolls the element into view");
   });
 
   test("stabilize.html contains ar-declaration--function class", () => {
-    const html = pages.get("stabilize.html")!;
+    const html = pages.get("main/stabilize.html")!;
     expect(html).toContain("ar-declaration--function");
   });
 
   test("stabilize.html has a source link button", () => {
-    const html = pages.get("stabilize.html")!;
+    const html = pages.get("main/stabilize.html")!;
     expect(html).toContain('class="ar-source-link"');
     expect(html).toContain(
-      'href="https://github.com/dtinth/pw-utilities/blob/c812544fcbf8123701c31e9d977080079be83322/src/stabilize.ts#L10"',
+      'href="https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L14"',
     );
     expect(html).toContain('aria-label="View source on GitHub"');
   });
 
   test("LocatorLike.html has method section", () => {
-    const html = pages.get("LocatorLike.html")!;
+    const html = pages.get("main/LocatorLike.html")!;
     expect(html).toContain("evaluate");
     expect(html).toContain("ar-card");
   });
@@ -108,53 +108,53 @@ describe("render visual-storyboard", () => {
   const pages = renderFixture("visual-storyboard");
 
   test("produces module and class pages", () => {
-    expect(pages.has("index/StoryboardWriter.html")).toBe(true);
-    expect(pages.has("index/StoryboardEvent.html")).toBe(true);
+    expect(pages.has("main/StoryboardWriter.html")).toBe(true);
+    expect(pages.has("main/StoryboardEvent.html")).toBe(true);
     expect(pages.has("integrations/playwright/PlaywrightStoryboard.html")).toBe(true);
   });
 
   test("StoryboardWriter.html has constructor section", () => {
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain("ar-card");
     expect(html).toContain("Constructor");
   });
 
   test("StoryboardWriter.html has methods section with member list", () => {
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain("createFrame");
     expect(html).toContain("finalize");
     expect(html).toContain("writeInfo");
   });
 
   test("StoryboardWriter.html shows source links on member cards", () => {
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain('id="constructor" class="ar-card"');
     expect(html).toContain(
-      'href="https://github.com/dtinth/visual-storyboard/blob/4726c729d692cf70930c04b5c27ba17639df4494/packages/core/src/writer.ts#L66"',
+      'href="https://github.com/dtinth/visual-storyboard/blob/v0.3.6/packages/core/src/writer.ts#L66"',
     );
   });
 
   test("StoryboardEvent.html has type-declaration section", () => {
-    const html = pages.get("index/StoryboardEvent.html")!;
+    const html = pages.get("main/StoryboardEvent.html")!;
     // Type-declaration renders as a union type in the content
     expect(html).toContain("ar-type");
   });
 
   test("cross-referenced types render as links", () => {
     // StoryboardWriter constructor takes StoryboardWriterOptions — should be a link
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain('href="StoryboardWriterOptions.html"');
   });
 
   test("ar-meta has correct title on class page", () => {
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain('"title":"StoryboardWriter"');
   });
 
   test("ar-meta has breadcrumbs on class page", () => {
-    const html = pages.get("index/StoryboardWriter.html")!;
+    const html = pages.get("main/StoryboardWriter.html")!;
     expect(html).toContain('"breadcrumbs"');
-    expect(html).toContain('"label":"index"');
+    expect(html).toContain('"label":"(main)"');
   });
 });
 
@@ -174,19 +174,19 @@ describe("render examples", () => {
   });
 
   test("AppConfig renders typeof type aliases", () => {
-    const html = pages.get("index/AppConfig.html")!;
+    const html = pages.get("main/AppConfig.html")!;
     expect(html).toContain("typeof");
     expect(html).toContain('href="defaultConfig.html"');
   });
 
   test("mapped type aliases render mapped syntax", () => {
-    const strictReadonlyHtml = pages.get("index/StrictReadonly.html")!;
+    const strictReadonlyHtml = pages.get("main/StrictReadonly.html")!;
     expect(strictReadonlyHtml).toContain("+readonly ");
     expect(strictReadonlyHtml).toContain("[Key");
     expect(strictReadonlyHtml).toContain(" in ");
     expect(strictReadonlyHtml).toContain("-?");
 
-    const changeHandlersHtml = pages.get("index/ChangeHandlers.html")!;
+    const changeHandlersHtml = pages.get("main/ChangeHandlers.html")!;
     expect(changeHandlersHtml).toContain("[Key");
     expect(changeHandlersHtml).toContain("+?");
     expect(changeHandlersHtml).toContain("ar-type-ref ar-type-ref--external");
@@ -207,7 +207,7 @@ describe("render examples", () => {
   });
 
   test("reference cards link to the referenced target page with breadcrumb text", () => {
-    const html = pages.get("index/index.html")!;
+    const html = pages.get("main/index.html")!;
     expect(html).toContain('href="../plugins/index.html"');
     expect(html).toContain("References");
     expect(html).toContain(">plugins<");

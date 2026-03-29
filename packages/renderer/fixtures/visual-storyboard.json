@@ -7176,11 +7176,11 @@
   },
   "files": {
     "entries": {
-      "1": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/index.ts",
-      "2": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/integrations/playwright.ts",
-      "3": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/transports/file.ts",
-      "4": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/README.md",
-      "5": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/visual-storyboard"
+      "1": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/index.ts",
+      "2": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/integrations/playwright.ts",
+      "3": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/src/transports/file.ts",
+      "4": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/visual-storyboard/README.md",
+      "5": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/visual-storyboard"
     },
     "reflections": {
       "1": 1,
