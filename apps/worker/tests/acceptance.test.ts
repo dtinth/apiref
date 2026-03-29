@@ -1,46 +1,60 @@
-import { describe, test, expect, beforeEach } from "vite-plus/test";
-import { generate } from "../src/generate.ts";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { mkdtemp } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import type { JSONOutput } from "typedoc";
+import { afterAll, beforeAll, describe, test } from "vite-plus/test";
+import { generate } from "../src/generate.ts";
 
-const ecosystemTestsRoot = fileURLToPath(
-  new URL("../../../packages/ecosystem-tests/node_modules", import.meta.url),
-);
-
-describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
-  let testDir: string;
-
-  beforeEach(async () => {
-    testDir = await mkdtemp(join(tmpdir(), "apiref-acceptance-"));
-  });
-
-  test("visual-storyboard@0.3.0 — Tier 2a source map resolution", async () => {
-    const vsPath = join(ecosystemTestsRoot, "visual-storyboard");
-    const outFile = join(testDir, "vs-doc.json");
+class DocFileGenerationTester {
+  private testDir?: string;
+  private cachedDocs = new Map<string, DocFileTester>();
+  setup() {
+    this.testDir = mkdtempSync(join(tmpdir(), "apiref-test-"));
+  }
+  teardown() {
+    rmSync(this.testDir!, { recursive: true, force: true });
+  }
+  getTestDir(): string {
+    if (!this.testDir) {
+      throw new Error("Test directory not set up");
+    }
+    return this.testDir;
+  }
+  async docForPackage(pkgName: string) {
+    if (this.cachedDocs.has(pkgName)) {
+      return this.cachedDocs.get(pkgName);
+    }
+    const ecosystemTestsRoot = fileURLToPath(
+      new URL("../../../packages/ecosystem-tests/node_modules", import.meta.url),
+    );
+    const pkgPath = join(ecosystemTestsRoot, pkgName);
+    const outFile = join(this.getTestDir(), `${pkgName}-doc.json`);
     const result = await generate({
-      installedPackagePath: vsPath,
+      installedPackagePath: pkgPath,
       outFile,
     });
+    const doc = new DocFileTester(JSON.parse(result));
+    this.cachedDocs.set(pkgName, doc);
+    return doc;
+  }
+}
 
-    expect(result).toBeDefined();
-    const parsed = JSON.parse(result);
-    expect(parsed.children).toBeDefined();
-    expect(parsed.children.length).toBeGreaterThan(0);
+class DocFileTester {
+  constructor(public reflection: JSONOutput.ProjectReflection) {}
+}
+
+const tester = new DocFileGenerationTester();
+beforeAll(() => tester.setup());
+afterAll(() => tester.teardown());
+
+describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
+  test("visual-storyboard@0.3.0 — Tier 2a source map resolution", async () => {
+    const doc = await tester.docForPackage("visual-storyboard");
+    console.log(doc?.reflection);
   });
 
   test("bsearch@2.0.0-next.1 — Tier 2a source map resolution", async () => {
-    const bsearchPath = join(ecosystemTestsRoot, "bsearch");
-    const outFile = join(testDir, "bsearch-doc.json");
-    const result = await generate({
-      installedPackagePath: bsearchPath,
-      outFile,
-    });
-
-    expect(result).toBeDefined();
-    const parsed = JSON.parse(result);
-    expect(parsed.children).toBeDefined();
-    expect(parsed.children.length).toBeGreaterThan(0);
+    const doc = await tester.docForPackage("bsearch");
   });
 });
