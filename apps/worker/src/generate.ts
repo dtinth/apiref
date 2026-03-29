@@ -7,7 +7,7 @@ import type { Logger } from "./logger.js";
 function createExecaOptions(cwd: string, logFile?: string | null): any {
   const options: any = { cwd };
   if (logFile) {
-    const output = { file: logFile };
+    const output = { file: logFile, append: true };
     options.stdout = output;
     options.stderr = output;
   } else {
@@ -77,7 +77,11 @@ async function resolveEntryPointViaDts(
   return undefined;
 }
 
-async function findEntryPointsFallback(packageDir: string, packageName: string): Promise<string[]> {
+async function findEntryPointsFallback(
+  packageDir: string,
+  packageName: string,
+  log: (msg: string) => void,
+): Promise<string[]> {
   try {
     const packageJsonPath = join(packageDir, "node_modules", packageName, "package.json");
     const packageJsonContent = await readFile(packageJsonPath, "utf-8");
@@ -102,6 +106,7 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
       }
 
       if (types) {
+        log(`   ${key}: ${types} (typedoc/types export)`);
         entryPoints.push(join(packageDir, "node_modules", packageName, types));
         continue;
       }
@@ -121,13 +126,19 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
         // Tier 2a: read source map to find original .ts source file
         const sourceMapEntry = await resolveEntryPointViaSourceMap(absDefaultPath);
         if (sourceMapEntry) {
+          log(`   ${key}: ${sourceMapEntry} (source map)`);
           entryPoints.push(sourceMapEntry);
           continue;
         }
 
         // Tier 2b: infer .d.mts or .d.ts from the export path
         const dtsEntry = await resolveEntryPointViaDts(defaultPath, pkgRoot);
-        if (dtsEntry) entryPoints.push(dtsEntry);
+        if (dtsEntry) {
+          log(`   ${key}: ${dtsEntry} (.d.mts/.d.ts)`);
+          entryPoints.push(dtsEntry);
+        } else {
+          log(`   ${key}: no entry point found (skipped)`);
+        }
       }
     }
 
@@ -213,7 +224,7 @@ export async function generate(options: GenerateOptions): Promise<string> {
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
       log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
-      const entryPoints = await findEntryPointsFallback(tempDir, packageName);
+      const entryPoints = await findEntryPointsFallback(tempDir, packageName, log);
       if (entryPoints.length === 0) {
         throw new Error(
           `Failed to generate TypeDoc: vanilla approach failed and no fallback entry points found`,
