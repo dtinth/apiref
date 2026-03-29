@@ -1,18 +1,13 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { expect, test, describe } from "vite-plus/test";
 import type { JSONOutput } from "typedoc";
+import { describe, expect, test } from "vite-plus/test";
 import type { TransformContext } from "../src/transform-context.ts";
-import { transformType } from "../src/type-transformer.ts";
 import { transform } from "../src/transformer.ts";
+import { transformType } from "../src/type-transformer.ts";
 import type { PageViewModel, SectionBlock } from "../src/viewmodel.ts";
 
 function loadFixture(name: string): unknown {
-  const path = fileURLToPath(new URL(`../../../fixtures/${name}.json`, import.meta.url));
-  return JSON.parse(readFileSync(path, "utf-8"));
-}
-
-function loadLocalFixture(name: string): unknown {
   const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
   return JSON.parse(readFileSync(path, "utf-8"));
 }
@@ -232,7 +227,7 @@ describe("visual-storyboard (multi-module)", () => {
 });
 
 describe("examples renderer fixture", () => {
-  const site = transform(loadLocalFixture("examples"), { version: "1.0.0" });
+  const site = transform(loadFixture("examples"), { version: "1.0.0" });
 
   test("AppConfig type alias preserves typeof query types", () => {
     const page = site.pages.find((p) => p.url === "index/AppConfig.html");

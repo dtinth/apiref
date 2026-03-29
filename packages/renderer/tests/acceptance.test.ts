@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { beforeAll, describe, test, expect } from "vite-plus/test";
+import { beforeAll, describe, expect, test } from "vite-plus/test";
 import { transform } from "../src/transformer.ts";
 import { SiteViewModelTester } from "./helpers/SiteViewModelTester.ts";
 
@@ -34,48 +34,48 @@ describe("nav", () => {
     tester.nav
       .child("@apiref-examples/core")
       .child("Something", { kind: "type-alias" })
-      .shouldLinkTo("index/Something.html");
+      .shouldLinkTo("main/Something.html");
     tester.nav
       .child("@apiref-examples/core")
       .child("Something", { kind: "variable" })
-      .shouldLinkTo("index/Something.html");
+      .shouldLinkTo("main/Something.html");
   });
   test("Namespace + function with same name are handled correctly", () => {
     tester.nav
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "namespace" })
-      .shouldLinkTo("index/createEmitter/index.html");
+      .shouldLinkTo("main/createEmitter/index.html");
 
-    // Normally functions would have its own HTML page like "index/createEmitter.html",
+    // Normally functions would have its own HTML page like "main/createEmitter.html",
     // but since it is combined with the namespace, and since namespace pages can have child pages,
     // the function would "lose" its own page and be rendered in the namespace page.
     // So the link should point to the namespace page.
     tester.nav
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "function" })
-      .shouldLinkTo("index/createEmitter/index.html");
+      .shouldLinkTo("main/createEmitter/index.html");
   });
   test("Children of namespace + function should be processed", () => {
     tester.nav
       .child("@apiref-examples/core")
       .child("createEmitter", { kind: "namespace" })
       .child("EventMap", { kind: "interface" })
-      .shouldLinkTo("index/createEmitter/EventMap.html");
+      .shouldLinkTo("main/createEmitter/EventMap.html");
   });
 });
 
 describe("pages", () => {
   test("Multi-nature pages should display multiple kinds", () => {
-    tester.page("index/Something.html").shouldHaveKind("multiple");
+    tester.page("main/Something.html").shouldHaveKind("multiple");
   });
   test("Function doc should come before namespace", () => {
-    tester.page("index/createEmitter/index.html").shouldHaveDeclarations([
+    tester.page("main/createEmitter/index.html").shouldHaveDeclarations([
       { name: "createEmitter", kind: "function" },
       { name: "createEmitter", kind: "namespace" },
     ]);
   });
   test("Outline should only include sections with ids", () => {
-    tester.page("index/Cache.html").shouldHaveOutline([
+    tester.page("main/Cache.html").shouldHaveOutline([
       {
         label: "Example",
         anchor: "~example",
@@ -99,7 +99,7 @@ describe("pages", () => {
     ]);
   });
   test("Section in module page", () => {
-    const page = tester.page("index/index.html");
+    const page = tester.page("main/index.html");
     page.section("Namespaces").card("createEmitter").shouldHaveKind("namespace");
     page.section("Enumerations").card("ErrorCategory").shouldHaveKind("enum");
     page.section("Classes").card("ApiError").shouldHaveKind("class");
@@ -109,11 +109,11 @@ describe("pages", () => {
     page.section("Functions").card("createEmitter").shouldHaveKind("function");
   });
   test("Section in class page", () => {
-    const page = tester.page("index/Builder.html");
+    const page = tester.page("main/Builder.html");
     page.section("Methods").card("build").shouldHaveKind("method");
   });
   test("Index signature should be documented", () => {
-    tester.page("index/createEmitter/EventMap.html").shouldHaveOutline([
+    tester.page("main/createEmitter/EventMap.html").shouldHaveOutline([
       {
         label: "Index Signatures",
         anchor: "~index-signatures",
@@ -135,19 +135,19 @@ describe("pages", () => {
 
 describe("type rendering", () => {
   test("Type aliases with 'typeof' renders correctly", () => {
-    const page = tester.page("index/AppConfig.html");
+    const page = tester.page("main/AppConfig.html");
     page.section("Type").shouldHaveSignature("typeof defaultConfig");
   });
   test("Type aliases with template literal renders correctly", () => {
-    const page = tester.page("index/SqlQuery.html");
+    const page = tester.page("main/SqlQuery.html");
     page.section("Type").shouldHaveSignature("`SELECT ${string} FROM ${string}`");
   });
   test("Signature with type assertions renders correctly", () => {
-    const page = tester.page("index/isNumber.html");
+    const page = tester.page("main/isNumber.html");
     page.section("Signature").shouldHaveSignature("(value: unknown): value is number");
   });
   test("Rest parameter function renders correctly", () => {
-    const page = tester.page("index/joinStrings.html");
+    const page = tester.page("main/joinStrings.html");
     page.section("Signature").shouldHaveSignature("(...args: string[]): string");
   });
 });

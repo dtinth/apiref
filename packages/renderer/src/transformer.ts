@@ -64,10 +64,6 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   idToUrl.set(project.id, "index.html");
 
   for (const mod of children) {
-    // Normalize empty module names (from "." export) to "index"
-    if (mod.name === "") {
-      mod.name = "index";
-    }
     const modUrl = encodeModulePath(mod.name, pkgName) + "/index.html";
     idToUrl.set(mod.id, modUrl);
 
@@ -363,9 +359,9 @@ function declarationUrl(decl: TDDeclaration, pathPrefix: string): string {
 
 function encodeModulePath(moduleName: string, pkgName: string): string {
   if (moduleName.startsWith(pkgName) + "/") {
-    return moduleName.slice(pkgName.length + 1);
+    return moduleName.slice(pkgName.length + 1) || "main";
   } else if (moduleName === pkgName) {
-    return "index";
+    return "main";
   } else {
     return moduleName;
   }

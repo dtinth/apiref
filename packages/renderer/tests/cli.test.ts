@@ -2,11 +2,11 @@ import { existsSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test, describe } from "vite-plus/test";
+import { afterAll, describe, expect, test } from "vite-plus/test";
 import { runCli } from "../src/run-cli.ts";
 
 function fixture(name: string): string {
-  return fileURLToPath(new URL(`../../../fixtures/${name}.json`, import.meta.url));
+  return fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
 }
 
 function tempDir(suffix: string): string {
@@ -24,8 +24,8 @@ describe("runCli — pw-utilities", () => {
     });
     expect(pagesWritten).toBe(3); // index, LocatorLike, stabilize
     expect(existsSync(join(out, "index.html"))).toBe(true);
-    expect(existsSync(join(out, "LocatorLike.html"))).toBe(true);
-    expect(existsSync(join(out, "stabilize.html"))).toBe(true);
+    expect(existsSync(join(out, "main/LocatorLike.html"))).toBe(true);
+    expect(existsSync(join(out, "main/stabilize.html"))).toBe(true);
   });
 
   test("written files contain valid HTML", () => {
@@ -40,7 +40,7 @@ describe("runCli — pw-utilities", () => {
     expect(html).toContain("https://cdn.example.com/shell@1/shell.js");
   });
 
-  test("cleanup", () => {
+  afterAll(() => {
     rmSync(out, { recursive: true });
   });
 });
@@ -56,14 +56,14 @@ describe("runCli — visual-storyboard (nested paths)", () => {
       version: "3.0.0",
     });
     expect(existsSync(join(out, "index.html"))).toBe(true);
-    expect(existsSync(join(out, "index", "StoryboardWriter.html"))).toBe(true);
+    expect(existsSync(join(out, "main", "StoryboardWriter.html"))).toBe(true);
     expect(existsSync(join(out, "integrations", "playwright", "PlaywrightStoryboard.html"))).toBe(
       true,
     );
   });
 
   test("--version override appears in ar-meta", () => {
-    const html = readFileSync(join(out, "index", "StoryboardWriter.html"), "utf-8");
+    const html = readFileSync(join(out, "main", "StoryboardWriter.html"), "utf-8");
     expect(html).toContain('"version":"3.0.0"');
   });
 
@@ -79,7 +79,7 @@ describe("runCli — visual-storyboard (nested paths)", () => {
     rmSync(out2, { recursive: true });
   });
 
-  test("cleanup", () => {
+  afterAll(() => {
     rmSync(out, { recursive: true });
   });
 });
