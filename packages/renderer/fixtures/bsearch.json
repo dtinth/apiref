@@ -5106,9 +5106,9 @@
   },
   "files": {
     "entries": {
-      "1": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch/src/index.ts",
-      "2": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch/README.md",
-      "3": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch"
+      "1": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/bsearch/src/index.ts",
+      "2": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/bsearch/README.md",
+      "3": "../home/runner/work/apiref/apiref/packages/ecosystem-tests/node_modules/bsearch"
     },
     "reflections": {
       "1": 1,
