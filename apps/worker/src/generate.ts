@@ -114,13 +114,16 @@ async function findEntryPoints(
       const subPath = key === "." ? "" : key.slice(2); // Remove "./" prefix
       const exportName = subPath ? `${packageName}/${subPath}` : packageName;
 
-      // Tier 1: typedoc/types conditional export
+      // Tier 1: typedoc/types conditional export or direct TypeScript file
       let types: string | undefined;
       if (typeof value === "object" && value !== null) {
         types = (value as Record<string, unknown>).typedoc as string | undefined;
         if (!types) {
           types = (value as Record<string, unknown>).types as string | undefined;
         }
+      } else if (typeof value === "string" && (value.endsWith(".ts") || value.endsWith(".tsx"))) {
+        // Tier 1a: direct TypeScript export
+        types = value;
       }
 
       if (types) {

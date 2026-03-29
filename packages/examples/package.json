@@ -2,24 +2,17 @@
   "name": "@apiref-examples/core",
   "version": "0.0.1",
   "description": "Example package demonstrating apiref documentation features",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dtinth/apiref",
+    "directory": "packages/examples"
+  },
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./data": {
-      "types": "./dist/data.d.ts",
-      "import": "./dist/data.js"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.js"
-    },
-    "./web": {
-      "types": "./dist/web.d.ts",
-      "import": "./dist/web.js"
-    }
+    ".": "./src/index.ts",
+    "./data": "./src/data.ts",
+    "./utils": "./src/utils.ts",
+    "./web": "./src/web.ts"
   },
   "dependencies": {
     "elysia": "catalog:"
