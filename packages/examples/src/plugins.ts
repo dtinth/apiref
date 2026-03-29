@@ -1,7 +1,7 @@
 /**
  * Plugin system with nested configuration.
  *
- * @module plugins
+ * @module
  */
 
 /**

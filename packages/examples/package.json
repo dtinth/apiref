@@ -12,7 +12,8 @@
     ".": "./src/index.ts",
     "./data": "./src/data.ts",
     "./utils": "./src/utils.ts",
-    "./web": "./src/web.ts"
+    "./web": "./src/web.ts",
+    "./plugins": "./src/plugins.ts"
   },
   "dependencies": {
     "elysia": "catalog:"

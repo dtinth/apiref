@@ -1,7 +1,7 @@
 /**
  * Utility functions and helpers.
  *
- * @module utils
+ * @module
  */
 
 /**

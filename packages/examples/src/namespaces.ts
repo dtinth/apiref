@@ -1,7 +1,7 @@
 /**
  * Deeply nested namespace examples.
  *
- * @module namespaces
+ * @module
  */
 
 /**

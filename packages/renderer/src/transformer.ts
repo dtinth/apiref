@@ -125,7 +125,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
     for (const [_name, decls] of modChildGroups) {
       collectNameGroupPages(
         decls,
-        modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
+        modBreadcrumbs.concat({ label: getModuleLabel(mod.name, pkgName), url: modUrl }),
         ctx,
         pages,
         modNavChildren,
@@ -166,7 +166,7 @@ function buildBreadcrumbLookup(
     const modUrl = idToUrl.get(mod.id) ?? "index.html";
     const modBreadcrumbs = [
       { label: pkgName, url: "index.html" },
-      { label: mod.name, url: modUrl },
+      { label: getModuleLabel(mod.name, pkgName), url: modUrl },
     ];
     idToBreadcrumbs.set(mod.id, modBreadcrumbs);
 
@@ -362,6 +362,16 @@ function encodeModulePath(moduleName: string, pkgName: string): string {
     return moduleName.slice(pkgName.length + 1) || "main";
   } else if (moduleName === pkgName) {
     return "main";
+  } else {
+    return moduleName;
+  }
+}
+
+function getModuleLabel(moduleName: string, pkgName: string): string {
+  if (moduleName.startsWith(pkgName) + "/") {
+    return moduleName.slice(pkgName.length + 1) || "(main)";
+  } else if (moduleName === pkgName) {
+    return "(main)";
   } else {
     return moduleName;
   }
