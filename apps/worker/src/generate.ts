@@ -2,7 +2,11 @@ import { execa } from "execa";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
+import { ReflectionKind } from "typedoc";
 import type { Logger } from "./logger.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function createExecaOptions(cwd: string, logFile?: string | null): any {
   const options: any = { cwd };
@@ -87,24 +91,28 @@ async function resolveEntryPointViaDts(
   return undefined;
 }
 
-async function findEntryPointsFallback(
-  packageDir: string,
+async function findEntryPoints(
+  packagePath: string,
   packageName: string,
   log: (msg: string) => void,
-): Promise<string[]> {
+): Promise<Array<{ exportName: string; filePath: string }>> {
   try {
-    const packageJsonPath = join(packageDir, "node_modules", packageName, "package.json");
+    const packageJsonPath = join(packagePath, "package.json");
     const packageJsonContent = await readFile(packageJsonPath, "utf-8");
     const packageJson = JSON.parse(packageJsonContent);
 
+    const entryPoints: Array<{ exportName: string; filePath: string }> = [];
     const exports = packageJson.exports || {};
-    const entryPoints: string[] = [];
 
+    // Process exports field
     for (const [key, value] of Object.entries(exports)) {
       // Skip package.json and wildcard exports
       if (key === "./package.json" || key.includes("*")) {
         continue;
       }
+
+      const subPath = key === "." ? "" : key.slice(2); // Remove "./" prefix
+      const exportName = subPath ? `${packageName}/${subPath}` : packageName;
 
       // Tier 1: typedoc/types conditional export
       let types: string | undefined;
@@ -117,7 +125,7 @@ async function findEntryPointsFallback(
 
       if (types) {
         log(`   ${key}: ${types} (typedoc/types export)`);
-        entryPoints.push(join(packageDir, "node_modules", packageName, types));
+        entryPoints.push({ exportName, filePath: join(packagePath, types) });
         continue;
       }
 
@@ -130,24 +138,35 @@ async function findEntryPointsFallback(
             : undefined;
 
       if (defaultPath) {
-        const pkgRoot = join(packageDir, "node_modules", packageName);
-        const absDefaultPath = join(pkgRoot, defaultPath);
+        const absDefaultPath = join(packagePath, defaultPath);
 
         // Tier 2a: read source map to find original .ts source file
         const sourceMapEntry = await resolveEntryPointViaSourceMap(absDefaultPath);
         if (sourceMapEntry) {
           log(`   ${key}: ${sourceMapEntry} (source map)`);
-          entryPoints.push(sourceMapEntry);
+          entryPoints.push({ exportName, filePath: sourceMapEntry });
           continue;
         }
 
         // Tier 2b: infer .d.mts or .d.ts from the export path
-        const dtsEntry = await resolveEntryPointViaDts(defaultPath, pkgRoot);
+        const dtsEntry = await resolveEntryPointViaDts(defaultPath, packagePath);
         if (dtsEntry) {
           log(`   ${key}: ${dtsEntry} (.d.mts/.d.ts)`);
-          entryPoints.push(dtsEntry);
+          entryPoints.push({ exportName, filePath: dtsEntry });
         } else {
           log(`   ${key}: no entry point found (skipped)`);
+        }
+      }
+    }
+
+    // Fallback to main/module/types/typings if no exports
+    if (entryPoints.length === 0) {
+      for (const field of ["types", "typings", "module", "main"]) {
+        const mainPath = packageJson[field];
+        if (typeof mainPath === "string") {
+          log(`   using ${field}: ${mainPath}`);
+          entryPoints.push({ exportName: packageName, filePath: join(packagePath, mainPath) });
+          break;
         }
       }
     }
@@ -155,7 +174,7 @@ async function findEntryPointsFallback(
     return entryPoints;
   } catch (error) {
     throw new Error(
-      `Failed to parse package.json exports for ${packageName}: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to parse package.json for entry points: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }
@@ -247,48 +266,82 @@ export async function generate(options: GenerateOptions): Promise<string> {
       gitDirectory = (repository as Record<string, unknown>).directory as string | undefined;
     }
 
-    // Generate TypeDoc JSON with vanilla TypeDoc (auto-discovers via typedoc export)
-    log(`📄 Generating TypeDoc JSON (vanilla)...`);
-    const docFile = join(tempDir, "doc.json");
-
-    const sourceLinkArgs = buildSourceLinkArgs(gitRemote, gitRevision, gitDirectory);
-
-    try {
-      await execa(
-        createExecaOptions(packagePath, typedocLogFile),
-      )`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLinkArgs}`;
-
-      // Check if vanilla output is meaningful (not just package.json)
-      const vanillaJson = JSON.parse(await readFile(docFile, "utf-8"));
-      const vanillaChildren: { name: string; sources?: { fileName: string }[] }[] =
-        vanillaJson.children ?? [];
-      const onlyPackageJson = vanillaChildren.every(
-        (c) => c.name === "package.json" || c.sources?.every((s) => s.fileName === "package.json"),
-      );
-      if (onlyPackageJson) {
-        throw new Error("Vanilla TypeDoc generated empty or package.json-only output");
-      }
-    } catch {
-      // Fallback: use explicit entry points if vanilla approach fails
-      log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
-      // findEntryPointsFallback expects a dir containing node_modules; packagePath is already .../node_modules/pkgname
-      const fallbackDir = installedPackagePath ? dirname(dirname(packagePath)) : tempDir;
-      const entryPoints = await findEntryPointsFallback(fallbackDir, packageName, log);
-      if (entryPoints.length === 0) {
-        throw new Error(
-          `Failed to generate TypeDoc: vanilla approach failed and no fallback entry points found`,
-        );
-      }
-
-      log(`   Found ${entryPoints.length} entry point(s)`);
-      const entryPointArgs = entryPoints.flatMap((ep) => ["--entryPoints", ep]);
-      await execa(
-        createExecaOptions(tempDir, typedocLogFile),
-      )`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLinkArgs}`;
+    // Discover entry points from package.json exports/main/module/types/typings
+    log(`📄 Discovering entry points...`);
+    const entryPoints = await findEntryPoints(packagePath, packageName, log);
+    if (entryPoints.length === 0) {
+      throw new Error(`Failed to generate TypeDoc: no entry points found in package.json`);
     }
 
+    log(`   Found ${entryPoints.length} entry point(s)`);
+    log(`📋 Module mapping:`);
+    for (const { exportName, filePath } of entryPoints) {
+      log(`   ${exportName} → ${filePath}`);
+    }
+
+    // Build source link template
+    const sourceLinkTemplate =
+      gitRemote && gitRevision
+        ? `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`
+        : undefined;
+
+    // Create TypeDoc options JSON in temp directory to avoid package pollution
+    const typedocConfigPath = join(tempDir, "typedoc.options.json");
+    const typedocOptions = {
+      entryPoints: entryPoints.map((ep) => ep.filePath),
+      json: join(tempDir, "doc.json"),
+      name: packageName,
+      skipErrorChecking: true,
+      disableGit: true,
+      displayBasePath: packagePath,
+      alwaysCreateEntryPointModule: true,
+      ...(sourceLinkTemplate ? { sourceLinkTemplate } : {}),
+    };
+
+    await writeFile(typedocConfigPath, JSON.stringify(typedocOptions, null, 2));
+    log(`   Wrote TypeDoc config:`);
+    log(`   ${JSON.stringify(typedocOptions, null, 2).split("\n").join("\n   ")}`);
+
+    // Run TypeDoc with the config file
+    log(`🔨 Generating TypeDoc JSON...`);
+    const docFile = typedocOptions.json as string;
+    const typedocBin = resolve(__dirname, "../node_modules/.bin/typedoc");
+    log(`   Using TypeDoc from: ${typedocBin}`);
+    await execa(
+      createExecaOptions(tempDir, typedocLogFile),
+    )`${typedocBin} --options ${typedocConfigPath}`;
+
     // Read the generated JSON
-    const typedocJson = await readFile(docFile, "utf-8");
+    let typedocJson = await readFile(docFile, "utf-8");
+    const doc = JSON.parse(typedocJson);
+
+    // Post-process: map file paths back to export names
+    log(`📝 Post-processing reflection names...`);
+    const filePathToExportName = new Map(entryPoints.map((ep) => [ep.filePath, ep.exportName]));
+
+    if (doc.children && Array.isArray(doc.children)) {
+      for (const child of doc.children) {
+        // Only rename module-type reflections with exactly one source
+        if (
+          child.kind === ReflectionKind.Module &&
+          child.sources &&
+          Array.isArray(child.sources) &&
+          child.sources.length === 1
+        ) {
+          const relativeSourcePath = child.sources[0].fileName as string;
+          // Convert relative path to absolute by joining with displayBasePath
+          const absoluteSourcePath = resolve(packagePath, relativeSourcePath);
+          const exportName = filePathToExportName.get(absoluteSourcePath);
+          if (exportName) {
+            const oldName = child.name;
+            child.name = exportName;
+            log(`   ${oldName} → ${exportName}`);
+          }
+        }
+      }
+    }
+
+    typedocJson = JSON.stringify(doc, null, 2);
 
     // Write output file
     const outputPath = resolve(outFile);

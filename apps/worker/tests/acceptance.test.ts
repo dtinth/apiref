@@ -81,20 +81,23 @@ beforeAll(() => tester.setup());
 afterAll(() => tester.teardown());
 
 describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
-  test.skip("visual-storyboard", async () => {
+  test("visual-storyboard", async () => {
     const doc = await tester.docForPackage("visual-storyboard");
     expect(doc.root.childrenNames).toEqual(
-      expect.arrayContaining(["index", "integrations/playwright", "transports/file"]),
+      expect.arrayContaining([
+        "visual-storyboard",
+        "visual-storyboard/integrations/playwright",
+        "visual-storyboard/transports/file",
+      ]),
     );
-    // TODO: source link paths are missing src/ prefix when using installedPackagePath
-    expect(doc.root.child("index").child("StoryboardWriter").sourceUrls).toEqual([
+    expect(doc.root.child("visual-storyboard").child("StoryboardWriter").sourceUrls).toEqual([
       "https://github.com/dtinth/visual-storyboard/blob/v0.3.6/packages/core/src/writer.ts#L61",
     ]);
   });
-  test.skip("bsearch", async () => {
+  test("bsearch", async () => {
     const doc = await tester.docForPackage("bsearch");
-    // TODO: source link paths are missing src/ prefix when using installedPackagePath
-    expect(doc.root.child("smallestInt").sourceUrls).toEqual([
+    expect(doc.root.childrenNames).toEqual(expect.arrayContaining(["bsearch"]));
+    expect(doc.root.child("bsearch").child("smallestInt").sourceUrls).toEqual([
       "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L13",
     ]);
   });
