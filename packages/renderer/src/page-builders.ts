@@ -61,7 +61,6 @@ function buildCommentSections(
 export function buildPackageIndexPage(
   project: TDProject,
   topLevel: TDDeclaration[],
-  isSingleEntry: boolean,
   ctx: TransformContext,
 ): PageViewModel {
   const sections: Section[] = [];
@@ -86,30 +85,12 @@ export function buildPackageIndexPage(
     if (doc.length > 0) sections.push({ body: [{ kind: "doc", doc }] });
   }
 
-  if (isSingleEntry) {
-    // Group children by TypeDoc group titles
-    const groups = project.groups ?? inferGroups(topLevel);
-    const idToDecl = new Map<number, TDDeclaration>(topLevel.map((c) => [c.id, c]));
-    for (const group of groups) {
-      const members = (group.children ?? [])
-        .map((id) => idToDecl.get(id))
-        .filter((d): d is TDDeclaration => d !== undefined);
-      sections.push({
-        title: group.title,
-        id: `~${group.title.toLowerCase().replace(/\s+/g, "-")}`,
-        body: members.flatMap((d) =>
-          declarationAsCards(d, ctx, `~${group.title.toLowerCase().replace(/\s+/g, "-")}`),
-        ),
-      });
-    }
-  } else {
-    // List modules
-    sections.push({
-      title: "Modules",
-      id: "~modules",
-      body: topLevel.flatMap((d) => declarationAsCards(d, ctx, "~modules")),
-    });
-  }
+  // List modules
+  sections.push({
+    title: "Modules",
+    id: "~modules",
+    body: topLevel.flatMap((d) => declarationAsCards(d, ctx, "~modules")),
+  });
 
   return {
     url: "index.html",

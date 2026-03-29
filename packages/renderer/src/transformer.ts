@@ -59,124 +59,100 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
   const pkgVersion = options.version ?? project.packageVersion ?? "0.0.0";
 
   const children = getDeclarationChildren(project);
-  const isSingleEntry = children.every((c) => c.kind !== Kind.Module);
 
   const idToUrl = new Map<number, string>();
   idToUrl.set(project.id, "index.html");
 
-  if (isSingleEntry) {
-    for (const child of children) {
-      registerReflection(child, "", isSingleEntry, idToUrl);
+  for (const mod of children) {
+    // Normalize empty module names (from "." export) to "index"
+    if (mod.name === "") {
+      mod.name = "index";
     }
-  } else {
-    for (const mod of children) {
-      // Normalize empty module names (from "." export) to "index"
-      if (mod.name === "") {
-        mod.name = "index";
-      }
-      const modUrl = encodeModulePath(mod.name, pkgName) + "/index.html";
-      idToUrl.set(mod.id, modUrl);
+    const modUrl = encodeModulePath(mod.name, pkgName) + "/index.html";
+    idToUrl.set(mod.id, modUrl);
 
-      // Group children by name to detect multi-declaration groups
-      const nameGroups = new Map<string, TDDeclaration[]>();
-      for (const child of getDeclarationChildren(mod)) {
-        if (PAGE_KINDS.has(child.kind)) {
-          if (!nameGroups.has(child.name)) {
-            nameGroups.set(child.name, []);
-          }
-          nameGroups.get(child.name)!.push(child);
+    // Group children by name to detect multi-declaration groups
+    const nameGroups = new Map<string, TDDeclaration[]>();
+    for (const child of getDeclarationChildren(mod)) {
+      if (PAGE_KINDS.has(child.kind)) {
+        if (!nameGroups.has(child.name)) {
+          nameGroups.set(child.name, []);
         }
+        nameGroups.get(child.name)!.push(child);
       }
+    }
 
-      // Register each child, using namespace URL if multiple declarations share a name
-      for (const child of getDeclarationChildren(mod)) {
-        if (PAGE_KINDS.has(child.kind)) {
-          const group = nameGroups.get(child.name)!;
-          let urlDecl = child;
+    // Register each child, using namespace URL if multiple declarations share a name
+    for (const child of getDeclarationChildren(mod)) {
+      if (PAGE_KINDS.has(child.kind)) {
+        const group = nameGroups.get(child.name)!;
+        let urlDecl = child;
 
-          // If this is part of a multi-declaration group, use the namespace declaration for URL generation
-          if (group.length > 1) {
-            const namespace = group.find((d) => d.kind === Kind.Namespace);
-            if (namespace) {
-              urlDecl = namespace;
-            }
+        // If this is part of a multi-declaration group, use the namespace declaration for URL generation
+        if (group.length > 1) {
+          const namespace = group.find((d) => d.kind === Kind.Namespace);
+          if (namespace) {
+            urlDecl = namespace;
           }
-
-          registerReflection(child, encodeModulePath(mod.name, pkgName), false, idToUrl, urlDecl);
-        } else {
-          registerReflection(child, encodeModulePath(mod.name, pkgName), false, idToUrl);
         }
+
+        registerReflection(child, encodeModulePath(mod.name, pkgName), idToUrl, urlDecl);
+      } else {
+        registerReflection(child, encodeModulePath(mod.name, pkgName), idToUrl);
       }
     }
   }
 
-  const idToBreadcrumbs = buildBreadcrumbLookup(project, children, isSingleEntry, pkgName, idToUrl);
+  const idToBreadcrumbs = buildBreadcrumbLookup(project, children, pkgName, idToUrl);
   const ctx: TransformContext = { idToUrl, idToBreadcrumbs, pkgName, pkgVersion };
 
   const pages: PageViewModel[] = [];
   const navTree: NavNode[] = [];
 
   // Package index page
-  pages.push(buildPackageIndexPage(project, children, isSingleEntry, ctx));
+  pages.push(buildPackageIndexPage(project, children, ctx));
 
-  if (isSingleEntry) {
-    const navChildren: NavNode[] = [];
-    // Group children by name to detect duplicates
-    const nameGroups = new Map<string, TDDeclaration[]>();
-    for (const child of children) {
-      if (!nameGroups.has(child.name)) {
-        nameGroups.set(child.name, []);
+  for (const mod of children) {
+    const modUrl = idToUrl.get(mod.id) ?? "index.html";
+    const modBreadcrumbs: Breadcrumb[] = [{ label: pkgName, url: "index.html" }];
+    pages.push(buildModulePage(mod, modBreadcrumbs, ctx));
+
+    const modNavChildren: NavNode[] = [];
+    const modChildGroups = new Map<string, TDDeclaration[]>();
+    for (const child of getDeclarationChildren(mod)) {
+      if (!modChildGroups.has(child.name)) {
+        modChildGroups.set(child.name, []);
       }
-      nameGroups.get(child.name)!.push(child);
+      modChildGroups.get(child.name)!.push(child);
     }
 
-    for (const [_name, decls] of nameGroups) {
-      collectNameGroupPages(decls, [], ctx, pages, navChildren, idToUrl);
+    for (const [_name, decls] of modChildGroups) {
+      collectNameGroupPages(
+        decls,
+        modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
+        ctx,
+        pages,
+        modNavChildren,
+        idToUrl,
+      );
     }
-    navTree.push(...navChildren.sort(byLabel));
-  } else {
-    for (const mod of children) {
-      const modUrl = idToUrl.get(mod.id) ?? "index.html";
-      const modBreadcrumbs: Breadcrumb[] = [{ label: pkgName, url: "index.html" }];
-      pages.push(buildModulePage(mod, modBreadcrumbs, ctx));
-
-      const modNavChildren: NavNode[] = [];
-      const modChildGroups = new Map<string, TDDeclaration[]>();
-      for (const child of getDeclarationChildren(mod)) {
-        if (!modChildGroups.has(child.name)) {
-          modChildGroups.set(child.name, []);
-        }
-        modChildGroups.get(child.name)!.push(child);
-      }
-
-      for (const [_name, decls] of modChildGroups) {
-        collectNameGroupPages(
-          decls,
-          modBreadcrumbs.concat({ label: mod.name, url: modUrl }),
-          ctx,
-          pages,
-          modNavChildren,
-          idToUrl,
-        );
-      }
-      navTree.push({
-        label: mod.name,
-        url: modUrl,
-        kind: "module",
-        iconClass: getKindIcon("module"),
-        flags: {},
-        children: modNavChildren.sort(byLabel),
-      });
-    }
-    // Sort modules with index first, then alphabetically
-    navTree.sort((a, b) => {
-      const aIsIndex = a.label === pkgName;
-      const bIsIndex = b.label === pkgName;
-      if (aIsIndex) return -1;
-      if (bIsIndex) return 1;
-      return a.label.localeCompare(b.label);
+    navTree.push({
+      label: mod.name,
+      url: modUrl,
+      kind: "module",
+      iconClass: getKindIcon("module"),
+      flags: {},
+      children: modNavChildren.sort(byLabel),
     });
   }
+  // Sort modules with index first, then alphabetically
+  navTree.sort((a, b) => {
+    const aIsIndex = a.label === pkgName;
+    const bIsIndex = b.label === pkgName;
+    if (aIsIndex) return -1;
+    if (bIsIndex) return 1;
+    return a.label.localeCompare(b.label);
+  });
 
   return { package: { name: pkgName, version: pkgVersion }, pages, navTree };
 }
@@ -184,29 +160,22 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
 function buildBreadcrumbLookup(
   project: TDProject,
   children: TDDeclaration[],
-  isSingleEntry: boolean,
   pkgName: string,
   idToUrl: Map<number, string>,
 ): Map<number, Breadcrumb[]> {
   const idToBreadcrumbs = new Map<number, Breadcrumb[]>();
   idToBreadcrumbs.set(project.id, [{ label: pkgName, url: "index.html" }]);
 
-  if (isSingleEntry) {
-    for (const child of children) {
-      collectDeclarationBreadcrumbs(child, [], idToUrl, idToBreadcrumbs);
-    }
-  } else {
-    for (const mod of children) {
-      const modUrl = idToUrl.get(mod.id) ?? "index.html";
-      const modBreadcrumbs = [
-        { label: pkgName, url: "index.html" },
-        { label: mod.name, url: modUrl },
-      ];
-      idToBreadcrumbs.set(mod.id, modBreadcrumbs);
+  for (const mod of children) {
+    const modUrl = idToUrl.get(mod.id) ?? "index.html";
+    const modBreadcrumbs = [
+      { label: pkgName, url: "index.html" },
+      { label: mod.name, url: modUrl },
+    ];
+    idToBreadcrumbs.set(mod.id, modBreadcrumbs);
 
-      for (const child of getDeclarationChildren(mod)) {
-        collectDeclarationBreadcrumbs(child, modBreadcrumbs, idToUrl, idToBreadcrumbs);
-      }
+    for (const child of getDeclarationChildren(mod)) {
+      collectDeclarationBreadcrumbs(child, modBreadcrumbs, idToUrl, idToBreadcrumbs);
     }
   }
 
@@ -341,11 +310,10 @@ function collectDeclarationBreadcrumbs(
 function registerReflection(
   decl: TDDeclaration,
   pathPrefix: string,
-  isSingleEntry: boolean,
   idToUrl: Map<number, string>,
   urlDecl?: TDDeclaration,
 ): void {
-  const url = declarationUrl(urlDecl ?? decl, pathPrefix, isSingleEntry);
+  const url = declarationUrl(urlDecl ?? decl, pathPrefix);
   idToUrl.set(decl.id, url);
 
   for (const child of getDeclarationChildren(decl)) {
@@ -358,14 +326,14 @@ function registerReflection(
       }
     } else if (PAGE_KINDS.has(child.kind)) {
       const childPrefix = pathPrefix ? `${pathPrefix}/${decl.name}` : decl.name;
-      const childUrl = declarationUrl(child, childPrefix, false);
+      const childUrl = declarationUrl(child, childPrefix);
       idToUrl.set(child.id, childUrl);
 
       // Recurse for nested PAGE_KINDS within this child
       const childPathPrefix = childPrefix ? `${childPrefix}/${child.name}` : child.name;
       for (const nestedChild of getDeclarationChildren(child)) {
         if (PAGE_KINDS.has(nestedChild.kind)) {
-          registerReflection(nestedChild, childPathPrefix, false, idToUrl);
+          registerReflection(nestedChild, childPathPrefix, idToUrl);
         }
       }
     }
@@ -375,8 +343,8 @@ function registerReflection(
   if (decl.setSignature) idToUrl.set(decl.setSignature.id, `${url}#${decl.name}`);
 }
 
-function declarationUrl(decl: TDDeclaration, pathPrefix: string, isSingleEntry: boolean): string {
-  const prefix = isSingleEntry ? "" : pathPrefix ? pathPrefix + "/" : "";
+function declarationUrl(decl: TDDeclaration, pathPrefix: string): string {
+  const prefix = pathPrefix ? pathPrefix + "/" : "";
   const { kind, name } = decl;
   switch (kind) {
     case Kind.Namespace:

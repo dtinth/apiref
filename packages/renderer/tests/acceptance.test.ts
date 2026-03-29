@@ -20,7 +20,8 @@ describe("nav", () => {
   test("Entry points exist at 1st level", () => {
     tester.nav.child("@apiref-examples/core").shouldHaveKind("module");
     tester.nav.child("@apiref-examples/core/data").shouldHaveKind("module");
-    tester.nav.child("@apiref-examples/core/namespaces").shouldHaveKind("module");
+    tester.nav.child("@apiref-examples/core/utils").shouldHaveKind("module");
+    tester.nav.child("@apiref-examples/core/web").shouldHaveKind("module");
   });
   test("Classes are present", () => {
     tester.nav.child("@apiref-examples/core").child("ApiError").shouldHaveKind("class");

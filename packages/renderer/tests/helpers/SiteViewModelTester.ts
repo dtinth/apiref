@@ -1,11 +1,11 @@
-import { expect } from "vite-plus/test";
+import { convert } from "html-to-text";
 import { h } from "preact";
 import { render as renderToString } from "preact-render-to-string";
-import { convert } from "html-to-text";
-import { buildOutline } from "../../src/outline-builder.ts";
+import { expect } from "vite-plus/test";
 import { buildApirefJson } from "../../src/apiref-json.ts";
 import { PageContext } from "../../src/components/PageContext.tsx";
-import { TypeView, SignatureLine } from "../../src/components/TypeView.tsx";
+import { SignatureLine, TypeView } from "../../src/components/TypeView.tsx";
+import { buildOutline } from "../../src/outline-builder.ts";
 import type {
   NavNode,
   PageViewModel,
@@ -103,7 +103,7 @@ class PageTester {
 
   private shouldExist(): PageViewModel {
     const page = this.resolve();
-    expect(page, `Expected page at URL ${this.url} to exist`).toBeDefined();
+    expect(page, `Expected page at URL ${this.url} to exist`).toBeTruthy();
     return page!;
   }
 

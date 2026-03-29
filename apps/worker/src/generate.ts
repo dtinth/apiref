@@ -37,18 +37,6 @@ export interface GenerateOptions {
   logDir?: string;
 }
 
-function buildSourceLinkArgs(
-  gitRemote: string | undefined,
-  gitRevision: string | undefined,
-  gitDirectory: string | undefined,
-): string[] {
-  if (!gitRemote || !gitRevision) return [];
-  return [
-    "--sourceLinkTemplate",
-    `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
-  ];
-}
-
 async function resolveEntryPointViaSourceMap(absDefaultPath: string): Promise<string | undefined> {
   try {
     const mapContent = await readFile(absDefaultPath + ".map", "utf-8");
