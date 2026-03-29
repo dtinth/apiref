@@ -32,7 +32,8 @@
   "dependencies": {
     "commander": "catalog:",
     "execa": "catalog:",
-    "pacote": "catalog:"
+    "pacote": "catalog:",
+    "typedoc": "catalog:"
   },
   "devDependencies": {
     "@apiref/renderer": "workspace:*",

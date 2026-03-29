@@ -108,6 +108,9 @@ importers:
       pacote:
         specifier: 'catalog:'
         version: 21.5.0
+      typedoc:
+        specifier: 'catalog:'
+        version: 0.28.18(typescript@5.9.3)
     devDependencies:
       '@apiref/renderer':
         specifier: workspace:*
@@ -131,8 +134,8 @@ importers:
         specifier: 2.0.0-next.1
         version: 2.0.0-next.1
       visual-storyboard:
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.3.6
+        version: 0.3.6
 
   packages/examples:
     dependencies:
@@ -1983,8 +1986,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  visual-storyboard@0.3.0:
-    resolution: {integrity: sha512-e0cFuMwC38aBKs3dq7I0lcbW8mDxB+zvOA3Hb/fCFZMJFYJGnEqH+Yltyqj2ziUMW/AXSNZ79hq/Rid0ZqtlNQ==}
+  visual-storyboard@0.3.6:
+    resolution: {integrity: sha512-KnV6yrwcnYtXDOWTi+CpCa4C1IElH8vROtIJ84tJLNg9M+wKjynal8bJsGQZZlWIfoYIbi02e+9i1ph6FLRcTg==}
 
   vite-plus@0.1.14:
     resolution: {integrity: sha512-p4pWlpZZNiEsHxPWNdeIU9iuPix3ydm3ficb0dXPggoyIkdotfXtvn2NPX9KwfiQImU72EVEs4+VYBZYNcUYrw==}
@@ -3810,7 +3813,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  visual-storyboard@0.3.0: {}
+  visual-storyboard@0.3.6: {}
 
   vite-plus@0.1.14(@types/node@24.12.0)(jiti@2.6.1)(typescript@5.9.3)(vite@8.0.3(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))(yaml@2.8.3):
     dependencies:

@@ -11,7 +11,8 @@
     "render": "vp run @apiref/renderer#build && node packages/renderer/dist/cli.mjs packages/renderer/fixtures/examples.json --out _site --assets-base /assets",
     "test": "vp test --tags-filter='!slow'",
     "test:slow": "vp test --tags-filter='slow'",
-    "test:all": "vp test"
+    "test:all": "vp test",
+    "check": "vp check"
   },
   "devDependencies": {
     "typedoc": "catalog:",
