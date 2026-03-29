@@ -1,6 +1,6 @@
 import { execa } from "execa";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import type { Logger } from "./logger.js";
 
@@ -21,6 +21,60 @@ export interface GenerateOptions {
   outFile?: string;
   logger?: Logger;
   logDir?: string;
+}
+
+function buildSourceLinkArgs(
+  gitRemote: string | undefined,
+  gitRevision: string | undefined,
+  gitDirectory: string | undefined,
+): string[] {
+  if (!gitRemote || !gitRevision) return [];
+  return [
+    "--sourceLinkTemplate",
+    `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
+  ];
+}
+
+async function resolveEntryPointViaSourceMap(absDefaultPath: string): Promise<string | undefined> {
+  try {
+    const mapContent = await readFile(absDefaultPath + ".map", "utf-8");
+    const map = JSON.parse(mapContent) as { sources?: string[] };
+    for (const source of map.sources ?? []) {
+      if (!source.endsWith(".ts") || source.endsWith(".d.ts")) continue;
+      const resolvedSource = resolve(dirname(absDefaultPath), source);
+      try {
+        await access(resolvedSource);
+        return resolvedSource;
+      } catch {
+        // source file not shipped in package
+      }
+    }
+  } catch {
+    // no source map available
+  }
+  return undefined;
+}
+
+async function resolveEntryPointViaDts(
+  defaultPath: string,
+  pkgRoot: string,
+): Promise<string | undefined> {
+  for (const [from, to] of [
+    [/\.mjs$/, ".d.mts"],
+    [/\.js$/, ".d.ts"],
+  ] as [RegExp, string][]) {
+    if (from.test(defaultPath)) {
+      const candidate = join(pkgRoot, defaultPath.replace(from, to));
+      try {
+        await access(candidate);
+        return candidate;
+      } catch {
+        // file doesn't exist, skip
+      }
+      break;
+    }
+  }
+  return undefined;
 }
 
 async function findEntryPointsFallback(packageDir: string, packageName: string): Promise<string[]> {
@@ -52,7 +106,7 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
         continue;
       }
 
-      // Tier 2: infer .d.mts or .d.ts from the .mjs/.js export path
+      // Tier 2: resolve from .mjs/.js export path via source map or .d.mts/.d.ts
       const defaultPath =
         typeof value === "string"
           ? value
@@ -61,26 +115,19 @@ async function findEntryPointsFallback(packageDir: string, packageName: string):
             : undefined;
 
       if (defaultPath) {
-        for (const [from, to] of [
-          [/\.mjs$/, ".d.mts"],
-          [/\.js$/, ".d.ts"],
-        ] as [RegExp, string][]) {
-          if (from.test(defaultPath)) {
-            const candidate = join(
-              packageDir,
-              "node_modules",
-              packageName,
-              defaultPath.replace(from, to),
-            );
-            try {
-              await access(candidate);
-              entryPoints.push(candidate);
-            } catch {
-              // file doesn't exist, skip
-            }
-            break;
-          }
+        const pkgRoot = join(packageDir, "node_modules", packageName);
+        const absDefaultPath = join(pkgRoot, defaultPath);
+
+        // Tier 2a: read source map to find original .ts source file
+        const sourceMapEntry = await resolveEntryPointViaSourceMap(absDefaultPath);
+        if (sourceMapEntry) {
+          entryPoints.push(sourceMapEntry);
+          continue;
         }
+
+        // Tier 2b: infer .d.mts or .d.ts from the export path
+        const dtsEntry = await resolveEntryPointViaDts(defaultPath, pkgRoot);
+        if (dtsEntry) entryPoints.push(dtsEntry);
       }
     }
 
@@ -146,18 +193,12 @@ export async function generate(options: GenerateOptions): Promise<string> {
     log(`📄 Generating TypeDoc JSON (vanilla)...`);
     const docFile = join(tempDir, "doc.json");
 
-    try {
-      const sourceLink =
-        gitRemote && gitRevision
-          ? [
-              "--sourceLinkTemplate",
-              `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
-            ]
-          : [];
+    const sourceLinkArgs = buildSourceLinkArgs(gitRemote, gitRevision, gitDirectory);
 
+    try {
       await execa(
         createExecaOptions(packagePath, typedocLogFile),
-      )`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
+      )`pnpm dlx typedoc --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLinkArgs}`;
 
       // Check if vanilla output is meaningful (not just package.json)
       const vanillaJson = JSON.parse(await readFile(docFile, "utf-8"));
@@ -181,17 +222,9 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
       log(`   Found ${entryPoints.length} entry point(s)`);
       const entryPointArgs = entryPoints.flatMap((ep) => ["--entryPoints", ep]);
-      const sourceLink =
-        gitRemote && gitRevision
-          ? [
-              "--sourceLinkTemplate",
-              `${gitRemote}/blob/${gitRevision}/${gitDirectory ? `${gitDirectory}/` : ""}{path}#L{line}`,
-            ]
-          : [];
-
       await execa(
         createExecaOptions(tempDir, typedocLogFile),
-      )`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLink}`;
+      )`pnpm dlx typedoc ${entryPointArgs} --json ${docFile} --name ${packageName} --skipErrorChecking --disableGit ${sourceLinkArgs}`;
     }
 
     // Read the generated JSON
