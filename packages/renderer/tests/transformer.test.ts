@@ -45,8 +45,8 @@ describe("pw-utilities (single-entry-point)", () => {
   test("page URLs", () => {
     const urls = site.pages.map((p) => p.url);
     expect(urls).toContain("index.html");
-    expect(urls).toContain("LocatorLike.html");
-    expect(urls).toContain("stabilize.html");
+    expect(urls).toContain("main/LocatorLike.html");
+    expect(urls).toContain("main/stabilize.html");
   });
 
   test("index page kind is package-index", () => {
@@ -55,17 +55,17 @@ describe("pw-utilities (single-entry-point)", () => {
   });
 
   test("LocatorLike page kind is interface", () => {
-    const page = site.pages.find((p) => p.url === "LocatorLike.html");
+    const page = site.pages.find((p) => p.url === "main/LocatorLike.html");
     expect(page?.kind).toBe("interface");
   });
 
   test("stabilize page kind is function", () => {
-    const page = site.pages.find((p) => p.url === "stabilize.html");
+    const page = site.pages.find((p) => p.url === "main/stabilize.html");
     expect(page?.kind).toBe("function");
   });
 
   test("stabilize page has summary doc", () => {
-    const page = site.pages.find((p) => p.url === "stabilize.html");
+    const page = site.pages.find((p) => p.url === "main/stabilize.html");
     const section = page?.sections.find((s) => s.body.some((b) => b.kind === "doc"));
     if (section?.body[0]?.kind === "doc") {
       expect(section.body[0].doc.length).toBeGreaterThan(0);
@@ -73,15 +73,15 @@ describe("pw-utilities (single-entry-point)", () => {
   });
 
   test("stabilize page has signatures section", () => {
-    const page = site.pages.find((p) => p.url === "stabilize.html") as PageViewModel;
+    const page = site.pages.find((p) => p.url === "main/stabilize.html") as PageViewModel;
     const section = page.sections.find((s) => s.body.some((b) => b.kind === "signatures"));
     expect(section).toBeDefined();
   });
 
   test("LocatorLike.evaluate resolves to anchor URL", () => {
-    // The method should resolve to LocatorLike.html#evaluate
+    // The method should resolve to main/LocatorLike.html#evaluate
     const section = site.pages
-      .find((p) => p.url === "stabilize.html")
+      .find((p) => p.url === "main/stabilize.html")
       ?.sections.find((s) => s.body.some((b) => b.kind === "signatures"));
     const sigBlock = section?.body.find((b) => b.kind === "signatures");
     // stabilize takes Pick<LocatorLike, "evaluate"> — reference to LocatorLike should resolve
@@ -94,17 +94,20 @@ describe("pw-utilities (single-entry-point)", () => {
         const arg0 = locatorParam.type.typeArguments[0];
         expect(arg0?.kind).toBe("reference");
         if (arg0?.kind === "reference") {
-          expect(arg0.url).toBe("LocatorLike.html");
+          expect(arg0.url).toBe("main/LocatorLike.html");
         }
       }
     }
   });
 
-  test("nav tree has top-level entries", () => {
+  test("nav tree has module node with children", () => {
     expect(site.navTree.length).toBeGreaterThan(0);
-    const labels = site.navTree.map((n) => n.label);
-    expect(labels).toContain("LocatorLike");
-    expect(labels).toContain("stabilize");
+    const modNode = site.navTree.find((n) => n.label === "pw-utilities");
+    expect(modNode).toBeDefined();
+    expect(modNode?.children.length).toBeGreaterThan(0);
+    const childLabels = modNode?.children.map((c) => c.label) ?? [];
+    expect(childLabels).toContain("LocatorLike");
+    expect(childLabels).toContain("stabilize");
   });
 });
 
@@ -122,36 +125,36 @@ describe("visual-storyboard (multi-module)", () => {
   test("page URLs include module index pages", () => {
     const urls = site.pages.map((p) => p.url);
     expect(urls).toContain("index.html");
-    expect(urls).toContain("index/index.html");
+    expect(urls).toContain("main/index.html");
     expect(urls).toContain("integrations/playwright/index.html");
     expect(urls).toContain("transports/file/index.html");
   });
 
   test("page URLs include class pages", () => {
     const urls = site.pages.map((p) => p.url);
-    expect(urls).toContain("index/StoryboardWriter.html");
+    expect(urls).toContain("main/StoryboardWriter.html");
     expect(urls).toContain("integrations/playwright/PlaywrightStoryboard.html");
     expect(urls).toContain("transports/file/FileTransport.html");
   });
 
   test("page URLs include interface and type-alias pages", () => {
     const urls = site.pages.map((p) => p.url);
-    expect(urls).toContain("index/StoryboardEvent.html"); // TypeAlias
-    expect(urls).toContain("index/StoryboardOutputTransport.html"); // Interface
+    expect(urls).toContain("main/StoryboardEvent.html"); // TypeAlias
+    expect(urls).toContain("main/StoryboardOutputTransport.html"); // Interface
   });
 
   test("module index page kind is module", () => {
-    const page = site.pages.find((p) => p.url === "index/index.html");
+    const page = site.pages.find((p) => p.url === "main/index.html");
     expect(page?.kind).toBe("module");
   });
 
   test("StoryboardWriter page kind is class", () => {
-    const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
+    const page = site.pages.find((p) => p.url === "main/StoryboardWriter.html");
     expect(page?.kind).toBe("class");
   });
 
   test("StoryboardWriter has constructor section", () => {
-    const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
+    const page = site.pages.find((p) => p.url === "main/StoryboardWriter.html");
     const section = page?.sections.find(
       (s) => s.title === "Constructors" && s.body.some((b) => b.kind === "card"),
     );
@@ -159,7 +162,7 @@ describe("visual-storyboard (multi-module)", () => {
   });
 
   test("StoryboardWriter has methods section", () => {
-    const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
+    const page = site.pages.find((p) => p.url === "main/StoryboardWriter.html");
     const section = page?.sections.find(
       (s) => s.title === "Methods" && s.body.some((b) => b.kind === "card"),
     );
@@ -179,7 +182,7 @@ describe("visual-storyboard (multi-module)", () => {
   });
 
   test("StoryboardEvent (TypeAlias) has type-declaration section", () => {
-    const page = site.pages.find((p) => p.url === "index/StoryboardEvent.html");
+    const page = site.pages.find((p) => p.url === "main/StoryboardEvent.html");
     expect(page?.kind).toBe("type-alias");
     const section = page?.sections.find((s) => s.body.some((b) => b.kind === "type-declaration"));
     expect(section).toBeDefined();
@@ -190,7 +193,7 @@ describe("visual-storyboard (multi-module)", () => {
 
   test("cross-references resolve to correct URLs", () => {
     // StoryboardWriter constructor takes StoryboardWriterOptions — should resolve
-    const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
+    const page = site.pages.find((p) => p.url === "main/StoryboardWriter.html");
     const ctorSection = page?.sections.find((s) => s.title === "Constructor");
     const ctorCards = ctorSection?.body.filter((b) => b.kind === "card");
     if (ctorCards && ctorCards.length > 0) {
@@ -205,7 +208,7 @@ describe("visual-storyboard (multi-module)", () => {
           expect(optionsParam?.name).toBe("options");
           expect(optionsParam?.type.kind).toBe("reference");
           if (optionsParam?.type.kind === "reference") {
-            expect(optionsParam.type.url).toBe("index/StoryboardWriterOptions.html");
+            expect(optionsParam.type.url).toBe("main/StoryboardWriterOptions.html");
           }
         }
       }
@@ -221,8 +224,8 @@ describe("visual-storyboard (multi-module)", () => {
   });
 
   test("breadcrumbs on class page reference module", () => {
-    const page = site.pages.find((p) => p.url === "index/StoryboardWriter.html");
-    expect(page?.breadcrumbs.some((b) => b.label === "index")).toBe(true);
+    const page = site.pages.find((p) => p.url === "main/StoryboardWriter.html");
+    expect(page?.breadcrumbs.some((b) => b.label === "visual-storyboard")).toBe(true);
   });
 });
 
@@ -230,7 +233,7 @@ describe("examples renderer fixture", () => {
   const site = transform(loadFixture("examples"), { version: "1.0.0" });
 
   test("AppConfig type alias preserves typeof query types", () => {
-    const page = site.pages.find((p) => p.url === "index/AppConfig.html");
+    const page = site.pages.find((p) => p.url === "main/AppConfig.html");
     const typeDeclarationBlock = page?.sections
       .flatMap((section) => section.body)
       .find((block) => block.kind === "type-declaration");
@@ -241,7 +244,7 @@ describe("examples renderer fixture", () => {
         queryType: {
           kind: "reference",
           name: "defaultConfig",
-          url: "index/defaultConfig.html",
+          url: "main/defaultConfig.html",
           typeArguments: [],
         },
       });
@@ -249,7 +252,7 @@ describe("examples renderer fixture", () => {
   });
 
   test("reference cards link to documented targets with breadcrumb labels", () => {
-    const page = site.pages.find((p) => p.url === "index/index.html");
+    const page = site.pages.find((p) => p.url === "main/index.html");
     const referencesSection = page?.sections.find(
       (section) =>
         section.title === "References" && section.body.some((block) => block.kind === "card"),
@@ -304,7 +307,7 @@ describe("examples renderer fixture", () => {
   });
 
   test("mapped type aliases preserve modifiers and nested types", () => {
-    const strictReadonlyPage = site.pages.find((p) => p.url === "index/StrictReadonly.html");
+    const strictReadonlyPage = site.pages.find((p) => p.url === "main/StrictReadonly.html");
     const strictReadonlyBlock = strictReadonlyPage?.sections
       .flatMap((section) => section.body)
       .find((block) => block.kind === "type-declaration");
@@ -329,7 +332,7 @@ describe("examples renderer fixture", () => {
       });
     }
 
-    const changeHandlersPage = site.pages.find((p) => p.url === "index/ChangeHandlers.html");
+    const changeHandlersPage = site.pages.find((p) => p.url === "main/ChangeHandlers.html");
     const changeHandlersBlock = changeHandlersPage?.sections
       .flatMap((section) => section.body)
       .find((block) => block.kind === "type-declaration");
@@ -408,7 +411,7 @@ describe("member cards", () => {
   const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
   const indexPage = site.pages.find((p) => p.url === "index.html");
   const functionsSection = indexPage?.sections.find(
-    (s) => s.title === "Functions" && s.body.some((b) => b.kind === "card"),
+    (s) => s.title === "Modules" && s.body.some((b) => b.kind === "card"),
   );
   const visualStoryboard = transform(loadFixture("visual-storyboard"), { version: "1.0.0" });
 
@@ -418,10 +421,10 @@ describe("member cards", () => {
         (b) =>
           b.kind === "card" &&
           b.sections[0]?.body[0]?.kind === "declaration-title" &&
-          b.sections[0]?.body[0]?.name === "stabilize",
+          b.sections[0]?.body[0]?.name === "pw-utilities",
       );
       if (stabilizeCard?.kind === "card") {
-        expect(stabilizeCard.url).toBe("stabilize.html");
+        expect(stabilizeCard.url).toBe("main/index.html");
         // Check card's inner sections (skip first which is declaration-title)
         const contentSections = stabilizeCard.sections.slice(1);
         const sectionKinds = contentSections.flatMap((s) => s.body.map((b) => b.kind));
@@ -449,7 +452,7 @@ describe("member cards", () => {
 
   test("inline method members expose render-oriented subsections", () => {
     const writerPage = visualStoryboard.pages.find(
-      (page) => page.url === "index/StoryboardWriter.html",
+      (page) => page.url === "main/StoryboardWriter.html",
     );
     const methodSection = writerPage?.sections.find(
       (section) => section.title === "Methods" && section.body.some((b) => b.kind === "card"),
@@ -473,7 +476,7 @@ describe("member cards", () => {
 
   test("inline property members use a type subsection", () => {
     const optionsPage = visualStoryboard.pages.find(
-      (p) => p.url === "index/CreateStoryboardFrameOptions.html",
+      (p) => p.url === "main/CreateStoryboardFrameOptions.html",
     );
     const propertiesSection = optionsPage?.sections.find(
       (section) => section.title === "Properties" && section.body.some((b) => b.kind === "card"),

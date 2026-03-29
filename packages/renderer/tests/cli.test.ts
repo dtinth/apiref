@@ -22,8 +22,9 @@ describe("runCli — pw-utilities", () => {
       out,
       assetsBase: "https://cdn.example.com/shell@1",
     });
-    expect(pagesWritten).toBe(3); // index, LocatorLike, stabilize
+    expect(pagesWritten).toBe(4); // index, main/index, main/LocatorLike, main/stabilize
     expect(existsSync(join(out, "index.html"))).toBe(true);
+    expect(existsSync(join(out, "main/index.html"))).toBe(true);
     expect(existsSync(join(out, "main/LocatorLike.html"))).toBe(true);
     expect(existsSync(join(out, "main/stabilize.html"))).toBe(true);
   });
