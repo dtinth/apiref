@@ -249,11 +249,14 @@ export async function generate(options: GenerateOptions): Promise<string> {
   try {
     const packageJsonPath = join(packagePath, "package.json");
 
-    // Read package.json to extract git info
+    // Read package.json to extract git info and package name
     const packageJsonContent = await readFile(packageJsonPath, "utf-8");
     const packageJson = JSON.parse(packageJsonContent);
     const version = packageJson.version as string | undefined;
     const repository = packageJson.repository as { type: string; url: string } | string | undefined;
+
+    // Use actual package name from package.json
+    packageName = (packageJson.name as string | undefined) || packageName;
 
     // Extract git remote and revision
     let gitRemote: string | undefined;

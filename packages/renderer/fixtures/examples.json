@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0",
   "id": 0,
-  "name": "examples",
+  "name": "@apiref-examples/core",
   "variant": "project",
   "kind": 1,
   "flags": {},
   "children": [
     {
       "id": 1,
-      "name": "examples",
+      "name": "@apiref-examples/core",
       "variant": "declaration",
       "kind": 2,
       "flags": {},
@@ -11344,7 +11344,7 @@
     },
     {
       "id": 183,
-      "name": "examples/data",
+      "name": "@apiref-examples/core/data",
       "variant": "declaration",
       "kind": 2,
       "flags": {},
@@ -15366,7 +15366,7 @@
     },
     {
       "id": 422,
-      "name": "examples/web",
+      "name": "@apiref-examples/core/web",
       "variant": "declaration",
       "kind": 2,
       "flags": {},
@@ -16833,7 +16833,7 @@
     },
     {
       "id": 321,
-      "name": "examples/utils",
+      "name": "@apiref-examples/core/utils",
       "variant": "declaration",
       "kind": 2,
       "flags": {},
