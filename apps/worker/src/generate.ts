@@ -16,8 +16,18 @@ function createExecaOptions(cwd: string, logFile?: string | null): any {
   return options;
 }
 
+/**
+ * Options for TypeDoc generation.
+ *
+ * Either `packageSpec` or `installedPackagePath` must be provided, but not both.
+ * - `packageSpec`: Install the package from npm (e.g., "elysia@1.4.28")
+ * - `installedPackagePath`: Use an already-installed package directory (skips installation)
+ */
 export interface GenerateOptions {
-  packageSpec: string;
+  /** Package spec to install (e.g. "pkg@1.0.0"), OR path to already-installed package. Mutually exclusive with installedPackagePath. */
+  packageSpec?: string;
+  /** Path to already-installed package directory. Mutually exclusive with packageSpec. */
+  installedPackagePath?: string;
   outFile?: string;
   logger?: Logger;
   logDir?: string;
@@ -151,33 +161,70 @@ async function findEntryPointsFallback(
 }
 
 export async function generate(options: GenerateOptions): Promise<string> {
-  const { packageSpec, outFile = "typedoc.json", logger, logDir } = options;
+  const { packageSpec, installedPackagePath, outFile = "typedoc.json", logger, logDir } = options;
+
+  // Validate mutually exclusive options
+  if (!packageSpec && !installedPackagePath) {
+    throw new Error("Either packageSpec or installedPackagePath must be provided");
+  }
+  if (packageSpec && installedPackagePath) {
+    throw new Error("packageSpec and installedPackagePath are mutually exclusive");
+  }
 
   const log = (msg: string) => {
     if (logger) logger.log(msg);
     else console.log(msg);
   };
 
-  // Create a temporary directory for installation
-  const tempDir = resolve(
-    tmpdir(),
-    `apiref-generate-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-  );
+  const pnpmLogFile = logDir ? join(logDir, "pnpm.log") : null;
+  const typedocLogFile = logDir ? join(logDir, "typedoc.log") : null;
+
+  // Extract package name early for use throughout
+  let packageName: string;
+  if (installedPackagePath) {
+    const parts = installedPackagePath.split("/");
+    packageName = parts[parts.length - 1] || installedPackagePath;
+  } else {
+    packageName = packageSpec!.split("@")[0] || packageSpec!;
+  }
+
+  let tempDir: string;
+  let packagePath: string;
+
+  if (installedPackagePath) {
+    // Use already-installed package, skip temp dir creation and installation
+    packagePath = installedPackagePath;
+    tempDir = tmpdir(); // dummy, won't be cleaned up
+    log(`📦 Using installed package at ${packagePath}`);
+  } else {
+    // Create a temporary directory for installation
+    tempDir = resolve(
+      tmpdir(),
+      `apiref-generate-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+
+    try {
+      await mkdir(tempDir, { recursive: true });
+
+      // Install the package
+      log(`📦 Installing ${packageSpec}...`);
+      await execa(
+        createExecaOptions(tempDir, pnpmLogFile),
+      )`pnpm add --ignore-scripts ${packageSpec!}`;
+
+      packagePath = join(tempDir, "node_modules", packageName);
+    } catch (e) {
+      // Cleanup on install failure
+      try {
+        await execa`rm -rf ${tempDir}`;
+      } catch {
+        // ignore cleanup errors
+      }
+      throw e;
+    }
+  }
 
   try {
-    await mkdir(tempDir, { recursive: true });
-
-    // Setup log files if logDir is provided
-    const pnpmLogFile = logDir ? join(logDir, "pnpm.log") : null;
-    const typedocLogFile = logDir ? join(logDir, "typedoc.log") : null;
-
-    // Install the package
-    log(`📦 Installing ${packageSpec}...`);
-    await execa(createExecaOptions(tempDir, pnpmLogFile))`pnpm add --ignore-scripts ${packageSpec}`;
-
-    // Extract package name from packageSpec (e.g., "elysia@1.4.28" -> "elysia")
-    const packageName = packageSpec.split("@")[0] || packageSpec;
-    const packagePath = join(tempDir, "node_modules", packageName);
     const packageJsonPath = join(packagePath, "package.json");
 
     // Read package.json to extract git info
@@ -224,7 +271,9 @@ export async function generate(options: GenerateOptions): Promise<string> {
     } catch {
       // Fallback: use explicit entry points if vanilla approach fails
       log(`⚠️  Vanilla TypeDoc failed, using explicit entry points...`);
-      const entryPoints = await findEntryPointsFallback(tempDir, packageName, log);
+      // findEntryPointsFallback expects a dir containing node_modules; packagePath is already .../node_modules/pkgname
+      const fallbackDir = installedPackagePath ? dirname(dirname(packagePath)) : tempDir;
+      const entryPoints = await findEntryPointsFallback(fallbackDir, packageName, log);
       if (entryPoints.length === 0) {
         throw new Error(
           `Failed to generate TypeDoc: vanilla approach failed and no fallback entry points found`,
@@ -248,13 +297,15 @@ export async function generate(options: GenerateOptions): Promise<string> {
 
     return typedocJson;
   } finally {
-    // Cleanup temp directory
-    try {
-      await execa`rm -rf ${tempDir}`;
-    } catch {
-      const warnMsg = `⚠️  Failed to cleanup temp directory: ${tempDir}`;
-      if (logger) logger.log(warnMsg);
-      else console.warn(warnMsg);
+    // Cleanup temp directory only if we created it (not if using installedPackagePath)
+    if (!installedPackagePath) {
+      try {
+        await execa`rm -rf ${tempDir}`;
+      } catch {
+        const warnMsg = `⚠️  Failed to cleanup temp directory: ${tempDir}`;
+        if (logger) logger.log(warnMsg);
+        else console.warn(warnMsg);
+      }
     }
   }
 }
