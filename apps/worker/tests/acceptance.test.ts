@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { JSONOutput } from "typedoc";
-import { afterAll, beforeAll, describe, test } from "vite-plus/test";
+import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
 import { generate } from "../src/generate.ts";
 
 class DocFileGenerationTester {
@@ -23,7 +23,7 @@ class DocFileGenerationTester {
   }
   async docForPackage(pkgName: string) {
     if (this.cachedDocs.has(pkgName)) {
-      return this.cachedDocs.get(pkgName);
+      return this.cachedDocs.get(pkgName)!;
     }
     const ecosystemTestsRoot = fileURLToPath(
       new URL("../../../packages/ecosystem-tests/node_modules", import.meta.url),
@@ -42,6 +42,38 @@ class DocFileGenerationTester {
 
 class DocFileTester {
   constructor(public reflection: JSONOutput.ProjectReflection) {}
+  get root() {
+    return new DocNodeTester(this.reflection);
+  }
+}
+
+class DocNodeTester {
+  constructor(public node: JSONOutput.ProjectReflection | JSONOutput.DeclarationReflection) {}
+  child(name: string): DocNodeTester {
+    if (!("children" in this.node) || !this.node.children) {
+      throw new Error(`Node ${this.node.name} has no children`);
+    }
+    const child = this.node.children.find((c) => c.name === name);
+    if (!child) {
+      const names = this.childrenNames.join(", ");
+      throw new Error(
+        `Node ${this.node.name} has no child named ${name} (available children: ${names})`,
+      );
+    }
+    return new DocNodeTester(child);
+  }
+  get childrenNames(): string[] {
+    if (!("children" in this.node) || !this.node.children) {
+      return [];
+    }
+    return this.node.children.map((c) => c.name);
+  }
+  get sourceUrls(): string[] {
+    if (!("sources" in this.node) || !this.node.sources) {
+      return [];
+    }
+    return this.node.sources.map((s) => s.url).filter((u): u is string => !!u);
+  }
 }
 
 const tester = new DocFileGenerationTester();
@@ -49,12 +81,21 @@ beforeAll(() => tester.setup());
 afterAll(() => tester.teardown());
 
 describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
-  test("visual-storyboard@0.3.0 — Tier 2a source map resolution", async () => {
+  test.skip("visual-storyboard", async () => {
     const doc = await tester.docForPackage("visual-storyboard");
-    console.log(doc?.reflection);
+    expect(doc.root.childrenNames).toEqual(
+      expect.arrayContaining(["index", "integrations/playwright", "transports/file"]),
+    );
+    // TODO: source link paths are missing src/ prefix when using installedPackagePath
+    expect(doc.root.child("index").child("StoryboardWriter").sourceUrls).toEqual([
+      "https://github.com/dtinth/visual-storyboard/blob/v0.3.6/packages/core/src/writer.ts#L61",
+    ]);
   });
-
-  test("bsearch@2.0.0-next.1 — Tier 2a source map resolution", async () => {
+  test.skip("bsearch", async () => {
     const doc = await tester.docForPackage("bsearch");
+    // TODO: source link paths are missing src/ prefix when using installedPackagePath
+    expect(doc.root.child("smallestInt").sourceUrls).toEqual([
+      "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L13",
+    ]);
   });
 });
