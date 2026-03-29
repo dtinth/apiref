@@ -12,7 +12,7 @@ import type { TypeViewModel } from "../src/viewmodel.ts";
 const SHELL = "https://cdn.example.com/shell@1.0.0";
 
 function loadFixture(name: string): unknown {
-  const path = fileURLToPath(new URL(`../../../fixtures/${name}.json`, import.meta.url));
+  const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
   return JSON.parse(readFileSync(path, "utf-8"));
 }
 

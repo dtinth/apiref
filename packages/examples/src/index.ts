@@ -425,6 +425,29 @@ export const defaultConfig = {
 /** Type derived from the default config */
 export type AppConfig = typeof defaultConfig;
 
+/** SQL query string template literal type */
+export type SqlQuery = `SELECT ${string} FROM ${string}`;
+
+/**
+ * Type guard for checking whether a value is a number.
+ *
+ * @param value - Value to check
+ * @returns true if value is a number
+ */
+export function isNumber(value: unknown): value is number {
+  return typeof value === "number";
+}
+
+/**
+ * Join multiple strings into one value.
+ *
+ * @param args - Strings to join
+ * @returns Joined string
+ */
+export function joinStrings(...args: string[]): string {
+  return args.join("");
+}
+
 /**
  * Makes every property readonly and required.
  *

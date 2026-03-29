@@ -14,6 +14,14 @@
       "flags": {
         "isExternal": true
       },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Utilities for working with Playwright locators and pages."
+          }
+        ]
+      },
       "children": [
         {
           "id": 2,
