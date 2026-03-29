@@ -1,0 +1,5119 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "bsearch",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "bsearch",
+      "variant": "declaration",
+      "kind": 2,
+      "flags": {
+        "isExternal": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Utility functions for performing binary search in various scenarios."
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 20,
+          "name": "firstElement",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 53,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L53"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 21,
+              "name": "firstElement",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the first element in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The first element in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such element exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 53,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L53"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 22,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 23,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 22,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 24,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i >= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 25,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 26,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 27,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 22,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 28,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 29,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 22,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 22,
+                "name": "T",
+                "package": "bsearch",
+                "refersToTypeParameter": true
+              }
+            }
+          ]
+        },
+        {
+          "id": 94,
+          "name": "firstElementAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 223,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L223"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 95,
+              "name": "firstElementAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the first element in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the first element in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such element exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 223,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L223"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 96,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 97,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 96,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 98,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i >= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 99,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 100,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 101,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 96,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 102,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 103,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 96,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "reference",
+                    "target": 96,
+                    "name": "T",
+                    "package": "bsearch",
+                    "refersToTypeParameter": true
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "firstIndex",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 38,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L38"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 11,
+              "name": "firstIndex",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the first index in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The first index in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`-1`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such index exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 38,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L38"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 12,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 13,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 12,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 14,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i >= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 15,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 16,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 17,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 12,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 18,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 19,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 12,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "name": "firstIndexAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 206,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L206"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 85,
+              "name": "firstIndexAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the first index in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the first index in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`-1`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such index exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 206,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L206"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 86,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 87,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 86,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 88,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i >= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 89,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 90,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 91,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 86,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 92,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 93,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 86,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "name": "largestFloat",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 154,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L154"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 68,
+              "name": "largestFloat",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the largest floating-point value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The largest floating-point value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 154,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L154"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 69,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 70,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 71,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x <= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 72,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 73,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 74,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": 75,
+                  "name": "maxIterations",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Maximum number of iterations to perform. It can be reduced to speed up the search for less precise values."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  },
+                  "defaultValue": "64"
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 141,
+          "name": "largestFloatAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 326,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L326"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 142,
+              "name": "largestFloatAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the largest floating-point value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the largest floating-point value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 326,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L326"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 143,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 144,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 145,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x <= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 146,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 147,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 148,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": 149,
+                  "name": "maxIterations",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Maximum number of iterations to perform. It can be reduced to speed up the search for less precise values."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  },
+                  "defaultValue": "64"
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "largestInt",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 69,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L69"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 31,
+              "name": "largestInt",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the largest integer value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The largest integer value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 69,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L69"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 32,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 33,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 34,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x <= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 35,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 36,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 37,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 104,
+          "name": "largestIntAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 239,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L239"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 105,
+              "name": "largestIntAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the largest integer value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the largest integer value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 239,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L239"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 106,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 107,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 108,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x <= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 109,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 110,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 111,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "name": "lastElement",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 109,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L109"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 49,
+              "name": "lastElement",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the last element in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The last element in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such element exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 109,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L109"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 50,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 51,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 50,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 52,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i <= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 53,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 54,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 55,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 50,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 56,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 57,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 50,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 50,
+                "name": "T",
+                "package": "bsearch",
+                "refersToTypeParameter": true
+              }
+            }
+          ]
+        },
+        {
+          "id": 122,
+          "name": "lastElementAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 281,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L281"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 123,
+              "name": "lastElementAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the last element in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the last element in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such element exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 281,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L281"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 124,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 125,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 124,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 126,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i <= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 127,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 128,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 129,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 124,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 130,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 131,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 124,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "reference",
+                    "target": 124,
+                    "name": "T",
+                    "package": "bsearch",
+                    "refersToTypeParameter": true
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "lastIndex",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 94,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L94"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 39,
+              "name": "lastIndex",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the last index in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The last index in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`-1`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such index exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 94,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L94"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 40,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 41,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 40,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 42,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i <= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 43,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 44,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 45,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 40,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 46,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 47,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 40,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 112,
+          "name": "lastIndexAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 264,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L264"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 113,
+              "name": "lastIndexAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the last index in "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`array`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " whose value satisfies the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the last index in "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`array`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " whose value satisfies the "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`-1`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such index exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 264,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L264"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 114,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {
+                    "isExternal": true
+                  }
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 115,
+                  "name": "array",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The array to search."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "typeOperator",
+                    "operator": "readonly",
+                    "target": {
+                      "type": "array",
+                      "elementType": {
+                        "type": "reference",
+                        "target": 114,
+                        "name": "T",
+                        "package": "bsearch",
+                        "refersToTypeParameter": true
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 116,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some index "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(array[i])`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`i <= I`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 117,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 118,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 119,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "reference",
+                                "target": 114,
+                                "name": "T",
+                                "package": "bsearch",
+                                "refersToTypeParameter": true
+                              }
+                            },
+                            {
+                              "id": 120,
+                              "name": "index",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            },
+                            {
+                              "id": 121,
+                              "name": "array",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "typeOperator",
+                                "operator": "readonly",
+                                "target": {
+                                  "type": "array",
+                                  "elementType": {
+                                    "type": "reference",
+                                    "target": 114,
+                                    "name": "T",
+                                    "package": "bsearch",
+                                    "refersToTypeParameter": true
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 58,
+          "name": "smallestFloat",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 126,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L126"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 59,
+              "name": "smallestFloat",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the smallest floating-point value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The smallest floating-point value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 126,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L126"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 60,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 61,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 62,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x >= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 63,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 64,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 65,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": 66,
+                  "name": "maxIterations",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Maximum number of iterations to perform. It can be reduced to speed up the search for less precise values."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  },
+                  "defaultValue": "64"
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 132,
+          "name": "smallestFloatAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 298,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L298"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 133,
+              "name": "smallestFloatAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the smallest floating-point value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the smallest floating-point value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 298,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L298"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 134,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 135,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 136,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x >= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 137,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 138,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 139,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": 140,
+                  "name": "maxIterations",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Maximum number of iterations to perform. It can be reduced to speed up the search for less precise values."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  },
+                  "defaultValue": "64"
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "smallestInt",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 13,
+              "character": 16,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L13"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 3,
+              "name": "smallestInt",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the smallest integer value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The smallest integer value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 13,
+                  "character": 16,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L13"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 4,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 5,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 6,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x >= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 7,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 8,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 9,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "intrinsic",
+                            "name": "boolean"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "id": 76,
+          "name": "smallestIntAsync",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isPublic": true,
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "src/index.ts",
+              "line": 181,
+              "character": 22,
+              "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L181"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 77,
+              "name": "smallestIntAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isPublic": true,
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Returns the smallest integer value in range ["
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`min`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": ", "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`max`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "] that is accepted by the "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "`predicate`"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "."
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "A promise that resolves to the smallest integer value whose predicate returns "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`true`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": ", or "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`undefined`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " if no such value exists."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/index.ts",
+                  "line": 181,
+                  "character": 22,
+                  "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L181"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 78,
+                  "name": "min",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The minimum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 79,
+                  "name": "max",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The maximum value to search for."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                },
+                {
+                  "id": 80,
+                  "name": "predicate",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "A predicate. There should exist some value "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " such that "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`predicate(x)`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " returns true for all "
+                      },
+                      {
+                        "kind": "code",
+                        "text": "`x >= X`"
+                      },
+                      {
+                        "kind": "text",
+                        "text": " and returns false otherwise."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 81,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "signatures": [
+                        {
+                          "id": 82,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "parameters": [
+                            {
+                              "id": 83,
+                              "name": "value",
+                              "variant": "param",
+                              "kind": 32768,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                              }
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "typescript",
+                              "packagePath": "lib/lib.es5.d.ts",
+                              "qualifiedName": "PromiseLike"
+                            },
+                            "typeArguments": [
+                              {
+                                "type": "intrinsic",
+                                "name": "boolean"
+                              }
+                            ],
+                            "name": "PromiseLike",
+                            "package": "typescript"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "number"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Functions",
+          "children": [20, 94, 10, 84, 67, 141, 30, 104, 48, 122, 38, 112, 58, 132, 2, 76]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/index.ts",
+          "line": 1,
+          "character": 0,
+          "url": "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L1"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Modules",
+      "children": [1]
+    }
+  ],
+  "packageName": "bsearch",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# bsearch\n\n**Utility functions for performing binary search in various scenarios** (sync/async, ints/arrays/floats).\n\n## Available functions\n\n| Use case       | Sync                                                           | Async                                                                              |\n| -------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |\n| Integers       | [smallestInt][smallestint]<br>[largestInt][largestint]         | [smallestIntAsync][smallestintasync]<br>[largestIntAsync][largestintasync]         |\n| Floats         | [smallestFloat][smallestfloat]<br>[largestFloat][largestfloat] | [smallestFloatAsync][smallestfloatasync]<br>[largestFloatAsync][largestfloatasync] |\n| Array indices  | [firstIndex][firstindex]<br>[lastIndex][lastindex]             | [firstIndexAsync][firstindexasync]<br>[lastIndexAsync][lastindexasync]             |\n| Array elements | [firstElement][firstelement]<br>[lastElement][lastelement]     | [firstElementAsync][firstelementasync]<br>[lastElementAsync][lastelementasync]     |\n\n[smallestint]: https://apiref.page/package/bsearch/smallestInt\n[largestint]: https://apiref.page/package/bsearch/largestInt\n[smallestintasync]: https://apiref.page/package/bsearch/smallestIntAsync\n[largestintasync]: https://apiref.page/package/bsearch/largestIntAsync\n[smallestfloat]: https://apiref.page/package/bsearch/smallestFloat\n[largestfloat]: https://apiref.page/package/bsearch/largestFloat\n[smallestfloatasync]: https://apiref.page/package/bsearch/smallestFloatAsync\n[largestfloatasync]: https://apiref.page/package/bsearch/largestFloatAsync\n[firstindex]: https://apiref.page/package/bsearch/firstIndex\n[lastindex]: https://apiref.page/package/bsearch/lastIndex\n[firstindexasync]: https://apiref.page/package/bsearch/firstIndexAsync\n[lastindexasync]: https://apiref.page/package/bsearch/lastIndexAsync\n[firstelement]: https://apiref.page/package/bsearch/firstElement\n[lastelement]: https://apiref.page/package/bsearch/lastElement\n[firstelementasync]: https://apiref.page/package/bsearch/firstElementAsync\n[lastelementasync]: https://apiref.page/package/bsearch/lastElementAsync\n\n## API reference\n\n<https://apiref.page/package/bsearch>\n\n[![API reference screenshot](https://ss.dt.in.th/api/screenshots/apiref-bsearch.png)](https://apiref.page/package/bsearch)\n\n## Example: Looking up chapter from page number\n\nSuppose you have an array of chapters in a book.\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```js\nconst book = [\n  { page: 0, chapter: \"Front Cover\" },\n  { page: 2, chapter: \"Preamble\" },\n  { page: 5, chapter: \"Table of Contents\" },\n  { page: 8, chapter: \"Chapter 1\" },\n  { page: 29, chapter: \"Chapter 2\" },\n  { page: 48, chapter: \"Chapter 3\" },\n];\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\nTo answer the question: **“What chapter am I on if I’m on page 20?”**\n\n- Translate the question into “What is the last chapter I have started?”\n- Define “I have started” as “I’m on or after the chapter’s first page.”\n\nWith that, the following code finds the answer:\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```js\nimport * as bsearch from \"bsearch\";\nconst chapter = bsearch.lastElement(book, (chapter) => 20 >= chapter.page);\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n## Example: Insertion index\n\nSuppose you have an array of numbers.\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```js\nconst numbers = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\nYou want to insert a new number "
+    },
+    {
+      "kind": "code",
+      "text": "`n`"
+    },
+    {
+      "kind": "text",
+      "text": " into the array while maintaining the sorted order. There are two ways:\n\n- Finding the first possible insertion index:\n\n  "
+    },
+    {
+      "kind": "code",
+      "text": "```js\n  const indexToInsertBefore = bsearch.firstIndex(numbers, (x) => n <= x);\n  const insertionIndex = indexToInsertBefore === -1 ? numbers.length : indexToInsertBefore;\n  ```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n- Finding the last possible insertion index:\n\n  "
+    },
+    {
+      "kind": "code",
+      "text": "```js\n  const indexToInsertAfter = bsearch.lastIndex(numbers, (x) => n >= x);\n  const insertionIndex = indexToInsertBefore + 1;\n  ```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n## Example: Text fitting\n\nSuppose you want to draw some text in a canvas. You want to find out what is the largest possible font size that will fit the text within a given width.\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```js\nconst fontSize = bsearch.largestInt(1, 1000, (fontSize) => {\n  ctx.font = `${fontSize}px sans-serif`;\n  return ctx.measureText(text).width <= availableWidth;\n});\n```"
+    }
+  ],
+  "symbolIdMap": {
+    "1": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "2": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestInt"
+    },
+    "3": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestInt"
+    },
+    "4": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "5": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "6": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "7": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "8": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "9": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "10": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstIndex"
+    },
+    "11": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstIndex"
+    },
+    "12": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "13": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "14": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "15": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "16": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "17": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "18": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "19": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "20": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstElement"
+    },
+    "21": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstElement"
+    },
+    "22": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "23": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "24": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "25": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "26": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "27": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "28": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "29": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "30": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestInt"
+    },
+    "31": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestInt"
+    },
+    "32": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "33": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "34": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "35": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "36": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "37": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "38": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastIndex"
+    },
+    "39": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastIndex"
+    },
+    "40": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "41": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "42": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "43": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "44": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "45": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "46": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "47": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "48": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastElement"
+    },
+    "49": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastElement"
+    },
+    "50": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "51": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "52": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "53": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "54": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "55": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "56": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "57": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "58": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestFloat"
+    },
+    "59": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestFloat"
+    },
+    "60": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "61": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "62": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "63": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "64": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "65": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "66": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "maxIterations"
+    },
+    "67": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestFloat"
+    },
+    "68": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestFloat"
+    },
+    "69": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "70": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "71": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "72": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "73": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "74": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "75": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "maxIterations"
+    },
+    "76": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestIntAsync"
+    },
+    "77": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestIntAsync"
+    },
+    "78": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "79": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "80": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "81": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "82": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "83": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "84": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstIndexAsync"
+    },
+    "85": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstIndexAsync"
+    },
+    "86": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "87": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "88": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "89": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "90": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "91": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "92": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "93": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "94": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstElementAsync"
+    },
+    "95": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "firstElementAsync"
+    },
+    "96": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "97": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "98": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "99": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "100": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "101": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "102": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "103": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "104": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestIntAsync"
+    },
+    "105": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestIntAsync"
+    },
+    "106": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "107": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "108": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "109": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "110": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "111": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "112": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastIndexAsync"
+    },
+    "113": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastIndexAsync"
+    },
+    "114": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "115": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "116": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "117": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "118": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "119": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "120": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "121": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "122": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastElementAsync"
+    },
+    "123": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "lastElementAsync"
+    },
+    "124": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "T"
+    },
+    "125": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "126": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "127": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "128": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "129": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "130": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "index"
+    },
+    "131": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "array"
+    },
+    "132": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestFloatAsync"
+    },
+    "133": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "smallestFloatAsync"
+    },
+    "134": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "135": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "136": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "137": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "138": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "139": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "140": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "maxIterations"
+    },
+    "141": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestFloatAsync"
+    },
+    "142": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "largestFloatAsync"
+    },
+    "143": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "min"
+    },
+    "144": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "max"
+    },
+    "145": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "predicate"
+    },
+    "146": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "147": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "__type"
+    },
+    "148": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "value"
+    },
+    "149": {
+      "packageName": "bsearch",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "maxIterations"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch/src/index.ts",
+      "2": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch/README.md",
+      "3": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/bsearch"
+    },
+    "reflections": {
+      "1": 1,
+      "2": 0,
+      "3": 0
+    }
+  }
+}

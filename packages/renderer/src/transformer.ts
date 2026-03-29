@@ -1,17 +1,17 @@
-import { ANCHOR_KINDS, Kind, PAGE_KINDS } from "./typedoc-kinds.ts";
-import { getDeclarationChildren } from "./typedoc.ts";
-import type { TDDeclaration, TDProject } from "./typedoc.ts";
-import type { Breadcrumb, NavNode, PageViewModel, SiteViewModel } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
-import { byLabel } from "./utils.ts";
-import { buildModuleImportPath, declarationNavNode } from "./nav.ts";
+import { declarationNavNode } from "./nav.ts";
 import {
-  buildPackageIndexPage,
+  buildDeclarationPage,
   buildModulePage,
   buildMultiDeclarationPage,
-  buildDeclarationPage,
+  buildPackageIndexPage,
 } from "./page-builders.ts";
 import type { TransformContext } from "./transform-context.ts";
+import { ANCHOR_KINDS, Kind, PAGE_KINDS } from "./typedoc-kinds.ts";
+import type { TDDeclaration, TDProject } from "./typedoc.ts";
+import { getDeclarationChildren } from "./typedoc.ts";
+import { byLabel } from "./utils.ts";
+import type { Breadcrumb, NavNode, PageViewModel, SiteViewModel } from "./viewmodel.ts";
 
 /**
  * Options for transforming TypeDoc JSON to a SiteViewModel.
@@ -74,7 +74,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
       if (mod.name === "") {
         mod.name = "index";
       }
-      const modUrl = encodeModulePath(mod.name) + "/index.html";
+      const modUrl = encodeModulePath(mod.name, pkgName) + "/index.html";
       idToUrl.set(mod.id, modUrl);
 
       // Group children by name to detect multi-declaration groups
@@ -102,9 +102,9 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
             }
           }
 
-          registerReflection(child, encodeModulePath(mod.name), false, idToUrl, urlDecl);
+          registerReflection(child, encodeModulePath(mod.name, pkgName), false, idToUrl, urlDecl);
         } else {
-          registerReflection(child, encodeModulePath(mod.name), false, idToUrl);
+          registerReflection(child, encodeModulePath(mod.name, pkgName), false, idToUrl);
         }
       }
     }
@@ -160,7 +160,7 @@ export function transform(input: unknown, options: TransformOptions = {}): SiteV
         );
       }
       navTree.push({
-        label: buildModuleImportPath(pkgName, mod.name),
+        label: mod.name,
         url: modUrl,
         kind: "module",
         iconClass: getKindIcon("module"),
@@ -393,7 +393,12 @@ function declarationUrl(decl: TDDeclaration, pathPrefix: string, isSingleEntry: 
   }
 }
 
-function encodeModulePath(moduleName: string): string {
-  // Module names may contain "/" (e.g. "integrations/playwright") — keep as-is
-  return moduleName;
+function encodeModulePath(moduleName: string, pkgName: string): string {
+  if (moduleName.startsWith(pkgName) + "/") {
+    return moduleName.slice(pkgName.length + 1);
+  } else if (moduleName === pkgName) {
+    return "index";
+  } else {
+    return moduleName;
+  }
 }

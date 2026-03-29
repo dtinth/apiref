@@ -54,6 +54,9 @@ catalogs:
     preact-render-to-string:
       specifier: ^6.6.6
       version: 6.6.6
+    pw-utilities:
+      specifier: ^0.1.2
+      version: 0.1.2
     shiki:
       specifier: 4.0.2
       version: 4.0.2
@@ -129,6 +132,10 @@ importers:
         version: 0.1.14(@types/node@24.12.0)(jiti@2.6.1)(typescript@5.9.3)(vite@8.0.3(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))(yaml@2.8.3)
 
   packages/ecosystem-tests:
+    dependencies:
+      pw-utilities:
+        specifier: 'catalog:'
+        version: 0.1.2
     devDependencies:
       bsearch:
         specifier: 2.0.0-next.1
@@ -1780,6 +1787,9 @@ packages:
   punycode.js@2.3.1:
     resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
     engines: {node: '>=6'}
+
+  pw-utilities@0.1.2:
+    resolution: {integrity: sha512-+CPMppSzddmmrRzR9qBMkyiLLHeFlinmLB7tor1YtwP5fGwFW/yosoMlCmzSt2+Z3CphU4DZqAkWWTXY9Iuahw==}
 
   quansync@1.0.0:
     resolution: {integrity: sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA==}
@@ -3574,6 +3584,8 @@ snapshots:
   property-information@7.1.0: {}
 
   punycode.js@2.3.1: {}
+
+  pw-utilities@0.1.2: {}
 
   quansync@1.0.0: {}
 

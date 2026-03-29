@@ -1,6 +1,9 @@
 {
   "name": "@apiref/ecosystem-tests",
   "private": true,
+  "dependencies": {
+    "pw-utilities": "catalog:"
+  },
   "devDependencies": {
     "bsearch": "2.0.0-next.1",
     "visual-storyboard": "0.3.6"

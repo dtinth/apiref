@@ -1,14 +1,7 @@
-import type { TDDeclaration } from "./typedoc.ts";
-import type { NavNode } from "./viewmodel.ts";
 import { getKindIcon } from "./components/kind-icons.ts";
+import type { TDDeclaration } from "./typedoc.ts";
 import { reflectionKindToDeclarationKind } from "./utils.ts";
-
-export function buildModuleImportPath(pkgName: string, moduleName: string): string {
-  if (moduleName === "index") {
-    return pkgName;
-  }
-  return `${pkgName}/${moduleName}`;
-}
+import type { NavNode } from "./viewmodel.ts";
 
 export function declarationNavNode(decl: TDDeclaration, idToUrl: Map<number, string>): NavNode {
   const url = idToUrl.get(decl.id) ?? "index.html";

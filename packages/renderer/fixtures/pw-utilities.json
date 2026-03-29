@@ -1,0 +1,444 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "pw-utilities",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "pw-utilities",
+      "variant": "declaration",
+      "kind": 2,
+      "flags": {
+        "isExternal": true
+      },
+      "children": [
+        {
+          "id": 2,
+          "name": "LocatorLike",
+          "variant": "declaration",
+          "kind": 256,
+          "flags": {
+            "isExternal": true
+          },
+          "children": [
+            {
+              "id": 3,
+              "name": "evaluate",
+              "variant": "declaration",
+              "kind": 2048,
+              "flags": {
+                "isExternal": true
+              },
+              "sources": [
+                {
+                  "fileName": "dist/index.d.mts",
+                  "line": 3,
+                  "character": 2,
+                  "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L3"
+                }
+              ],
+              "signatures": [
+                {
+                  "id": 4,
+                  "name": "evaluate",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "sources": [
+                    {
+                      "fileName": "dist/index.d.mts",
+                      "line": 3,
+                      "character": 2,
+                      "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L3"
+                    }
+                  ],
+                  "typeParameters": [
+                    {
+                      "id": 5,
+                      "name": "R",
+                      "variant": "typeParam",
+                      "kind": 131072,
+                      "flags": {
+                        "isExternal": true
+                      }
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "id": 6,
+                      "name": "pageFunction",
+                      "variant": "param",
+                      "kind": 32768,
+                      "flags": {
+                        "isExternal": true
+                      },
+                      "type": {
+                        "type": "reflection",
+                        "declaration": {
+                          "id": 7,
+                          "name": "__type",
+                          "variant": "declaration",
+                          "kind": 65536,
+                          "flags": {
+                            "isExternal": true
+                          },
+                          "signatures": [
+                            {
+                              "id": 8,
+                              "name": "__type",
+                              "variant": "signature",
+                              "kind": 4096,
+                              "flags": {
+                                "isExternal": true
+                              },
+                              "parameters": [
+                                {
+                                  "id": 9,
+                                  "name": "element",
+                                  "variant": "param",
+                                  "kind": 32768,
+                                  "flags": {
+                                    "isExternal": true
+                                  },
+                                  "type": {
+                                    "type": "reference",
+                                    "target": {
+                                      "packageName": "typescript",
+                                      "packagePath": "lib/lib.dom.d.ts",
+                                      "qualifiedName": "Element"
+                                    },
+                                    "name": "Element",
+                                    "package": "typescript"
+                                  }
+                                }
+                              ],
+                              "type": {
+                                "type": "union",
+                                "types": [
+                                  {
+                                    "type": "reference",
+                                    "target": 5,
+                                    "name": "R",
+                                    "package": "pw-utilities",
+                                    "refersToTypeParameter": true
+                                  },
+                                  {
+                                    "type": "reference",
+                                    "target": {
+                                      "packageName": "typescript",
+                                      "packagePath": "lib/lib.es5.d.ts",
+                                      "qualifiedName": "Promise"
+                                    },
+                                    "typeArguments": [
+                                      {
+                                        "type": "reference",
+                                        "target": 5,
+                                        "name": "R",
+                                        "package": "pw-utilities",
+                                        "refersToTypeParameter": true
+                                      }
+                                    ],
+                                    "name": "Promise",
+                                    "package": "typescript"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "packageName": "typescript",
+                      "packagePath": "lib/lib.es5.d.ts",
+                      "qualifiedName": "Promise"
+                    },
+                    "typeArguments": [
+                      {
+                        "type": "reference",
+                        "target": 5,
+                        "name": "R",
+                        "package": "pw-utilities",
+                        "refersToTypeParameter": true
+                      }
+                    ],
+                    "name": "Promise",
+                    "package": "typescript"
+                  }
+                }
+              ]
+            }
+          ],
+          "groups": [
+            {
+              "title": "Methods",
+              "children": [3]
+            }
+          ],
+          "sources": [
+            {
+              "fileName": "dist/index.d.mts",
+              "line": 2,
+              "character": 10,
+              "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L2"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "stabilize",
+          "variant": "declaration",
+          "kind": 64,
+          "flags": {
+            "isExternal": true
+          },
+          "sources": [
+            {
+              "fileName": "dist/index.d.mts",
+              "line": 14,
+              "character": 17,
+              "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L14"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 11,
+              "name": "stabilize",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {
+                "isExternal": true
+              },
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Scrolls the element into view and waits for its position to stop changing\nacross animation frames before taking a screenshot.\n\nInjects a temporary red outline overlay so the element is visible in the\nscreenshot even before the stabilization loop completes."
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "dist/index.d.mts",
+                  "line": 14,
+                  "character": 17,
+                  "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L14"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 12,
+                  "name": "locator",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isExternal": true
+                  },
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "packageName": "typescript",
+                      "packagePath": "lib/lib.es5.d.ts",
+                      "qualifiedName": "Pick"
+                    },
+                    "typeArguments": [
+                      {
+                        "type": "reference",
+                        "target": 2,
+                        "name": "LocatorLike",
+                        "package": "pw-utilities"
+                      },
+                      {
+                        "type": "literal",
+                        "value": "evaluate"
+                      }
+                    ],
+                    "name": "Pick",
+                    "package": "typescript"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "void"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Interfaces",
+          "children": [2]
+        },
+        {
+          "title": "Functions",
+          "children": [10]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "dist/index.d.mts",
+          "line": 1,
+          "character": 0,
+          "url": "https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L1"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Modules",
+      "children": [1]
+    }
+  ],
+  "packageName": "pw-utilities",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# pw-utilities\n\nPlaywright utilities for stabilizing elements before taking screenshots.\n\n## Installation\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```bash\nnpm install pw-utilities\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n## API\n\n### "
+    },
+    {
+      "kind": "code",
+      "text": "`stabilize(locator)`"
+    },
+    {
+      "kind": "text",
+      "text": "\n\nScrolls the element into view and waits for its position to stop changing across animation frames before taking a screenshot. Injects a temporary red outline overlay so the element is visible in the screenshot even before the stabilization loop completes.\n\n"
+    },
+    {
+      "kind": "code",
+      "text": "```ts\nimport { stabilize } from \"pw-utilities\";\n\nconst locator = page.locator(\"#my-element\");\nawait stabilize(locator);\nawait locator.screenshot();\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n### "
+    },
+    {
+      "kind": "code",
+      "text": "`LocatorLike`"
+    },
+    {
+      "kind": "text",
+      "text": "\n\nA duck-typed interface compatible with Playwright's "
+    },
+    {
+      "kind": "code",
+      "text": "`Locator`"
+    },
+    {
+      "kind": "text",
+      "text": ". This library does not depend on "
+    },
+    {
+      "kind": "code",
+      "text": "`@playwright/test`"
+    },
+    {
+      "kind": "text",
+      "text": " at runtime — it uses structural typing for compatibility."
+    }
+  ],
+  "symbolIdMap": {
+    "1": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": ""
+    },
+    "2": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "LocatorLike"
+    },
+    "3": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "LocatorLike.evaluate"
+    },
+    "4": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "LocatorLike.evaluate"
+    },
+    "5": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "R"
+    },
+    "6": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "pageFunction"
+    },
+    "7": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "__type"
+    },
+    "8": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "__type"
+    },
+    "9": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "element"
+    },
+    "10": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "stabilize"
+    },
+    "11": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "stabilize"
+    },
+    "12": {
+      "packageName": "pw-utilities",
+      "packagePath": "dist/index.d.mts",
+      "qualifiedName": "locator"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities/dist/index.d.mts",
+      "2": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities/README.md",
+      "3": "../../../../../../Users/dtinth/ghq/github.com/dtinth/apiref/packages/ecosystem-tests/node_modules/pw-utilities"
+    },
+    "reflections": {
+      "1": 1,
+      "2": 0,
+      "3": 0
+    }
+  }
+}
