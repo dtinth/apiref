@@ -59,3 +59,11 @@ To make documentation pages link back to the source code correctly:
     },
   }
   ```
+
+## Deployments
+
+| Component | Source              | Endpoint                        | Platform              | Details                                                                       |
+| --------- | ------------------- | ------------------------------- | --------------------- | ----------------------------------------------------------------------------- |
+| **Site**  | `apps/site`         | https://apiref-site.vercel.app/ | Vercel                | [Elysia](https://elysiajs.com/) backend; server-rendered pages + dynamic APIs |
+| **Shell** | `packages/shell`    | https://cdn.apiref.page/        | GitHub Pages          | Web components for interactive doc layout (nav, outline, header)              |
+| **Docs**  | `packages/renderer` | https://npm.apiref.page/        | Linode Object Storage | Static HTML generated from npm packages; one directory per package version    |
