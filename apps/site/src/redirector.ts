@@ -27,6 +27,11 @@ export interface SymbolLocation {
   url: string;
 }
 
+interface SymbolMatch {
+  kind: "single" | "ambiguous";
+  locations: SymbolLocation[];
+}
+
 export interface ApirefJson {
   package: string;
   version: string;
@@ -96,53 +101,162 @@ export function parsePackageUrl(path: string): ParsedUrl {
 
 /**
  * Find a symbol in the tree by following the symbol path.
- * Prefers children over outline items.
+ * Exact selector path matches win. Otherwise, a unique descendant-style match wins.
  */
 export function findSymbolInTree(
   tree: TreeNode[],
   symbolPath: string[],
 ): SymbolLocation | undefined {
+  const match = matchSymbolInTree(tree, symbolPath);
+  return match?.kind === "single" ? match.locations[0] : undefined;
+}
+
+function matchSymbolInTree(tree: TreeNode[], symbolPath: string[]): SymbolMatch | undefined {
   if (symbolPath.length === 0) return undefined;
 
-  // Start from the root (usually a single module)
-  let current = tree[0];
-  if (!current) return undefined;
-
-  // Traverse the path
-  for (let i = 0; i < symbolPath.length; i++) {
-    const segment = symbolPath[i];
-
-    // Try to find in children first
-    if (current.children) {
-      const nextNode = current.children.find((c) => c.name === segment);
-      if (nextNode) {
-        current = nextNode;
-        continue;
-      }
-    }
-
-    // If this is the last segment, check outline
-    if (i === symbolPath.length - 1) {
-      const outlineItem = current.outline?.find((o) => o.name === segment);
-      if (outlineItem) {
-        if (outlineItem.linkTo) {
-          return { url: outlineItem.linkTo };
-        } else if (current.url && outlineItem.anchor) {
-          return { url: `${current.url}#${outlineItem.anchor}` };
-        }
-      }
-    }
-
-    // Not found
-    return undefined;
+  const candidates = collectSymbolCandidates(tree);
+  const exactMatches = uniqueLocations(
+    candidates.filter((candidate) => isExactSelectorMatch(symbolPath, candidate.selectorPath)),
+  );
+  if (exactMatches.length > 0) {
+    return {
+      kind: exactMatches.length === 1 ? "single" : "ambiguous",
+      locations: exactMatches,
+    };
   }
 
-  // Found the final node
-  if (current.url) {
-    return { url: current.url };
+  const descendantMatches = uniqueLocations(
+    candidates.filter((candidate) => isDescendantSelectorMatch(symbolPath, candidate.selectorPath)),
+  );
+  if (descendantMatches.length === 0) return undefined;
+
+  return {
+    kind: descendantMatches.length === 1 ? "single" : "ambiguous",
+    locations: descendantMatches,
+  };
+}
+
+interface SymbolCandidate {
+  location: SymbolLocation;
+  selectorPath: string[];
+}
+
+function collectSymbolCandidates(tree: TreeNode[]): SymbolCandidate[] {
+  const candidates: SymbolCandidate[] = [];
+  for (const node of tree) {
+    collectNodeCandidates(node, [[]], true, candidates);
+  }
+  return candidates;
+}
+
+function collectNodeCandidates(
+  node: TreeNode,
+  prefixes: string[][],
+  isTopLevel: boolean,
+  candidates: SymbolCandidate[],
+): void {
+  const selectorTokens = getNodeSelectorTokens(node);
+  const expandedPrefixes = expandSelectorPrefixes(prefixes, selectorTokens);
+  const nextPrefixes = isTopLevel ? prefixes.concat(expandedPrefixes) : expandedPrefixes;
+
+  if (node.url) {
+    for (const selectorPath of nextPrefixes) {
+      if (selectorPath.length > 0) {
+        candidates.push({
+          location: { url: node.url },
+          selectorPath,
+        });
+      }
+    }
   }
 
+  if (node.outline) {
+    for (const outlineItem of node.outline) {
+      const location = getOutlineLocation(node, outlineItem);
+      if (!location) continue;
+      for (const selectorPath of nextPrefixes) {
+        candidates.push({
+          location,
+          selectorPath: selectorPath.concat(outlineItem.name),
+        });
+      }
+    }
+  }
+
+  if (node.children) {
+    for (const child of node.children) {
+      collectNodeCandidates(child, nextPrefixes, false, candidates);
+    }
+  }
+}
+
+function expandSelectorPrefixes(prefixes: string[][], selectorTokens: string[]): string[][] {
+  const expanded: string[][] = [];
+  for (const prefix of prefixes) {
+    for (const token of selectorTokens) {
+      expanded.push(prefix.concat(token));
+    }
+  }
+  return expanded;
+}
+
+function getNodeSelectorTokens(node: TreeNode): string[] {
+  const tokens = new Set<string>();
+  const nameToken = node.name.split("/").filter(Boolean).at(-1);
+  if (nameToken) {
+    tokens.add(nameToken);
+  }
+
+  if (node.url?.endsWith("/index.html")) {
+    const dir = node.url.slice(0, -"/index.html".length);
+    const urlToken = dir.split("/").filter(Boolean).at(-1);
+    if (urlToken) {
+      tokens.add(urlToken);
+    }
+  }
+
+  return [...tokens];
+}
+
+function getOutlineLocation(node: TreeNode, outlineItem: OutlineItem): SymbolLocation | undefined {
+  if (outlineItem.linkTo) {
+    return { url: outlineItem.linkTo };
+  }
+  if (node.url && outlineItem.anchor) {
+    return { url: `${node.url}#${outlineItem.anchor}` };
+  }
   return undefined;
+}
+
+function isExactSelectorMatch(symbolPath: string[], selectorPath: string[]): boolean {
+  return (
+    symbolPath.length === selectorPath.length &&
+    symbolPath.every((segment, index) => segment === selectorPath[index])
+  );
+}
+
+function isDescendantSelectorMatch(symbolPath: string[], selectorPath: string[]): boolean {
+  if (symbolPath.length === 0 || selectorPath.length === 0) return false;
+  if (symbolPath[symbolPath.length - 1] !== selectorPath[selectorPath.length - 1]) return false;
+
+  let matchIndex = 0;
+  for (const segment of selectorPath) {
+    if (segment === symbolPath[matchIndex]) {
+      matchIndex += 1;
+      if (matchIndex === symbolPath.length) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function uniqueLocations(candidates: SymbolCandidate[]): SymbolLocation[] {
+  const unique = new Map<string, SymbolLocation>();
+  for (const candidate of candidates) {
+    unique.set(candidate.location.url, candidate.location);
+  }
+  return [...unique.values()];
 }
 
 /**
@@ -311,17 +425,25 @@ export async function redirect(
     }
 
     // Find symbol in tree
-    const location = findSymbolInTree(apirefJson.tree, parsed.symbolPath);
-    if (!location) {
+    const match = matchSymbolInTree(apirefJson.tree, parsed.symbolPath);
+    if (!match) {
       return {
         kind: "error",
         reason: `Symbol not found: ${parsed.symbolPath.join(".")}`,
       };
     }
 
+    if (match.kind === "ambiguous") {
+      return {
+        kind: "error",
+        reason: `Ambiguous symbol path: ${parsed.symbolPath.join(".")}`,
+        details: match.locations.map((location) => location.url).join("\n"),
+      };
+    }
+
     return {
       kind: "redirect",
-      url: resolveSymbolUrl(parsed.packageName, resolvedVersion, location.url),
+      url: resolveSymbolUrl(parsed.packageName, resolvedVersion, match.locations[0].url),
     };
   } catch (error) {
     return {
