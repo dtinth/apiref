@@ -1,10 +1,18 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vite-plus/test";
 import {
   parsePackageUrl,
   findSymbolInTree,
   resolveSymbolUrl,
   selectVersion,
+  redirect,
 } from "./redirector.ts";
+
+function loadFixture(name: string): unknown {
+  const path = fileURLToPath(new URL(`../fixtures/${name}.json`, import.meta.url));
+  return JSON.parse(readFileSync(path, "utf-8"));
+}
 
 describe("redirector", () => {
   describe("parsePackageUrl", () => {
@@ -235,6 +243,96 @@ describe("redirector", () => {
       const versions = ["2.0.0-next.1", "2.0.0", "2.1.0"];
       const result = selectVersion("2.0.0-next.1", versions);
       expect(result).toBe("2.0.0-next.1");
+    });
+  });
+
+  describe("redirect interactor", () => {
+    test("redirects to symbol in fixture", async () => {
+      const apirefJson = loadFixture("bsearch-2.0.0.apiref");
+      const result = await redirect("bsearch/firstElement", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => apirefJson as any,
+      });
+      expect(result).toEqual({
+        kind: "redirect",
+        url: "https://npm.apiref.page/package/bsearch/v/2.0.0/main/firstElement.html",
+      });
+    });
+
+    test("returns error when symbol not found", async () => {
+      const apirefJson = loadFixture("bsearch-2.0.0.apiref");
+      const result = await redirect("bsearch/nonExistentSymbol", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => apirefJson as any,
+      });
+      expect(result.kind).toBe("error");
+    });
+
+    test("returns error when version not found (exact match requested)", async () => {
+      const result = await redirect("bsearch@3.0.0/firstElement", {
+        resolveVersion: async () => {
+          throw new Error("Version not found");
+        },
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => {
+          throw new Error("Should not be called");
+        },
+      });
+      expect(result.kind).toBe("error");
+    });
+
+    test("redirects with no version specified (uses latest)", async () => {
+      const apirefJson = loadFixture("bsearch-2.0.0.apiref");
+      const result = await redirect("bsearch/firstElement", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["1.0.0", "2.0.0"],
+        getApirefJson: async () => apirefJson as any,
+      });
+      expect(result).toEqual({
+        kind: "redirect",
+        url: "https://npm.apiref.page/package/bsearch/v/2.0.0/main/firstElement.html",
+      });
+    });
+
+    test("redirects to index when no symbol specified", async () => {
+      const apirefJson = loadFixture("bsearch-2.0.0.apiref");
+      const result = await redirect("bsearch", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => apirefJson as any,
+      });
+      expect(result).toEqual({
+        kind: "redirect",
+        url: "https://npm.apiref.page/package/bsearch/v/2.0.0/main/index.html",
+      });
+    });
+
+    test("returns error when getVersions fails", async () => {
+      const result = await redirect("bsearch/symbol", {
+        resolveVersion: async () => {
+          throw new Error("Should not be called");
+        },
+        getVersions: async () => {
+          throw new Error("Package not found");
+        },
+        getApirefJson: async () => {
+          throw new Error("Should not be called");
+        },
+      });
+      expect(result.kind).toBe("error");
+    });
+
+    test("returns error when getApirefJson fails", async () => {
+      const result = await redirect("bsearch/symbol", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => {
+          throw new Error("Failed to fetch apiref.json");
+        },
+      });
+      expect(result.kind).toBe("error");
     });
   });
 });

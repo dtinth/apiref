@@ -27,6 +27,22 @@ export interface SymbolLocation {
   url: string;
 }
 
+export interface ApirefJson {
+  package: string;
+  version: string;
+  tree: TreeNode[];
+}
+
+export type RedirectorOutcome =
+  | { kind: "redirect"; url: string }
+  | { kind: "error"; reason: string };
+
+export interface RedirectorOptions {
+  resolveVersion: (pkg: string, versionSpec?: string) => Promise<string>;
+  getVersions: (pkg: string) => Promise<string[]>;
+  getApirefJson: (pkg: string, version: string) => Promise<ApirefJson>;
+}
+
 /**
  * Parse a URL path like "pkg/symbol/path" or "@scope/pkg@1.0.0/symbol.path"
  * into package name, version, and symbol path.
@@ -222,4 +238,94 @@ function compareSemver(a: string, b: string): number {
   }
 
   return 0;
+}
+
+/**
+ * Main redirector interactor.
+ * Takes a path and dependency-injected functions to resolve versions and load apiref.json.
+ */
+export async function redirect(
+  path: string,
+  options: RedirectorOptions,
+): Promise<RedirectorOutcome> {
+  try {
+    const parsed = parsePackageUrl(path);
+
+    // Get available versions
+    let versions: string[];
+    try {
+      versions = await options.getVersions(parsed.packageName);
+    } catch (error) {
+      return {
+        kind: "error",
+        reason: `Failed to fetch versions for ${parsed.packageName}`,
+      };
+    }
+
+    if (versions.length === 0) {
+      return {
+        kind: "error",
+        reason: `No versions available for ${parsed.packageName}`,
+      };
+    }
+
+    // Resolve version
+    let resolvedVersion: string | undefined;
+    try {
+      resolvedVersion = await options.resolveVersion(parsed.packageName, parsed.version);
+    } catch (error) {
+      return {
+        kind: "error",
+        reason: parsed.version
+          ? `Version ${parsed.version} not found for ${parsed.packageName}`
+          : `Failed to resolve version for ${parsed.packageName}`,
+      };
+    }
+
+    if (!resolvedVersion) {
+      return {
+        kind: "error",
+        reason: `Could not resolve version for ${parsed.packageName}`,
+      };
+    }
+
+    // Get apiref.json
+    let apirefJson: ApirefJson;
+    try {
+      apirefJson = await options.getApirefJson(parsed.packageName, resolvedVersion);
+    } catch (error) {
+      return {
+        kind: "error",
+        reason: `Failed to fetch documentation for ${parsed.packageName}@${resolvedVersion}`,
+      };
+    }
+
+    // If no symbol specified, redirect to index
+    if (parsed.symbolPath.length === 0) {
+      const moduleUrl = apirefJson.tree[0]?.url || "main/index.html";
+      return {
+        kind: "redirect",
+        url: resolveSymbolUrl(parsed.packageName, resolvedVersion, moduleUrl),
+      };
+    }
+
+    // Find symbol in tree
+    const location = findSymbolInTree(apirefJson.tree, parsed.symbolPath);
+    if (!location) {
+      return {
+        kind: "error",
+        reason: `Symbol not found: ${parsed.symbolPath.join(".")}`,
+      };
+    }
+
+    return {
+      kind: "redirect",
+      url: resolveSymbolUrl(parsed.packageName, resolvedVersion, location.url),
+    };
+  } catch (error) {
+    return {
+      kind: "error",
+      reason: `An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}`,
+    };
+  }
 }
