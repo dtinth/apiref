@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node src/index.ts",
-    "build": "vp check",
+    "build": "vp pack",
     "start": "node src/index.ts"
   },
   "dependencies": {
