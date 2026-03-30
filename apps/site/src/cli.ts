@@ -1,6 +1,6 @@
 import { createRequestListener } from "@remix-run/node-fetch-server";
 import * as http from "node:http";
-import app from "./index.ts";
+import app from "./elysia-app.ts";
 
 let server = http.createServer(createRequestListener(app.fetch));
 

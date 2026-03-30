@@ -1,2 +1,2 @@
-import app from "./dist/index.mjs";
+import app from "./dist/elysia-app.mjs";
 export default app;
