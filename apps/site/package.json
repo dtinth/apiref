@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@remix-run/node-fetch-server": "catalog:",
-    "elysia": "catalog:"
+    "elysia": "catalog:",
+    "htm": "catalog:",
+    "preact": "catalog:",
+    "preact-render-to-string": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

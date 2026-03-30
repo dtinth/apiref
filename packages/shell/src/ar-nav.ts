@@ -23,10 +23,11 @@ export class ArNav extends LitElement {
 
   private renderNode(node: NavNode, depth: number): TemplateResult {
     const isActive = node.url === this.currentUrl;
+    const href = node.url.includes("://") ? node.url : this.baseHref + node.url;
 
     return html`
       <a
-        href=${this.baseHref + node.url}
+        href=${href}
         class=${`ar-nav-item ar-nav-item--depth-${depth} ${isActive ? "ar-nav-item--active" : ""} ${node.flags.deprecated ? "line-through opacity-60" : ""}`}
       >
         <i class=${`codicon ${node.iconClass} ar-kind-icon ar-kind-icon--${node.kind}`}></i>
