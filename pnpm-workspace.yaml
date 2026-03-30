@@ -4,6 +4,7 @@ packages:
   - tools/*
 
 catalog:
+  "@remix-run/node-fetch-server": ^0.13.0
   "@shikijs/langs": 4.0.2
   "@shikijs/themes": 4.0.2
   "@tailwindcss/typography": ^0.5.19
