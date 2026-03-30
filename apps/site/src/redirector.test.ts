@@ -148,6 +148,27 @@ describe("redirector", () => {
       });
     });
 
+    test("finds top-level module by url segment", () => {
+      const result = findSymbolInTree(tree, ["main"]);
+      expect(result).toEqual({
+        url: "main/index.html",
+      });
+    });
+
+    test("finds child through top-level module path", () => {
+      const result = findSymbolInTree(tree, ["main", "firstElement"]);
+      expect(result).toEqual({
+        url: "main/firstElement.html",
+      });
+    });
+
+    test("finds a unique descendant-style match", () => {
+      const result = findSymbolInTree(tree, ["main", "helper"]);
+      expect(result).toEqual({
+        url: "main/Utils/helper.html",
+      });
+    });
+
     test("returns undefined for non-existent symbol", () => {
       const result = findSymbolInTree(tree, ["NonExistent"]);
       expect(result).toBeUndefined();
@@ -270,6 +291,57 @@ describe("redirector", () => {
       expect(result.kind).toBe("error");
     });
 
+    test("returns error when symbol path is ambiguous", async () => {
+      const apirefJson = {
+        package: "pkg",
+        version: "2.0.0",
+        tree: [
+          {
+            name: "pkg",
+            kind: "module",
+            url: "main/index.html",
+            children: [
+              {
+                name: "Alpha",
+                kind: "namespace",
+                url: "main/Alpha/index.html",
+                children: [
+                  {
+                    name: "helper",
+                    kind: "function",
+                    url: "main/Alpha/helper.html",
+                  },
+                ],
+              },
+              {
+                name: "Beta",
+                kind: "namespace",
+                url: "main/Beta/index.html",
+                children: [
+                  {
+                    name: "helper",
+                    kind: "function",
+                    url: "main/Beta/helper.html",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = await redirect("pkg/main/helper", {
+        resolveVersion: async () => "2.0.0",
+        getVersions: async () => ["2.0.0"],
+        getApirefJson: async () => apirefJson,
+      });
+
+      expect(result).toMatchObject({
+        kind: "error",
+        reason: "Ambiguous symbol path: main.helper",
+      });
+    });
+
     test("returns error when version not found (exact match requested)", async () => {
       const result = await redirect("bsearch@3.0.0/firstElement", {
         resolveVersion: async () => {
@@ -335,7 +407,7 @@ describe("redirector", () => {
       expect(result.kind).toBe("error");
     });
 
-    test.skip("bsearch acceptance tests", async () => {
+    test("bsearch acceptance tests", async () => {
       const apirefJson = loadFixture("bsearch-2.0.0.apiref");
       const thePath = (path: string) => {
         return {
