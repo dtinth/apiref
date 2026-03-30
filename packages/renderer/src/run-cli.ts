@@ -1,5 +1,6 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { zstdCompressSync } from "node:zlib";
 import { transform } from "./transformer.ts";
 import { renderSite } from "./render.tsx";
 import { buildApirefJson } from "./apiref-json.ts";
@@ -53,6 +54,10 @@ export async function runCli(options: CliOptions): Promise<{ pagesWritten: numbe
   // Generate and write apiref.json
   const apiref = buildApirefJson(site);
   writeFileSync(join(out, "apiref.json"), JSON.stringify(apiref, null, 2), "utf-8");
+
+  // Write TypeDoc JSON as doc.json.zst (Zstandard compressed)
+  const docJsonCompressed = zstdCompressSync(raw);
+  writeFileSync(join(out, "doc.json.zst"), docJsonCompressed);
 
   return { pagesWritten: pages.size };
 }

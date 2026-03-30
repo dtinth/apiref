@@ -52,7 +52,7 @@ SERVING      → object storage (S3-compatible, R2, GCS) + shared shell CDN
 ### Transformer (`src/transformer.ts`)
 
 - Two-pass: pass 1 builds `id → URL` map; pass 2 builds pages.
-- Single-entry-point detection: `children.every(c => c.kind !== Kind.Module)`.
+- All packages treated uniformly as multi-module structures (single-entry packages get "main" module).
 - Nav tree children sorted alphabetically.
 - Builds `outline` data (from page sections) for `#ar-meta`.
 
@@ -326,6 +326,7 @@ Fixtures: `fixtures/visual-storyboard.json`, `fixtures/pw-utilities.json`
 
 ## Recent changes
 
+- **2026-03-30:** Removed single-entry-point conditional logic from transformer; all packages now uniformly treated as multi-module structures (single-entry packages get "main" module)
 - **2026-03-28:** Implemented upload-storage step using rclone with destination path `package/{name}/v/{version}/`
 - **2026-03-28:** Implemented --base-url flag for absolute root-relative links; resolves S3 trailing-slash problem
 - **2026-03-28:** Added canonical link generation when baseUrl provided; added favicon pointing to shell interface.svg

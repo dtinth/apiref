@@ -44,7 +44,9 @@ Options:
     baseUrl: values["base-url"],
   });
 
-  process.stderr.write(`Wrote ${pagesWritten} pages and apiref.json to ${values.out}/\n`);
+  process.stderr.write(
+    `Wrote ${pagesWritten} pages, apiref.json, and doc.json.zst to ${values.out}/\n`,
+  );
 }
 
 void main();
