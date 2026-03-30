@@ -302,12 +302,11 @@ export async function redirect(
       };
     }
 
-    // If no symbol specified, redirect to index
+    // If no symbol specified, redirect to package index
     if (parsed.symbolPath.length === 0) {
-      const moduleUrl = apirefJson.tree[0]?.url || "main/index.html";
       return {
         kind: "redirect",
-        url: resolveSymbolUrl(parsed.packageName, resolvedVersion, moduleUrl),
+        url: resolveSymbolUrl(parsed.packageName, resolvedVersion, "index.html"),
       };
     }
 

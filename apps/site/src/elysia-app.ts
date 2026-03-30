@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
-import { redirect as redirectToSymbol } from "./redirector.ts";
 import { renderHome } from "./pages/home.ts";
+import { redirect as redirectToSymbol } from "./redirector.ts";
 
 const DOCS_BASE = "https://npm.apiref.page";
 

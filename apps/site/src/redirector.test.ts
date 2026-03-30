@@ -305,7 +305,7 @@ describe("redirector", () => {
       });
       expect(result).toEqual({
         kind: "redirect",
-        url: "https://npm.apiref.page/package/bsearch/v/2.0.0/main/index.html",
+        url: "https://npm.apiref.page/package/bsearch/v/2.0.0/index.html",
       });
     });
 
