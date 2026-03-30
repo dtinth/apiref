@@ -1,4 +1,6 @@
 import { Elysia } from "elysia";
+import { html, respondWithHtml } from "./html.ts";
+import { Layout } from "./components/Layout.ts";
 import { renderHome } from "./pages/home.ts";
 import { redirect as redirectToSymbol } from "./redirector.ts";
 
@@ -74,34 +76,26 @@ const app = new Elysia()
     }
 
     // Error case
-    const detailsSection = outcome.details
-      ? `<details><summary>Error details</summary><pre>${outcome.details}</pre></details>`
-      : "";
-    return new Response(
-      `<!DOCTYPE html>
-<html>
-<head>
-  <title>Not Found</title>
-  <style>
-    body { font-family: sans-serif; padding: 40px; }
-    h1 { color: #d32f2f; }
-    pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
-  </style>
-</head>
-<body>
-  <h1>Symbol Not Found</h1>
-  <p>${outcome.reason}</p>
-  ${detailsSection}
-  <p><a href="/">Back to home</a></p>
-</body>
-</html>`,
-      {
-        status: 404,
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-        },
-      },
-    );
+    const errorPage = html`
+      <${Layout} title="Symbol Not Found" shellBaseUrl="https://cdn.apiref.page/assets">
+        <article class="ar-description">
+          <h1 style="color: #d32f2f;">Symbol Not Found</h1>
+          <p>${outcome.reason}</p>
+          ${outcome.details
+            ? html`
+                <details>
+                  <summary>Error details</summary>
+                  <pre style="background: #f5f5f5; padding: 10px; overflow-x: auto;">
+${outcome.details}</pre
+                  >
+                </details>
+              `
+            : null}
+          <p><a href="/">Back to home</a></p>
+        </article>
+      <//>
+    `;
+    return respondWithHtml(errorPage, 404);
   });
 
 export default app;
