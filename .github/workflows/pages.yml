@@ -23,13 +23,8 @@ jobs:
         with:
           cache: true
 
-      - name: Build shell assets
-        working-directory: packages/shell
-        run: vp build
-
-      - name: Build renderer CLI
-        working-directory: packages/renderer
-        run: vp pack
+      - name: Build project
+        run: vp run build -r
 
       - name: Generate TypeDoc JSON
         run: vp run generate-fixture
