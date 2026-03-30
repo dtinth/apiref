@@ -35,12 +35,12 @@ export interface ApirefJson {
 
 export type RedirectorOutcome =
   | { kind: "redirect"; url: string }
-  | { kind: "error"; reason: string };
+  | { kind: "error"; reason: string; details?: string };
 
 export interface RedirectorOptions {
   resolveVersion: (pkg: string, versionSpec?: string) => Promise<string>;
   getVersions: (pkg: string) => Promise<string[]>;
-  getApirefJson: (pkg: string, version: string) => Promise<ApirefJson>;
+  getApirefJson: (pkg: string, version: string) => Promise<unknown>;
 }
 
 /**
@@ -255,7 +255,7 @@ export async function redirect(
     let versions: string[];
     try {
       versions = await options.getVersions(parsed.packageName);
-    } catch (error) {
+    } catch {
       return {
         kind: "error",
         reason: `Failed to fetch versions for ${parsed.packageName}`,
@@ -279,6 +279,7 @@ export async function redirect(
         reason: parsed.version
           ? `Version ${parsed.version} not found for ${parsed.packageName}`
           : `Failed to resolve version for ${parsed.packageName}`,
+        details: String(error),
       };
     }
 
@@ -292,11 +293,12 @@ export async function redirect(
     // Get apiref.json
     let apirefJson: ApirefJson;
     try {
-      apirefJson = await options.getApirefJson(parsed.packageName, resolvedVersion);
+      apirefJson = (await options.getApirefJson(parsed.packageName, resolvedVersion)) as ApirefJson;
     } catch (error) {
       return {
         kind: "error",
         reason: `Failed to fetch documentation for ${parsed.packageName}@${resolvedVersion}`,
+        details: String(error),
       };
     }
 
