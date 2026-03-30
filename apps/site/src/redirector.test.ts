@@ -2,11 +2,11 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vite-plus/test";
 import {
-  parsePackageUrl,
   findSymbolInTree,
+  parsePackageUrl,
+  redirect,
   resolveSymbolUrl,
   selectVersion,
-  redirect,
 } from "./redirector.ts";
 
 function loadFixture(name: string): unknown {
@@ -333,6 +333,33 @@ describe("redirector", () => {
         },
       });
       expect(result.kind).toBe("error");
+    });
+
+    test.skip("bsearch acceptance tests", async () => {
+      const apirefJson = loadFixture("bsearch-2.0.0.apiref");
+      const thePath = (path: string) => {
+        return {
+          shouldRedirectTo: async (url: string) => {
+            const result = await redirect(path, {
+              resolveVersion: async () => "2.0.0",
+              getVersions: async () => ["2.0.0"],
+              getApirefJson: async () => apirefJson as any,
+            });
+            expect(result.kind).toBe("redirect");
+            if (result.kind === "redirect") {
+              expect(new URL(result.url).pathname).toBe(url);
+            }
+          },
+        };
+      };
+      await thePath("bsearch").shouldRedirectTo("/package/bsearch/v/2.0.0/index.html");
+      await thePath("bsearch/main").shouldRedirectTo("/package/bsearch/v/2.0.0/main/index.html");
+      await thePath("bsearch/firstElement").shouldRedirectTo(
+        "/package/bsearch/v/2.0.0/main/firstElement.html",
+      );
+      await thePath("bsearch/main/firstElement").shouldRedirectTo(
+        "/package/bsearch/v/2.0.0/main/firstElement.html",
+      );
     });
   });
 });

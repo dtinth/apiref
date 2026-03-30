@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node src/index.ts",
+    "dev": "node --watch src/cli.ts",
     "build": "vp pack",
-    "start": "node src/index.ts"
+    "start": "node src/cli.ts"
   },
   "dependencies": {
     "@remix-run/node-fetch-server": "catalog:",

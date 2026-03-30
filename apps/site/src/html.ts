@@ -1,7 +1,6 @@
 import { render } from "preact-render-to-string";
 import htm from "htm";
 import { h } from "preact";
-import type { ComponentChildren } from "preact";
 
 export const html = (htm as any).bind(h);
 

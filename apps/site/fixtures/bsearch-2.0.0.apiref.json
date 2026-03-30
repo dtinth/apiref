@@ -1,0 +1,192 @@
+{
+  "package": "bsearch",
+  "version": "2.0.0",
+  "generatorVersion": 1,
+  "tree": [
+    {
+      "name": "bsearch",
+      "kind": "module",
+      "url": "main/index.html",
+      "outline": [
+        {
+          "name": "firstElement",
+          "kind": "function",
+          "anchor": "firstElement",
+          "linkTo": "main/firstElement.html"
+        },
+        {
+          "name": "firstElementAsync",
+          "kind": "function",
+          "anchor": "firstElementAsync",
+          "linkTo": "main/firstElementAsync.html"
+        },
+        {
+          "name": "firstIndex",
+          "kind": "function",
+          "anchor": "firstIndex",
+          "linkTo": "main/firstIndex.html"
+        },
+        {
+          "name": "firstIndexAsync",
+          "kind": "function",
+          "anchor": "firstIndexAsync",
+          "linkTo": "main/firstIndexAsync.html"
+        },
+        {
+          "name": "largestFloat",
+          "kind": "function",
+          "anchor": "largestFloat",
+          "linkTo": "main/largestFloat.html"
+        },
+        {
+          "name": "largestFloatAsync",
+          "kind": "function",
+          "anchor": "largestFloatAsync",
+          "linkTo": "main/largestFloatAsync.html"
+        },
+        {
+          "name": "largestInt",
+          "kind": "function",
+          "anchor": "largestInt",
+          "linkTo": "main/largestInt.html"
+        },
+        {
+          "name": "largestIntAsync",
+          "kind": "function",
+          "anchor": "largestIntAsync",
+          "linkTo": "main/largestIntAsync.html"
+        },
+        {
+          "name": "lastElement",
+          "kind": "function",
+          "anchor": "lastElement",
+          "linkTo": "main/lastElement.html"
+        },
+        {
+          "name": "lastElementAsync",
+          "kind": "function",
+          "anchor": "lastElementAsync",
+          "linkTo": "main/lastElementAsync.html"
+        },
+        {
+          "name": "lastIndex",
+          "kind": "function",
+          "anchor": "lastIndex",
+          "linkTo": "main/lastIndex.html"
+        },
+        {
+          "name": "lastIndexAsync",
+          "kind": "function",
+          "anchor": "lastIndexAsync",
+          "linkTo": "main/lastIndexAsync.html"
+        },
+        {
+          "name": "smallestFloat",
+          "kind": "function",
+          "anchor": "smallestFloat",
+          "linkTo": "main/smallestFloat.html"
+        },
+        {
+          "name": "smallestFloatAsync",
+          "kind": "function",
+          "anchor": "smallestFloatAsync",
+          "linkTo": "main/smallestFloatAsync.html"
+        },
+        {
+          "name": "smallestInt",
+          "kind": "function",
+          "anchor": "smallestInt",
+          "linkTo": "main/smallestInt.html"
+        },
+        {
+          "name": "smallestIntAsync",
+          "kind": "function",
+          "anchor": "smallestIntAsync",
+          "linkTo": "main/smallestIntAsync.html"
+        }
+      ],
+      "children": [
+        {
+          "name": "firstElement",
+          "kind": "function",
+          "url": "main/firstElement.html"
+        },
+        {
+          "name": "firstElementAsync",
+          "kind": "function",
+          "url": "main/firstElementAsync.html"
+        },
+        {
+          "name": "firstIndex",
+          "kind": "function",
+          "url": "main/firstIndex.html"
+        },
+        {
+          "name": "firstIndexAsync",
+          "kind": "function",
+          "url": "main/firstIndexAsync.html"
+        },
+        {
+          "name": "largestFloat",
+          "kind": "function",
+          "url": "main/largestFloat.html"
+        },
+        {
+          "name": "largestFloatAsync",
+          "kind": "function",
+          "url": "main/largestFloatAsync.html"
+        },
+        {
+          "name": "largestInt",
+          "kind": "function",
+          "url": "main/largestInt.html"
+        },
+        {
+          "name": "largestIntAsync",
+          "kind": "function",
+          "url": "main/largestIntAsync.html"
+        },
+        {
+          "name": "lastElement",
+          "kind": "function",
+          "url": "main/lastElement.html"
+        },
+        {
+          "name": "lastElementAsync",
+          "kind": "function",
+          "url": "main/lastElementAsync.html"
+        },
+        {
+          "name": "lastIndex",
+          "kind": "function",
+          "url": "main/lastIndex.html"
+        },
+        {
+          "name": "lastIndexAsync",
+          "kind": "function",
+          "url": "main/lastIndexAsync.html"
+        },
+        {
+          "name": "smallestFloat",
+          "kind": "function",
+          "url": "main/smallestFloat.html"
+        },
+        {
+          "name": "smallestFloatAsync",
+          "kind": "function",
+          "url": "main/smallestFloatAsync.html"
+        },
+        {
+          "name": "smallestInt",
+          "kind": "function",
+          "url": "main/smallestInt.html"
+        },
+        {
+          "name": "smallestIntAsync",
+          "kind": "function",
+          "url": "main/smallestIntAsync.html"
+        }
+      ]
+    }
+  ]
+}
