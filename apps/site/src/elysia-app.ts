@@ -96,7 +96,7 @@ const app = new Elysia()
           </article>
         <//>
       `;
-      return respondWithHtml(ambiguousPage, 300);
+      return respondWithHtml(ambiguousPage, 200);
     }
 
     // Error case
