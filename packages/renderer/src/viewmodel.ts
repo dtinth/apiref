@@ -74,8 +74,8 @@ export interface PageViewModel {
 export interface Breadcrumb {
   /** Display text for this breadcrumb. */
   label: string;
-  /** URL to navigate to. */
-  url: string;
+  /** URL to navigate to, if available. */
+  url?: string;
 }
 
 /**
@@ -108,6 +108,7 @@ export type SectionBlock =
       sections: Section[];
     }
   | { kind: "reference-breadcrumbs"; breadcrumbs: Breadcrumb[] }
+  | { kind: "inherited-breadcrumbs"; breadcrumbs: Breadcrumb[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
   | { kind: "flags"; flags: MemberFlags }
   | { kind: "parameters"; parameters: ParameterDocViewModel[] }

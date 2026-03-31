@@ -94,6 +94,7 @@ export function declarationAsCards(
   const commentSource = rawSignatures[0]?.comment ?? decl.comment;
   const doc = commentSource ? transformComment(commentSource, ctx) : [];
   const referenceTarget = referenceTargetForDeclaration(decl, ctx);
+  const inheritedTarget = inheritedTargetForDeclaration(decl, ctx, sourceUrlForDeclaration(decl));
   const url =
     referenceTarget?.url ?? (PAGE_KINDS.has(decl.kind) ? ctx.idToUrl.get(decl.id) : undefined);
   const kind = declarationKindForMember(decl, signatures);
@@ -104,6 +105,9 @@ export function declarationAsCards(
   if (url) {
     const referenceSections: Section[] = referenceTarget?.breadcrumbs.length
       ? [{ body: [{ kind: "reference-breadcrumbs", breadcrumbs: referenceTarget.breadcrumbs }] }]
+      : [];
+    const inheritedSections: Section[] = inheritedTarget?.breadcrumbs.length
+      ? [{ body: [{ kind: "inherited-breadcrumbs", breadcrumbs: inheritedTarget.breadcrumbs }] }]
       : [];
     const docSections: Section[] = doc.length > 0 ? [{ body: [{ kind: "doc", doc }] }] : [];
     return [
@@ -124,6 +128,7 @@ export function declarationAsCards(
             ],
           },
           ...referenceSections,
+          ...inheritedSections,
           ...docSections,
         ],
       },
@@ -142,6 +147,7 @@ export function declarationAsCards(
       url: undefined,
       ctx,
       idPrefix: baseName,
+      inheritedBreadcrumbs: inheritedTarget?.breadcrumbs,
     });
     return [
       {
@@ -229,6 +235,7 @@ function buildCardSections(input: {
   url?: string;
   ctx: TransformContext;
   idPrefix?: string;
+  inheritedBreadcrumbs?: Breadcrumb[];
 }): Section[] {
   const idPrefix = input.idPrefix ?? "";
 
@@ -241,6 +248,12 @@ function buildCardSections(input: {
   // Flags (if renderable)
   if (hasRenderableMemberFlags(input.flags)) {
     sections.push({ body: [{ kind: "flags", flags: input.flags }] });
+  }
+
+  if (input.inheritedBreadcrumbs?.length) {
+    sections.push({
+      body: [{ kind: "inherited-breadcrumbs", breadcrumbs: input.inheritedBreadcrumbs }],
+    });
   }
 
   // Signatures or type declaration
@@ -348,4 +361,44 @@ function referenceTargetForDeclaration(
   if (!url || !breadcrumbs || breadcrumbs.length === 0) return null;
 
   return { url, breadcrumbs };
+}
+
+function inheritedTargetForDeclaration(
+  decl: TDDeclaration,
+  ctx: TransformContext,
+  sourceUrl?: string,
+): { breadcrumbs: Breadcrumb[] } | null {
+  const inheritedFrom = "inheritedFrom" in decl ? decl.inheritedFrom : undefined;
+  if (!inheritedFrom || typeof inheritedFrom !== "object") return null;
+
+  if ("target" in inheritedFrom && typeof inheritedFrom.target === "number") {
+    const url = ctx.idToUrl.get(inheritedFrom.target);
+    const breadcrumbs = ctx.idToBreadcrumbs.get(inheritedFrom.target);
+    if (breadcrumbs?.length) {
+      if (url && !breadcrumbs.at(-1)?.url) {
+        return {
+          breadcrumbs: breadcrumbs.map((breadcrumb, index) =>
+            index === breadcrumbs.length - 1 ? { ...breadcrumb, url } : breadcrumb,
+          ),
+        };
+      }
+      return { breadcrumbs };
+    }
+  }
+
+  if (!("name" in inheritedFrom) || typeof inheritedFrom.name !== "string") return null;
+
+  const parts = inheritedFrom.name.split(".");
+  if (parts.length === 0) return null;
+
+  return {
+    breadcrumbs: parts.map((label, index) => ({
+      label,
+      url: index === parts.length - 1 ? sourceUrl : undefined,
+    })),
+  };
+}
+
+function sourceUrlForDeclaration(decl: TDDeclaration): string | undefined {
+  return getSourceUrl(decl, decl.signatures?.[0]);
 }

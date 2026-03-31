@@ -306,6 +306,56 @@ describe("examples renderer fixture", () => {
     }
   });
 
+  test("inherited members expose inherited-from breadcrumbs", () => {
+    const page = site.pages.find((p) => p.url === "main/FriendlyGreeter.html");
+    const methodsSection = page?.sections.find(
+      (section) =>
+        section.title === "Methods" && section.body.some((block) => block.kind === "card"),
+    );
+    const greetCard = methodsSection?.body.find(
+      (block) =>
+        block.kind === "card" &&
+        block.sections[0]?.body[0]?.kind === "declaration-title" &&
+        block.sections[0]?.body[0]?.name === "greet",
+    );
+
+    expect(greetCard?.kind).toBe("card");
+    if (greetCard?.kind === "card") {
+      const inheritedBlock = greetCard.sections
+        .flatMap((section) => section.body)
+        .find((block) => block.kind === "inherited-breadcrumbs");
+      expect(inheritedBlock?.kind).toBe("inherited-breadcrumbs");
+      if (inheritedBlock?.kind === "inherited-breadcrumbs") {
+        expect(inheritedBlock.breadcrumbs.map((breadcrumb) => breadcrumb.label)).toEqual([
+          "@apiref-examples/core",
+          "BaseGreeter",
+          "greet",
+        ]);
+        expect(inheritedBlock.breadcrumbs.at(-1)?.url).toBe("main/BaseGreeter.html#greet");
+      }
+    }
+  });
+
+  test("deprecated members preserve deprecation metadata in cards", () => {
+    const page = site.pages.find((p) => p.url === "main/Repository.html");
+    const methodsSection = page?.sections.find(
+      (section) =>
+        section.title === "Methods" && section.body.some((block) => block.kind === "card"),
+    );
+    const findAllCard = methodsSection?.body.find(
+      (block) =>
+        block.kind === "card" &&
+        block.sections[0]?.body[0]?.kind === "declaration-title" &&
+        block.sections[0]?.body[0]?.name === "findAll",
+    );
+
+    expect(findAllCard?.kind).toBe("card");
+    if (findAllCard?.kind === "card") {
+      expect(findAllCard.flags.deprecated).toBe(true);
+      expect(findAllCard.flags.deprecatedMessage?.length).toBeGreaterThan(0);
+    }
+  });
+
   test("mapped type aliases preserve modifiers and nested types", () => {
     const strictReadonlyPage = site.pages.find((p) => p.url === "main/StrictReadonly.html");
     const strictReadonlyBlock = strictReadonlyPage?.sections

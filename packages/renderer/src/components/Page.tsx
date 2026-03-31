@@ -117,14 +117,11 @@ function PageContent({ page }: { page: PageViewModel }) {
 }
 
 function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
-  const resolve = useResolveLink();
   return (
     <nav class="ar-breadcrumbs" aria-label="Breadcrumb">
       {breadcrumbs.map((breadcrumb, index) => (
         <span key={index} class="ar-breadcrumb-item">
-          <a href={resolve(breadcrumb.url)} class="ar-breadcrumb-link">
-            {breadcrumb.label}
-          </a>
+          <LinkedBreadcrumb breadcrumb={breadcrumb} className="ar-breadcrumb-link" />
           <span class="ar-breadcrumb-separator" aria-hidden="true">
             {" » "}
           </span>
@@ -238,6 +235,13 @@ function BlockView({
         </p>
       );
 
+    case "inherited-breadcrumbs":
+      return (
+        <p class="ar-card-reference">
+          Inherited from <InlineBreadcrumbs breadcrumbs={block.breadcrumbs} />
+        </p>
+      );
+
     case "flags":
       return <FlagsView flags={block.flags} />;
 
@@ -308,7 +312,13 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
     </h3>
   ) : null;
 
-  const cardClasses = card.url ? "ar-card ar-card--link" : "ar-card";
+  const cardClasses = [
+    "ar-card",
+    card.url ? "ar-card--link" : "",
+    card.flags.deprecated ? "ar-card--deprecated" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const hasBody = card.sections.length > 1;
 
   return (
@@ -326,12 +336,11 @@ function CardView({ card }: { card: Extract<SectionBlock, { kind: "card" }> }) {
 }
 
 function InlineBreadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
-  const resolve = useResolveLink();
   return (
     <span class="ar-reference-breadcrumbs">
       {breadcrumbs.map((breadcrumb, index) => (
         <span key={index}>
-          <a href={resolve(breadcrumb.url)}>{breadcrumb.label}</a>
+          <LinkedBreadcrumb breadcrumb={breadcrumb} />
           {index + 1 < breadcrumbs.length ? (
             <span aria-hidden="true" class="ar-breadcrumb-separator">
               {" » "}
@@ -340,6 +349,22 @@ function InlineBreadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
         </span>
       ))}
     </span>
+  );
+}
+
+function LinkedBreadcrumb({
+  breadcrumb,
+  className,
+}: {
+  breadcrumb: Breadcrumb;
+  className?: string;
+}) {
+  const resolve = useResolveLink();
+  if (!breadcrumb.url) return <span class={className}>{breadcrumb.label}</span>;
+  return (
+    <a href={resolve(breadcrumb.url)} class={className}>
+      {breadcrumb.label}
+    </a>
   );
 }
 
