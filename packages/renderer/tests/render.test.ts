@@ -165,12 +165,13 @@ describe("render visual-storyboard", () => {
 describe("render examples", () => {
   const pages = renderRendererFixture("examples");
 
-  test("example code blocks are highlighted with shiki", () => {
+  test("example code blocks are highlighted with shiki css variables", () => {
     const renderedPages = [...pages.values()];
-    expect(renderedPages.some((page) => page.includes('class="shiki catppuccin-mocha"'))).toBe(
+    expect(renderedPages.some((page) => page.includes('class="shiki apiref-css-variables"'))).toBe(
       true,
     );
-    expect(renderedPages.some((page) => page.includes("<span style="))).toBe(true);
+    expect(renderedPages.some((page) => page.includes("var(--ar-shiki-token-"))).toBe(true);
+    expect(renderedPages.some((page) => page.includes('<span style="color:#'))).toBe(false);
   });
 
   test("AppConfig renders typeof type aliases", () => {

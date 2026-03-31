@@ -9,20 +9,18 @@ import markdown from "@shikijs/langs/markdown";
 import tsx from "@shikijs/langs/tsx";
 import typescript from "@shikijs/langs/typescript";
 import yaml from "@shikijs/langs/yaml";
-import catppuccinMocha from "@shikijs/themes/catppuccin-mocha";
 import { Marked, Renderer } from "marked";
-import { createHighlighterCoreSync } from "shiki/core";
+import { createCssVariablesTheme, createHighlighterCoreSync } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import type { DocNode } from "../viewmodel.ts";
 import { useResolveLink } from "./PageContext.tsx";
 
-const SHIKI_THEME = {
-  ...catppuccinMocha,
-  colors: {
-    ...catppuccinMocha.colors,
-    "editor.background": "#252423",
-  },
-};
+const SHIKI_THEME_NAME = "apiref-css-variables";
+
+const SHIKI_THEME = createCssVariablesTheme({
+  name: SHIKI_THEME_NAME,
+  variablePrefix: "--ar-shiki-",
+});
 
 type ShikiLanguage =
   | "bash"
@@ -79,7 +77,7 @@ markdownRenderer.code = (token) => {
   try {
     return getShiki().codeToHtml(token.text, {
       lang: language,
-      theme: SHIKI_THEME.name ?? "catppuccin-mocha",
+      theme: SHIKI_THEME_NAME,
     });
   } catch {
     return renderCodeBlockFallback(token);
