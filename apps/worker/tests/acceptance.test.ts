@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -100,5 +100,47 @@ describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
     expect(doc.root.child("bsearch").child("smallestInt").sourceUrls).toEqual([
       "https://github.com/dtinth/bsearch/blob/v2.0.0-next.1/src/index.ts#L13",
     ]);
+  });
+  test("nested conditional types export", async () => {
+    const pkgPath = join(tester.getTestDir(), "conditional-types-export");
+    mkdirSync(pkgPath, { recursive: true });
+    writeFileSync(
+      join(pkgPath, "package.json"),
+      JSON.stringify(
+        {
+          name: "conditional-types-export",
+          version: "1.0.0",
+          type: "module",
+          exports: {
+            ".": {
+              types: {
+                require: "./index.d.cts",
+                default: "./index.d.ts",
+              },
+              default: {
+                require: "./index.cjs",
+                default: "./index.js",
+              },
+            },
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    writeFileSync(join(pkgPath, "index.d.ts"), "export declare const answer: 42;\n");
+    writeFileSync(join(pkgPath, "index.d.cts"), "export declare const answer: 42;\n");
+    writeFileSync(join(pkgPath, "index.js"), "export const answer = 42;\n");
+    writeFileSync(join(pkgPath, "index.cjs"), "exports.answer = 42;\n");
+
+    const outFile = join(tester.getTestDir(), "conditional-types-export-doc.json");
+    const result = await generate({
+      installedPackagePath: pkgPath,
+      outFile,
+    });
+    const doc = new DocFileTester(JSON.parse(result));
+
+    expect(doc.root.childrenNames).toEqual(expect.arrayContaining(["conditional-types-export"]));
+    expect(doc.root.child("conditional-types-export").child("answer").node.name).toBe("answer");
   });
 });

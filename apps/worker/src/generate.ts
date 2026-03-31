@@ -79,6 +79,26 @@ async function resolveEntryPointViaDts(
   return undefined;
 }
 
+function resolveConditionalExportPath(
+  value: unknown,
+  fallbackConditions: readonly string[],
+): string | undefined {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+  const record = value as Record<string, unknown>;
+  for (const condition of fallbackConditions) {
+    const resolved = resolveConditionalExportPath(record[condition], fallbackConditions);
+    if (resolved) {
+      return resolved;
+    }
+  }
+  return undefined;
+}
+
 async function findEntryPoints(
   packagePath: string,
   packageName: string,
@@ -105,9 +125,17 @@ async function findEntryPoints(
       // Tier 1: typedoc/types conditional export or direct TypeScript file
       let types: string | undefined;
       if (typeof value === "object" && value !== null) {
-        types = (value as Record<string, unknown>).typedoc as string | undefined;
+        types = resolveConditionalExportPath((value as Record<string, unknown>).typedoc, [
+          "default",
+          "import",
+          "require",
+        ]);
         if (!types) {
-          types = (value as Record<string, unknown>).types as string | undefined;
+          types = resolveConditionalExportPath((value as Record<string, unknown>).types, [
+            "default",
+            "import",
+            "require",
+          ]);
         }
       } else if (typeof value === "string" && (value.endsWith(".ts") || value.endsWith(".tsx"))) {
         // Tier 1a: direct TypeScript export
@@ -125,7 +153,7 @@ async function findEntryPoints(
         typeof value === "string"
           ? value
           : typeof value === "object" && value !== null
-            ? ((value as Record<string, unknown>).default as string | undefined)
+            ? resolveConditionalExportPath(value, ["default", "import", "require"])
             : undefined;
 
       if (defaultPath) {
