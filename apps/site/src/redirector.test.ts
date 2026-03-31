@@ -291,7 +291,7 @@ describe("redirector", () => {
       expect(result.kind).toBe("error");
     });
 
-    test("returns error when symbol path is ambiguous", async () => {
+    test("returns ambiguous outcome with candidate breadcrumbs when symbol path is ambiguous", async () => {
       const apirefJson = {
         package: "pkg",
         version: "2.0.0",
@@ -336,9 +336,45 @@ describe("redirector", () => {
         getApirefJson: async () => apirefJson,
       });
 
-      expect(result).toMatchObject({
-        kind: "error",
+      expect(result).toEqual({
+        kind: "ambiguous",
         reason: "Ambiguous symbol path: main.helper",
+        candidates: [
+          {
+            url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Alpha/helper.html",
+            breadcrumbs: [
+              {
+                label: "pkg",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/index.html",
+              },
+              {
+                label: "Alpha",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Alpha/index.html",
+              },
+              {
+                label: "helper",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Alpha/helper.html",
+              },
+            ],
+          },
+          {
+            url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Beta/helper.html",
+            breadcrumbs: [
+              {
+                label: "pkg",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/index.html",
+              },
+              {
+                label: "Beta",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Beta/index.html",
+              },
+              {
+                label: "helper",
+                url: "https://npm.apiref.page/package/pkg/v/2.0.0/main/Beta/helper.html",
+              },
+            ],
+          },
+        ],
       });
     });
 

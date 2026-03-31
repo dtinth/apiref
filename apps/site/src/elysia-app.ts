@@ -75,6 +75,30 @@ const app = new Elysia()
       });
     }
 
+    if (outcome.kind === "ambiguous") {
+      const ambiguousPage = html`
+        <${Layout} title="Ambiguous Symbol" shellBaseUrl="https://cdn.apiref.page/assets">
+          <article class="ar-description">
+            <h1>Ambiguous Symbol</h1>
+            <p>${outcome.reason}</p>
+            <ul>
+              ${outcome.candidates.map(
+                (candidate) => html`
+                  <li>
+                    <a href=${candidate.url}>
+                      ${candidate.breadcrumbs.map((breadcrumb) => breadcrumb.label).join(" › ")}
+                    </a>
+                  </li>
+                `,
+              )}
+            </ul>
+            <p><a href="/">Back to home</a></p>
+          </article>
+        <//>
+      `;
+      return respondWithHtml(ambiguousPage, 300);
+    }
+
     // Error case
     const errorPage = html`
       <${Layout} title="Symbol Not Found" shellBaseUrl="https://cdn.apiref.page/assets">
