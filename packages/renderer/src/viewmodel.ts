@@ -74,7 +74,7 @@ export interface PageViewModel {
 export interface Breadcrumb {
   /** Display text for this breadcrumb. */
   label: string;
-  /** URL to navigate to, if available. */
+  /** URL to navigate to. Omitted for non-navigable fallback breadcrumbs. */
   url?: string;
 }
 
