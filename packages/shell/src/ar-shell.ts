@@ -121,6 +121,11 @@ export class ArShell extends LitElement {
       arOutline.sections = meta.outline;
       aside.appendChild(arOutline);
     }
+
+    // Initialize quicklink for faster navigation
+    void import("quicklink").then(({ listen }) => {
+      listen();
+    });
   }
 
   private toggleSidebar(button: HTMLElement) {
