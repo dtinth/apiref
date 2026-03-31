@@ -111,6 +111,10 @@ describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
           name: "conditional-types-export",
           version: "1.0.0",
           type: "module",
+          repository: {
+            type: "git",
+            url: "https://github.com/example/conditional-types-export.git",
+          },
           exports: {
             ".": {
               types: {
