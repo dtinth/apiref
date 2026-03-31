@@ -74,6 +74,12 @@ class DocNodeTester {
     }
     return this.node.sources.map((s) => s.url).filter((u): u is string => !!u);
   }
+  get sourceFileNames(): string[] {
+    if (!("sources" in this.node) || !this.node.sources) {
+      return [];
+    }
+    return this.node.sources.map((s) => s.fileName);
+  }
 }
 
 const tester = new DocFileGenerationTester();
@@ -145,6 +151,8 @@ describe("TypeDoc generation acceptance tests", { tags: ["slow"] }, () => {
     const doc = new DocFileTester(JSON.parse(result));
 
     expect(doc.root.childrenNames).toEqual(expect.arrayContaining(["conditional-types-export"]));
-    expect(doc.root.child("conditional-types-export").child("answer").node.name).toBe("answer");
+    const moduleDoc = doc.root.child("conditional-types-export");
+    expect(moduleDoc.sourceFileNames).toEqual(["index.d.ts"]);
+    expect(moduleDoc.child("answer").node.name).toBe("answer");
   });
 });
