@@ -84,13 +84,13 @@ describe("render pw-utilities", () => {
     expect(html).toContain("ar-declaration--function");
   });
 
-  test("stabilize.html has a source link button", () => {
+  test("stabilize.html does not have a source link button for .d.mts files", () => {
     const html = pages.get("main/stabilize.html")!;
-    expect(html).toContain('class="ar-source-link"');
-    expect(html).toContain(
+    // Type definition files (.d.ts, .d.mts) should not have source links
+    expect(html).not.toContain('class="ar-source-link"');
+    expect(html).not.toContain(
       'href="https://github.com/dtinth/pw-utilities/blob/v0.1.2/dist/index.d.mts#L14"',
     );
-    expect(html).toContain('aria-label="View source on GitHub"');
   });
 
   test("LocatorLike.html has method section", () => {

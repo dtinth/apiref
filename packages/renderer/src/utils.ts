@@ -121,5 +121,11 @@ function isGitHubUrl(url: string | undefined): url is string {
 }
 
 function isTypeDefinitionFile(url: string): boolean {
-  return url.endsWith(".d.ts") || url.endsWith(".d.mts");
+  try {
+    const pathname = new URL(url).pathname;
+    return pathname.endsWith(".d.ts") || pathname.endsWith(".d.mts");
+  } catch {
+    // Fallback to simple string check if URL parsing fails
+    return url.endsWith(".d.ts") || url.endsWith(".d.mts");
+  }
 }
