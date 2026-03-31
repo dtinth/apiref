@@ -328,6 +328,7 @@ describe("examples renderer fixture", () => {
       if (inheritedBlock?.kind === "inherited-breadcrumbs") {
         expect(inheritedBlock.breadcrumbs.map((breadcrumb) => breadcrumb.label)).toEqual([
           "@apiref-examples/core",
+          "(main)",
           "BaseGreeter",
           "greet",
         ]);
@@ -337,7 +338,7 @@ describe("examples renderer fixture", () => {
   });
 
   test("deprecated members preserve deprecation metadata in cards", () => {
-    const page = site.pages.find((p) => p.url === "main/Repository.html");
+    const page = site.pages.find((p) => p.url === "data/Repository.html");
     const methodsSection = page?.sections.find(
       (section) =>
         section.title === "Methods" && section.body.some((block) => block.kind === "card"),
@@ -458,8 +459,9 @@ describe("transformType", () => {
 // ---------------------------------------------------------------------------
 
 describe("member cards", () => {
-  const site = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
-  const indexPage = site.pages.find((p) => p.url === "index.html");
+  const pwUtilities = transform(loadFixture("pw-utilities"), { version: "1.0.0" });
+  const examples = transform(loadFixture("examples"), { version: "1.0.0" });
+  const indexPage = examples.pages.find((p) => p.url === "index.html");
   const functionsSection = indexPage?.sections.find(
     (s) => s.title === "Modules" && s.body.some((b) => b.kind === "card"),
   );
@@ -471,7 +473,7 @@ describe("member cards", () => {
         (b) =>
           b.kind === "card" &&
           b.sections[0]?.body[0]?.kind === "declaration-title" &&
-          b.sections[0]?.body[0]?.name === "pw-utilities",
+          b.sections[0]?.body[0]?.name === "@apiref-examples/core",
       );
       if (stabilizeCard?.kind === "card") {
         expect(stabilizeCard.url).toBe("main/index.html");
@@ -484,8 +486,12 @@ describe("member cards", () => {
   });
 
   test("linked member summary subsections strip links", () => {
-    if (functionsSection) {
-      const memberCard = functionsSection.body.find(
+    const pwIndexPage = pwUtilities.pages.find((p) => p.url === "index.html");
+    const pwFunctionsSection = pwIndexPage?.sections.find(
+      (s) => s.title === "Modules" && s.body.some((b) => b.kind === "card"),
+    );
+    if (pwFunctionsSection) {
+      const memberCard = pwFunctionsSection.body.find(
         (b) => b.kind === "card" && b.url !== undefined,
       );
       if (memberCard?.kind === "card") {

@@ -229,7 +229,7 @@ describe("render examples", () => {
   });
 
   test("deprecated member cards are visually muted and keep the deprecated badge", () => {
-    const html = pages.get("main/Repository.html")!;
+    const html = pages.get("data/Repository.html")!;
     expect(html).toContain('id="findAll" class="ar-card ar-card--deprecated"');
     expect(html).toContain('class="ar-badge ar-badge--deprecated"');
   });

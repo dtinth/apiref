@@ -85,6 +85,7 @@ export function declarationAsCards(
     ...(decl.signatures?.flatMap((s) => s.comment?.blockTags ?? []) ?? []),
   ].find((t) => t.tag === "@deprecated");
   if (deprecatedBlockTag?.content.length) {
+    flags.deprecated = true;
     flags.deprecatedMessage = transformCommentParts(deprecatedBlockTag.content, ctx);
   }
 
