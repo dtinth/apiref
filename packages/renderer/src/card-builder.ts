@@ -377,6 +377,8 @@ function inheritedTargetForDeclaration(
     const breadcrumbs = ctx.idToBreadcrumbs.get(inheritedFrom.target);
     if (breadcrumbs?.length) {
       if (url && !breadcrumbs.at(-1)?.url) {
+        // Fallback breadcrumbs synthesized from names may omit the terminal member URL,
+        // so patch it back in when we can resolve the inherited declaration target.
         return {
           breadcrumbs: breadcrumbs.map((breadcrumb, index) =>
             index === breadcrumbs.length - 1 ? { ...breadcrumb, url } : breadcrumb,
