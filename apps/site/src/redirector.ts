@@ -27,9 +27,19 @@ export interface SymbolLocation {
   url: string;
 }
 
+export interface Breadcrumb {
+  label: string;
+  url: string;
+}
+
+export interface RedirectCandidate {
+  url: string;
+  breadcrumbs: Breadcrumb[];
+}
+
 interface SymbolMatch {
   kind: "single" | "ambiguous";
-  locations: SymbolLocation[];
+  locations: SymbolCandidate[];
 }
 
 export interface ApirefJson {
@@ -40,6 +50,7 @@ export interface ApirefJson {
 
 export type RedirectorOutcome =
   | { kind: "redirect"; url: string }
+  | { kind: "ambiguous"; reason: string; candidates: RedirectCandidate[] }
   | { kind: "error"; reason: string; details?: string };
 
 export interface RedirectorOptions {
@@ -108,7 +119,7 @@ export function findSymbolInTree(
   symbolPath: string[],
 ): SymbolLocation | undefined {
   const match = matchSymbolInTree(tree, symbolPath);
-  return match?.kind === "single" ? match.locations[0] : undefined;
+  return match?.kind === "single" ? match.locations[0].location : undefined;
 }
 
 function matchSymbolInTree(tree: TreeNode[], symbolPath: string[]): SymbolMatch | undefined {
@@ -139,12 +150,13 @@ function matchSymbolInTree(tree: TreeNode[], symbolPath: string[]): SymbolMatch 
 interface SymbolCandidate {
   location: SymbolLocation;
   selectorPath: string[];
+  breadcrumbs: Breadcrumb[];
 }
 
 function collectSymbolCandidates(tree: TreeNode[]): SymbolCandidate[] {
   const candidates: SymbolCandidate[] = [];
   for (const node of tree) {
-    collectNodeCandidates(node, [[]], true, candidates);
+    collectNodeCandidates(node, [[]], true, [], candidates);
   }
   return candidates;
 }
@@ -153,11 +165,18 @@ function collectNodeCandidates(
   node: TreeNode,
   prefixes: string[][],
   isTopLevel: boolean,
+  parentBreadcrumbs: Breadcrumb[],
   candidates: SymbolCandidate[],
 ): void {
   const selectorTokens = getNodeSelectorTokens(node);
   const expandedPrefixes = expandSelectorPrefixes(prefixes, selectorTokens);
   const nextPrefixes = isTopLevel ? prefixes.concat(expandedPrefixes) : expandedPrefixes;
+  const nodeBreadcrumbs = node.url
+    ? parentBreadcrumbs.concat({
+        label: node.name,
+        url: node.url,
+      })
+    : parentBreadcrumbs;
 
   if (node.url) {
     for (const selectorPath of nextPrefixes) {
@@ -165,6 +184,7 @@ function collectNodeCandidates(
         candidates.push({
           location: { url: node.url },
           selectorPath,
+          breadcrumbs: nodeBreadcrumbs,
         });
       }
     }
@@ -178,6 +198,10 @@ function collectNodeCandidates(
         candidates.push({
           location,
           selectorPath: selectorPath.concat(outlineItem.name),
+          breadcrumbs: nodeBreadcrumbs.concat({
+            label: outlineItem.name,
+            url: location.url,
+          }),
         });
       }
     }
@@ -185,7 +209,7 @@ function collectNodeCandidates(
 
   if (node.children) {
     for (const child of node.children) {
-      collectNodeCandidates(child, nextPrefixes, false, candidates);
+      collectNodeCandidates(child, nextPrefixes, false, nodeBreadcrumbs, candidates);
     }
   }
 }
@@ -251,12 +275,36 @@ function isDescendantSelectorMatch(symbolPath: string[], selectorPath: string[])
   return false;
 }
 
-function uniqueLocations(candidates: SymbolCandidate[]): SymbolLocation[] {
-  const unique = new Map<string, SymbolLocation>();
+function uniqueLocations(candidates: SymbolCandidate[]): SymbolCandidate[] {
+  const unique = new Map<string, SymbolCandidate>();
   for (const candidate of candidates) {
-    unique.set(candidate.location.url, candidate.location);
+    unique.set(candidate.location.url, candidate);
   }
   return [...unique.values()];
+}
+
+function resolveBreadcrumb(
+  packageName: string,
+  version: string,
+  breadcrumb: Breadcrumb,
+): Breadcrumb {
+  return {
+    label: breadcrumb.label,
+    url: resolveSymbolUrl(packageName, version, breadcrumb.url),
+  };
+}
+
+function resolveCandidate(
+  packageName: string,
+  version: string,
+  candidate: SymbolCandidate,
+): RedirectCandidate {
+  return {
+    url: resolveSymbolUrl(packageName, version, candidate.location.url),
+    breadcrumbs: candidate.breadcrumbs.map((breadcrumb) =>
+      resolveBreadcrumb(packageName, version, breadcrumb),
+    ),
+  };
 }
 
 /**
@@ -435,15 +483,17 @@ export async function redirect(
 
     if (match.kind === "ambiguous") {
       return {
-        kind: "error",
+        kind: "ambiguous",
         reason: `Ambiguous symbol path: ${parsed.symbolPath.join(".")}`,
-        details: match.locations.map((location) => location.url).join("\n"),
+        candidates: match.locations.map((candidate) =>
+          resolveCandidate(parsed.packageName, resolvedVersion, candidate),
+        ),
       };
     }
 
     return {
       kind: "redirect",
-      url: resolveSymbolUrl(parsed.packageName, resolvedVersion, match.locations[0].url),
+      url: resolveSymbolUrl(parsed.packageName, resolvedVersion, match.locations[0].location.url),
     };
   } catch (error) {
     return {
