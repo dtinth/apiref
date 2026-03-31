@@ -31,7 +31,7 @@ describe("runCli — pw-utilities", () => {
 
   test("written files contain valid HTML", () => {
     const html = readFileSync(join(out, "index.html"), "utf-8");
-    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("<!doctype html>");
     expect(html).toContain("</html>");
   });
 

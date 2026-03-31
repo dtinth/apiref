@@ -36,10 +36,14 @@
   "dependencies": {
     "@shikijs/langs": "catalog:",
     "@shikijs/themes": "catalog:",
+    "hast-util-from-html": "catalog:",
+    "hast-util-to-html": "catalog:",
     "marked": "catalog:",
+    "parse5-html-rewriting-stream": "catalog:",
     "preact": "catalog:",
     "preact-render-to-string": "catalog:",
-    "shiki": "catalog:"
+    "shiki": "catalog:",
+    "stringify-entities": "catalog:"
   },
   "devDependencies": {
     "@types/html-to-text": "catalog:",

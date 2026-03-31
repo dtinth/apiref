@@ -1,6 +1,11 @@
+import { fromHtml } from "hast-util-from-html";
+import { toHtml } from "hast-util-to-html";
+import { Readable } from "node:stream";
+import { RewritingStream } from "parse5-html-rewriting-stream";
 import { render as renderToString } from "preact-render-to-string";
-import type { SiteViewModel } from "./viewmodel.ts";
+import { stringifyEntities } from "stringify-entities";
 import { Page, type PageRenderOptions } from "./components/Page.tsx";
+import type { SiteViewModel } from "./viewmodel.ts";
 
 /**
  * Options for rendering a site to HTML.
@@ -42,8 +47,40 @@ export function renderSite(site: SiteViewModel, options: RenderOptions): Map<str
   const output = new Map<string, string>();
   for (const page of site.pages) {
     const html =
-      "<!DOCTYPE html>" + renderToString(<Page site={site} page={page} options={options} />);
+      "<!doctype html>" + renderToString(<Page site={site} page={page} options={options} />);
     output.set(page.url, html);
   }
   return output;
+}
+
+export async function compressSite(site: Map<string, string>): Promise<Map<string, string>> {
+  const compressed = new Map<string, string>();
+  for (const [url, html] of site) {
+    const compressedHtml = await compress(html);
+    compressed.set(url, compressedHtml);
+  }
+  return compressed;
+}
+
+export async function compress(html: string): Promise<string> {
+  const hast = fromHtml(html);
+  const html2 = toHtml(hast, { characterReferences: { useShortestReferences: true } });
+  const stream = Readable.from(html2);
+  const rewriter = new RewritingStream();
+  rewriter.on("startTag", (startTag) => {
+    let res = `<${startTag.tagName}`;
+    for (const attr of startTag.attrs) {
+      res += `\n${attr.name}="${stringifyEntities(attr.value, { useShortestReferences: true })}"`;
+    }
+    res += startTag.selfClosing ? "/>" : ">";
+    rewriter.emitRaw(res);
+  });
+  rewriter.on("endTag", (endTag) => {
+    rewriter.emitRaw(`</${endTag.tagName}>`);
+  });
+  const htmlParts: string[] = [];
+  for await (const chunk of stream.pipe(rewriter)) {
+    htmlParts.push(chunk.toString());
+  }
+  return htmlParts.join("");
 }

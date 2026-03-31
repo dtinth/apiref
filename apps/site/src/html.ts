@@ -1,12 +1,12 @@
-import { render } from "preact-render-to-string";
 import htm from "htm";
 import { h } from "preact";
+import { render } from "preact-render-to-string";
 
 export const html = (htm as any).bind(h);
 
 export function renderHtmlPage(content: unknown): string {
   const rendered = render(content as any);
-  return "<!DOCTYPE html>" + rendered;
+  return "<!doctype html>" + rendered;
 }
 
 export function respondWithHtml(content: unknown, status: number = 200): Response {

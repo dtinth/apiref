@@ -1,6 +1,6 @@
 import { render } from "preact-render-to-string";
-import { html } from "../html.ts";
 import { Layout } from "../components/Layout.ts";
+import { html } from "../html.ts";
 
 interface RenderHomeOptions {
   shellBaseUrl?: string;
@@ -41,5 +41,5 @@ export function renderHome(options: RenderHomeOptions = {}): string {
     <//>
   `;
 
-  return "<!DOCTYPE html>" + render(page);
+  return "<!doctype html>" + render(page);
 }

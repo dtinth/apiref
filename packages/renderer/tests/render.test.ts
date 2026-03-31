@@ -46,7 +46,7 @@ describe("render pw-utilities", () => {
 
   test("index.html is a complete HTML document", () => {
     const html = pages.get("index.html")!;
-    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("<!doctype html>");
     expect(html).toContain("<html");
     expect(html).toContain("</html>");
   });

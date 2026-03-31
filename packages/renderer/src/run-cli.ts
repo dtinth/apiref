@@ -1,9 +1,9 @@
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { zstdCompressSync } from "node:zlib";
-import { transform } from "./transformer.ts";
-import { renderSite } from "./render.tsx";
 import { buildApirefJson } from "./apiref-json.ts";
+import { compressSite, renderSite } from "./render.tsx";
+import { transform } from "./transformer.ts";
 
 export interface CliOptions {
   /** Path to typedoc.json, or "-" to read from stdin. */
@@ -42,7 +42,7 @@ export async function runCli(options: CliOptions): Promise<{ pagesWritten: numbe
   const site = transform(json, { version });
 
   // Render → HTML pages
-  const pages = renderSite(site, { shellBaseUrl: assetsBase, baseUrl });
+  const pages = await compressSite(renderSite(site, { shellBaseUrl: assetsBase, baseUrl }));
 
   // Write files
   for (const [url, html] of pages) {
