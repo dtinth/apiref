@@ -71,7 +71,9 @@ export function getSourceUrl(
   ...nodes: Array<{ sources?: TDSource[] } | TDSignature | TDDeclaration | undefined>
 ): string | undefined {
   for (const node of nodes) {
-    const url = node?.sources?.map((source) => source.url).find(isGitHubUrl);
+    const url = node?.sources
+      ?.map((source) => source.url)
+      .find((url) => isGitHubUrl(url) && !isTypeDefinitionFile(url));
     if (url) return url;
   }
   return undefined;
@@ -116,4 +118,8 @@ function isGitHubUrl(url: string | undefined): url is string {
   } catch {
     return false;
   }
+}
+
+function isTypeDefinitionFile(url: string): boolean {
+  return url.endsWith(".d.ts") || url.endsWith(".d.mts");
 }
