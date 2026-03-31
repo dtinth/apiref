@@ -270,6 +270,26 @@ export class ApiError extends Error {
 }
 
 /**
+ * Base greeter with a reusable greeting method.
+ */
+export class BaseGreeter {
+  /**
+   * Generate a greeting for a person.
+   *
+   * @param name - Person to greet
+   * @returns Greeting text
+   */
+  greet(name: string): string {
+    return `Hello, ${name}!`;
+  }
+}
+
+/**
+ * Friendly greeter that inherits its greeting behavior.
+ */
+export class FriendlyGreeter extends BaseGreeter {}
+
+/**
  * Parse a value that could be a string, number, or object.
  *
  * A utility function with multiple signatures for flexible usage.

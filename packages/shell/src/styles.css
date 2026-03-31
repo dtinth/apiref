@@ -465,6 +465,10 @@ a.ar-card-header {
   @apply bg-red-900/50 text-red-300;
 }
 
+.ar-card--deprecated {
+  opacity: 0.64;
+}
+
 .ar-badge--static {
   @apply bg-blue-900/50 text-blue-300;
 }

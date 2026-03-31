@@ -219,6 +219,20 @@ describe("render examples", () => {
     expect(html).toContain(">References <");
     expect(html).toContain(">RecA<");
   });
+
+  test("inherited member cards show inherited-from breadcrumbs", () => {
+    const html = pages.get("main/FriendlyGreeter.html")!;
+    expect(html).toContain("Inherited from");
+    expect(html).toContain('href="BaseGreeter.html#greet"');
+    expect(html).toContain(">BaseGreeter<");
+    expect(html).toContain(">greet<");
+  });
+
+  test("deprecated member cards are visually muted and keep the deprecated badge", () => {
+    const html = pages.get("main/Repository.html")!;
+    expect(html).toContain('id="findAll" class="ar-card ar-card--deprecated"');
+    expect(html).toContain('class="ar-badge ar-badge--deprecated"');
+  });
 });
 
 describe("TypeView", () => {
