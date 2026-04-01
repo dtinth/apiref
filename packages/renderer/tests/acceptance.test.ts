@@ -104,6 +104,7 @@ describe("pages", () => {
     page.section("Enumerations").card("ErrorCategory").shouldHaveKind("enum");
     page.section("Classes").card("ApiError").shouldHaveKind("class");
     page.section("Interfaces").card("CacheEntry").shouldHaveKind("interface");
+    page.section("Interfaces").card("MessageFormatter").shouldHaveKind("interface");
     page.section("Type Aliases").card("AppConfig").shouldHaveKind("type-alias");
     page.section("Variables").card("defaultConfig").shouldHaveKind("variable");
     page.section("Functions").card("createEmitter").shouldHaveKind("function");
@@ -119,6 +120,27 @@ describe("pages", () => {
         anchor: "~index-signatures",
       },
     ]);
+  });
+  test("Call signatures should be documented on interface pages", () => {
+    const page = tester.page("main/MessageFormatter.html");
+    page.shouldHaveOutline([
+      {
+        label: "Call Signatures",
+        anchor: "~call-signatures",
+        items: [
+          { label: "MessageFormatter (1/2)", anchor: "MessageFormatter-1" },
+          { label: "MessageFormatter (2/2)", anchor: "MessageFormatter-2" },
+        ],
+      },
+      {
+        label: "Properties",
+        anchor: "~properties",
+        items: [{ label: "defaultPrefix", anchor: "defaultPrefix" }],
+      },
+    ]);
+    page.section("Call Signatures").card("MessageFormatter (1/2)").shouldHaveKind("interface");
+    page.section("Call Signatures").card("MessageFormatter (2/2)").shouldHaveKind("interface");
+    page.section("Properties").card("defaultPrefix").shouldHaveKind("property");
   });
   test("Function page outline should have correct sections", () => {
     tester

@@ -2,7 +2,8 @@ import { buildSignatureCard, declarationAsCards } from "./card-builder.ts";
 import { extractBlockTagSections, transformCommentParts } from "./comment-transformer.ts";
 import type { TransformContext } from "./transform-context.ts";
 import { getDeclarationChildren } from "./typedoc.ts";
-import type { TDDeclaration } from "./typedoc.ts";
+import type { TDDeclaration, TDSignature } from "./typedoc.ts";
+import { Kind } from "./typedoc-kinds.ts";
 import { transformSignature, transformType } from "./type-transformer.ts";
 import { getSourceUrl, inferGroups } from "./utils.ts";
 import type { Section } from "./viewmodel.ts";
@@ -12,6 +13,59 @@ function buildSectionId(idPrefix: string, title: string): string {
   const sectionPart = title.toLowerCase().replace(/\s+/g, "-");
   if (!idPrefix) return `~${sectionPart}`;
   return `${idPrefix}~${sectionPart}`;
+}
+
+function buildSignatureCards(
+  decl: TDDeclaration,
+  rawSigs: TDSignature[],
+  ctx: TransformContext,
+  declarationKind: "function" | "interface",
+) {
+  const n = rawSigs.length;
+  return rawSigs.map((rawSig, i) => {
+    const sig = transformSignature(rawSig, ctx);
+    const blockTags = extractBlockTagSections(rawSig.comment, ctx);
+    const extraSections: Section[] = [];
+    extraSections.push(...blockTags.examples);
+    const typeParamDocs = (rawSig.typeParameters ?? [])
+      .filter((tp) => tp.comment?.summary?.length)
+      .map((tp) => ({
+        name: tp.name,
+        doc: transformCommentParts(tp.comment!.summary, ctx),
+      }));
+    if (typeParamDocs.length > 0) {
+      extraSections.push({
+        title: "Type Parameters",
+        body: [{ kind: "parameters", parameters: typeParamDocs }],
+      });
+    }
+    const params = (rawSig.parameters ?? [])
+      .filter((p) => p.comment?.summary?.length)
+      .map((p) => ({
+        name: p.name,
+        doc: transformCommentParts(p.comment!.summary, ctx),
+      }));
+    if (params.length > 0) {
+      extraSections.push({
+        title: "Parameters",
+        body: [{ kind: "parameters", parameters: params }],
+      });
+    }
+    extraSections.push(...blockTags.returns, ...blockTags.throws);
+    const label = n === 1 ? decl.name : `${decl.name} (${i + 1}/${n})`;
+    const anchor = n === 1 ? decl.name : `${decl.name}-${i + 1}`;
+    return buildSignatureCard(
+      decl.name,
+      label,
+      anchor,
+      sig,
+      {},
+      declarationKind,
+      getSourceUrl(rawSig, decl),
+      extraSections,
+      anchor,
+    );
+  });
 }
 
 export function buildClassSections(
@@ -46,6 +100,15 @@ export function buildMemberSections(
   idPrefix: string = "",
 ): Section[] {
   const sections: Section[] = [];
+
+  const callSigs = decl.kind === Kind.Interface ? (decl.signatures ?? []) : [];
+  if (callSigs.length > 0) {
+    sections.push({
+      title: "Call Signatures",
+      id: buildSectionId(idPrefix, "Call Signatures"),
+      body: buildSignatureCards(decl, callSigs, ctx, "interface"),
+    });
+  }
 
   // Index signatures first
   const indexSigs = decl.indexSignatures ?? [];
@@ -150,52 +213,7 @@ export function buildFunctionSections(
   }
 
   // Multiple signatures: one card per overload
-  const n = transformedSigs.length;
-  const cards = transformedSigs.map((sig, i) => {
-    const blockTags = extractBlockTagSections(sigs[i].comment, ctx);
-    const extraSections: Section[] = [];
-    extraSections.push(...blockTags.examples);
-    // Type parameters
-    const typeParamDocs = (sigs[i].typeParameters ?? [])
-      .filter((tp) => tp.comment?.summary?.length)
-      .map((tp) => ({
-        name: tp.name,
-        doc: transformCommentParts(tp.comment!.summary, ctx),
-      }));
-    if (typeParamDocs.length > 0) {
-      extraSections.push({
-        title: "Type Parameters",
-        body: [{ kind: "parameters", parameters: typeParamDocs }],
-      });
-    }
-    // Parameters
-    const params = (sigs[i].parameters ?? [])
-      .filter((p) => p.comment?.summary?.length)
-      .map((p) => ({
-        name: p.name,
-        doc: transformCommentParts(p.comment!.summary, ctx),
-      }));
-    if (params.length > 0) {
-      extraSections.push({
-        title: "Parameters",
-        body: [{ kind: "parameters", parameters: params }],
-      });
-    }
-    extraSections.push(...blockTags.returns, ...blockTags.throws);
-    const label = `${decl.name} (${i + 1}/${n})`;
-    const anchor = `${decl.name}-${i + 1}`;
-    return buildSignatureCard(
-      decl.name,
-      label,
-      anchor,
-      sig,
-      {},
-      "function",
-      getSourceUrl(sigs[i], decl),
-      extraSections,
-      anchor,
-    );
-  });
+  const cards = buildSignatureCards(decl, sigs, ctx, "function");
 
   return [
     {

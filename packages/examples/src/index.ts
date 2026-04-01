@@ -5,6 +5,7 @@
  *
  * This package showcases:
  * - Multi-signature methods and functions
+ * - Callable interfaces with multiple call signatures
  * - Generic types and constraints
  * - Mapped types with readonly and optional modifiers
  * - Classes with various member types
@@ -144,6 +145,31 @@ export interface ProcessOptions {
   timeout?: number;
   /** Optional batch size for processing */
   batchSize?: number;
+}
+
+/**
+ * A callable interface for formatting messages with optional interpolation data.
+ */
+export interface MessageFormatter {
+  /**
+   * Format a plain message.
+   *
+   * @param message - Message to format
+   * @returns The formatted message
+   */
+  (message: string): string;
+
+  /**
+   * Format a message template with replacement values.
+   *
+   * @param template - Message template to format
+   * @param values - Replacement values keyed by placeholder name
+   * @returns The formatted message
+   */
+  (template: string, values: Record<string, string | number>): string;
+
+  /** Prefix added before each formatted message */
+  defaultPrefix?: string;
 }
 
 /**
