@@ -160,7 +160,7 @@ describe("type rendering", () => {
     const page = tester.page("main/Result.html");
     page
       .section("Union Type")
-      .shouldHaveTypeList(["{ ok: true; value: T }", "{ ok: false; error: E }"]);
+      .shouldHaveTypeList(["{ ok: true; value: T }", "{ error: E; ok: false }"]);
   });
   test("Type aliases with 'typeof' renders correctly", () => {
     const page = tester.page("main/AppConfig.html");

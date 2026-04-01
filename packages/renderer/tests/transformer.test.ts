@@ -181,13 +181,15 @@ describe("visual-storyboard (multi-module)", () => {
     }
   });
 
-  test("StoryboardEvent (TypeAlias) has type-declaration section", () => {
+  test("StoryboardEvent (TypeAlias) has union type section", () => {
     const page = site.pages.find((p) => p.url === "main/StoryboardEvent.html");
     expect(page?.kind).toBe("type-alias");
-    const section = page?.sections.find((s) => s.body.some((b) => b.kind === "type-declaration"));
+    const section = page?.sections.find(
+      (s) => s.title === "Union Type" && s.body.some((b) => b.kind === "type-declaration-list"),
+    );
     expect(section).toBeDefined();
-    if (section?.body[0]?.kind === "type-declaration") {
-      expect(section.body[0].type.kind).toBe("union");
+    if (section?.body[0]?.kind === "type-declaration-list") {
+      expect(section.body[0].types.length).toBeGreaterThan(1);
     }
   });
 
