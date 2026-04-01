@@ -183,8 +183,9 @@ describe("render examples", () => {
     const html = pages.get("main/Result.html")!;
     expect(html).toContain(">Union Type<");
     expect(html).toContain('class="ar-type-declaration-list"');
-    expect(html).toContain("{ ok: true; value: T }");
-    expect(html).toContain("{ ok: false; error: E }");
+    expect(html.match(/class="ar-type-declaration-list-item"/g)).toHaveLength(2);
+    expect(html).toMatch(/ok.*true.*value.*T/s);
+    expect(html).toMatch(/error.*E.*ok.*false/s);
   });
 
   test("mapped type aliases render mapped syntax", () => {
