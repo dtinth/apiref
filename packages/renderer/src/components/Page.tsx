@@ -228,6 +228,19 @@ function BlockView({
         </div>
       );
 
+    case "type-declaration-list":
+      return (
+        <ul class="ar-type-declaration-list">
+          {block.types.map((type, i) => (
+            <li key={i} class="ar-type-declaration-list-item">
+              <div class="ar-signature">
+                <TypeView type={type} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      );
+
     case "reference-breadcrumbs":
       return (
         <p class="ar-card-reference">

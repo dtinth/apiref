@@ -156,6 +156,12 @@ describe("pages", () => {
 });
 
 describe("type rendering", () => {
+  test("Top-level union type aliases render as a union type section", () => {
+    const page = tester.page("main/Result.html");
+    page
+      .section("Union Type")
+      .shouldHaveTypeList(["{ ok: true; value: T }", "{ ok: false; error: E }"]);
+  });
   test("Type aliases with 'typeof' renders correctly", () => {
     const page = tester.page("main/AppConfig.html");
     page.section("Type").shouldHaveSignature("typeof defaultConfig");
