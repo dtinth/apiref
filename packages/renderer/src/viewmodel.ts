@@ -87,6 +87,7 @@ export interface Breadcrumb {
  * - `signatures`: Callable signatures (functions, methods)
  * - `card`: A member/item rendered as a card (methods, properties, etc.)
  * - `type-declaration`: Type alias or variable type definition
+ * - `type-declaration-list`: Bulleted list of top-level union members for type aliases
  * - `flags`: Modifier badges (deprecated, static, abstract, readonly)
  * - `parameters`: Parameter documentation list
  */
@@ -110,6 +111,7 @@ export type SectionBlock =
   | { kind: "reference-breadcrumbs"; breadcrumbs: Breadcrumb[] }
   | { kind: "inherited-breadcrumbs"; breadcrumbs: Breadcrumb[] }
   | { kind: "type-declaration"; name?: string; type: TypeViewModel; optional?: boolean }
+  | { kind: "type-declaration-list"; types: TypeViewModel[] }
   | { kind: "flags"; flags: MemberFlags }
   | { kind: "parameters"; parameters: ParameterDocViewModel[] }
   | { kind: "examples"; examples: DocNode[][] };

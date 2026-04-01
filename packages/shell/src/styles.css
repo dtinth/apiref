@@ -270,6 +270,14 @@ a.ar-card-header {
   @apply font-mono text-sm bg-black/20 rounded px-3 py-2 overflow-x-auto;
 }
 
+.ar-type-declaration-list {
+  @apply list-disc pl-6 space-y-2;
+}
+
+.ar-type-declaration-list-item {
+  @apply pl-1;
+}
+
 .ar-signature-block {
   @apply space-y-2;
 }

@@ -230,6 +230,20 @@ export function buildTypeAliasSections(
   _idPrefix: string = "",
 ): Section[] {
   if (!decl.type) return [];
+  if (decl.type.type === "union") {
+    return [
+      {
+        title: "Union Type",
+        id: "union-type",
+        body: [
+          {
+            kind: "type-declaration-list",
+            types: decl.type.types.map((type) => transformType(type, ctx)),
+          },
+        ],
+      },
+    ];
+  }
   return [
     {
       title: "Type",

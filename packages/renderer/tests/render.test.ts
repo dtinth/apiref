@@ -179,6 +179,14 @@ describe("render examples", () => {
     expect(html).toContain('href="defaultConfig.html"');
   });
 
+  test("top-level union type aliases render as a bulleted list", () => {
+    const html = pages.get("main/Result.html")!;
+    expect(html).toContain(">Union Type<");
+    expect(html).toContain('class="ar-type-declaration-list"');
+    expect(html).toContain("{ ok: true; value: T }");
+    expect(html).toContain("{ ok: false; error: E }");
+  });
+
   test("mapped type aliases render mapped syntax", () => {
     const strictReadonlyHtml = pages.get("main/StrictReadonly.html")!;
     expect(strictReadonlyHtml).toContain("+readonly ");

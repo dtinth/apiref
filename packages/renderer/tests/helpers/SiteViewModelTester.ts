@@ -195,6 +195,29 @@ class SectionTester {
     }).trim();
     expect(text).toBe(expected);
   }
+
+  shouldHaveTypeList(expected: string[]) {
+    const sections = this.resolver.resolve();
+    expect(sections).toHaveLength(1);
+    const section = sections[0]!;
+    const body = section.body[0];
+
+    if (body.kind !== "type-declaration-list") {
+      throw new Error(`Unexpected block kind: ${body.kind}`);
+    }
+
+    const rendered = body.types.map((type) => {
+      const html = renderToString(
+        h(PageContext.Provider, { value: "index.html" }, h(TypeView, { type })),
+      );
+      return convert(html, {
+        preserveNewlines: false,
+        selectors: [{ selector: "a", options: { ignoreHref: true } }],
+      }).trim();
+    });
+
+    expect(rendered).toEqual(expected);
+  }
 }
 
 type Card = Extract<SectionBlock, { kind: "card" }>;
