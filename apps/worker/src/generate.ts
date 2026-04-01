@@ -37,6 +37,18 @@ export interface GenerateOptions {
   logDir?: string;
 }
 
+export function extractPackageNameFromSpec(packageSpec: string): string {
+  if (packageSpec.startsWith("@")) {
+    const slashIndex = packageSpec.indexOf("/");
+    if (slashIndex === -1) return packageSpec;
+    const versionSeparatorIndex = packageSpec.indexOf("@", slashIndex + 1);
+    return versionSeparatorIndex === -1 ? packageSpec : packageSpec.slice(0, versionSeparatorIndex);
+  }
+
+  const versionSeparatorIndex = packageSpec.indexOf("@");
+  return versionSeparatorIndex === -1 ? packageSpec : packageSpec.slice(0, versionSeparatorIndex);
+}
+
 async function resolveEntryPointViaSourceMap(absDefaultPath: string): Promise<string | undefined> {
   try {
     const mapContent = await readFile(absDefaultPath + ".map", "utf-8");
@@ -223,7 +235,7 @@ export async function generate(options: GenerateOptions): Promise<string> {
     const parts = installedPackagePath.split("/");
     packageName = parts[parts.length - 1] || installedPackagePath;
   } else {
-    packageName = packageSpec!.split("@")[0] || packageSpec!;
+    packageName = extractPackageNameFromSpec(packageSpec!);
   }
 
   let tempDir: string;
